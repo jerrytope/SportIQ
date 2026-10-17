@@ -12,6 +12,9 @@
 #                  postgres://postgres:PASSWORD@127.0.0.1:5432/postgres)
 set -euo pipefail
 
+# Everything runs inside main(), which bash must read in full before executing. When piped from curl, commands
+# that read stdin (ffmpeg during the demo seed, for example) would otherwise swallow the rest of this script.
+main() {
 DOMAIN="${DOMAIN:-nislearning.madeinafricasport.com}"
 SERVER_IP="${SERVER_IP:-13.62.102.196}"
 REPO="${REPO:-https://github.com/jerrytope/SportIQ.git}"
@@ -139,7 +142,7 @@ fi
 chown "$APP_USER:$APP_USER" "$ENV_FILE" && chmod 600 "$ENV_FILE"
 
 # --- 6. Migrate, static files, demo data ----------------------------------------------------------
-manage() { (cd "$APP_DIR" && as_app "$APP_DIR/.venv/bin/python" manage.py "$@"); }
+manage() { (cd "$APP_DIR" && as_app "$APP_DIR/.venv/bin/python" manage.py "$@" </dev/null); }
 say "Running database migrations"
 manage migrate --noinput
 say "Collecting static files"
@@ -290,4 +293,7 @@ cat <<EOF
   Update later   : re-run the same command
 EOF
 [ "$SEED_DEMO" = "yes" ] && warn "Demo accounts (incl. admin@sportiq.test) use the published password SportIQ-demo-2026. Change them or reinstall with SEED_DEMO=no before real users join."
-exit 0
+return 0
+}
+
+main "$@"
