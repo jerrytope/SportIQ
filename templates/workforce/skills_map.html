@@ -1,0 +1,22 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}National skills map · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Nigeria's sports skills map</h1><p>Registered professionals and those holding a currently valid credential, by state. Counts below {{ suppress }} are hidden to protect individuals; a dash (–) means the qualified count is hidden because it, or the number not qualified, is below {{ suppress }}.</p></div></div>
+<form class="card card-tight inline-form mb-3" method="get">
+  <div><label for="m1">Profession</label><select id="m1" name="profession"><option value="">All</option>{% for p in professions %}<option value="{{ p.slug }}" {% if request.GET.profession == p.slug %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></div>
+  <div><label for="m2">Sport</label><select id="m2" name="sport"><option value="">All</option>{% for s in sports %}<option value="{{ s.slug }}" {% if request.GET.sport == s.slug %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></div>
+  <div><label for="m3">Credential</label><select id="m3" name="credential"><option value="">Any valid credential</option>{% for c in credential_types %}<option value="{{ c.code }}" {% if request.GET.credential == c.code %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+  <button class="btn btn-primary">Update map</button></form>
+<div class="split">
+  <div class="card">
+    <div class="row-between mb-2"><strong>{{ qualified }} qualified of {{ total }} registered</strong><small class="muted">Darker green = more qualified professionals</small></div>
+    <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px" role="img" aria-label="Tile map of Nigerian states">
+      {% for c in cells %}<div title="{{ c.state }}: {% if c.total is None %}fewer than {{ suppress }}{% elif c.qualified is None %}{{ c.total }} registered (qualified count hidden: small group){% else %}{{ c.qualified }} of {{ c.total }} qualified{% endif %}" style="grid-row:{{ c.row }};grid-column:{{ c.col }};aspect-ratio:1;border-radius:10px;padding:4px;display:flex;flex-direction:column;justify-content:space-between;font-size:.62rem;line-height:1.1;background:color-mix(in srgb,#008751 {{ c.shade }}%,var(--tint));color:{% if c.shade > 55 %}#fff{% else %}var(--primary){% endif %}">
+        <strong>{{ c.state|truncatechars:11 }}</strong><span>{% if c.total is None %}&lt;{{ suppress }}{% elif c.qualified is None %}–/{{ c.total }}{% else %}{{ c.qualified }}/{{ c.total }}{% endif %}</span></div>{% endfor %}
+    </div>
+    <p class="small muted mt-2 mb-0">Approximate tile layout: each square is one state, positioned roughly as on the map.</p>
+  </div>
+  <div class="card"><h3>Largest training gaps</h3><p class="small muted">Lowest share of registered professionals holding a valid credential.</p>
+    {% for g in gaps %}<div class="hbar"><span>{{ g.state }}</span><span class="track"><span style="width:{{ g.rate }}%"></span></span><b>{{ g.rate }}%</b></div>{% empty %}<p class="muted">Not enough data.</p>{% endfor %}</div>
+</div>
+{% endblock %}

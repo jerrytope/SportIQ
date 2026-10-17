@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% load sportiq %}
+{% block title %}{% block page_title %}Back office{% endblock %} · SportIQ Back office{% endblock %}
+{% block body_class %}app-body{% endblock %}
+{% block body %}
+<div class="app">
+  {% include "manage/_sidebar.html" %}
+  <div class="side-drawer" id="sidedrawer"><div class="scrim" data-close="sidedrawer"></div>{% include "manage/_sidebar.html" %}</div>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn mobile-menu-btn" type="button" data-open="sidedrawer" aria-label="Open menu">{% icon "menu" %}</button>
+      <form class="search" action="{% url 'backoffice:users' %}" role="search">
+        {% icon "search" %}<label class="sr-only" for="bosearch">Search people</label>
+        <input id="bosearch" type="search" name="q" placeholder="Search people by name or email…">
+      </form>
+      <div class="topbar-actions">
+        <a class="btn btn-secondary btn-sm hide-sm" href="{% url 'learning:dashboard' %}">Learner view</a>
+        <span class="avatar" title="{{ user }}">{{ user.initials }}</span>
+      </div>
+    </header>
+    <main id="main" class="content">
+      {% if messages %}{% for m in messages %}<div class="alert alert-{% if m.tags == 'error' %}error{% elif m.tags == 'warning' %}warning{% elif m.tags == 'info' %}info{% else %}success{% endif %}">{{ m }}</div>{% endfor %}{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}

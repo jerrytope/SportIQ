@@ -1,0 +1,26 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ s.title }} · Match analysis lab{% endblock %}
+{% block head %}{% if s.hls_playlist %}<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>{% endif %}{% endblock %}
+{% block content %}
+{% include "labs/_header.html" %}
+<form method="post" id="ann-form">{% csrf_token %}
+<div class="split">
+  <div class="stack">
+    <div class="player"><video id="lab-video" controls preload="metadata" {% if not s.hls_playlist and s.video %}src="{{ s.video.url }}"{% endif %} data-hls="{% if s.hls_playlist %}{{ MEDIA_URL }}{{ s.hls_playlist }}{% endif %}"></video></div>
+    <div class="card card-tight"><strong class="small">Tag the moment at the current video time:</strong>
+      <div class="row mt-1">{% for t in s.data.tags %}<button type="button" class="chip" data-tag="{{ t }}" style="cursor:pointer">{{ t }}</button>{% endfor %}</div></div>
+    <div class="card"><label for="report">Tactical report</label><textarea id="report" name="report" rows="6" placeholder="Summarise what you saw: patterns, strengths, what you'd change (60+ words)."></textarea></div>
+    <input type="hidden" name="annotations" id="annotations" value="[]">
+    <button class="btn btn-primary btn-lg">Submit analysis</button>
+  </div>
+  <div class="card"><h3>Your annotations</h3><ul class="list" id="ann-list"><li class="muted small">Play the video and tag key moments.</li></ul></div>
+</div>
+</form>
+<script>
+(function(){var v=document.getElementById("lab-video"),list=document.getElementById("ann-list"),field=document.getElementById("annotations"),anns=[];
+ if(v.dataset.hls){if(window.Hls&&Hls.isSupported()){var h=new Hls();h.loadSource(v.dataset.hls);h.attachMedia(v);}else{v.src=v.dataset.hls;}}
+ function render(){field.value=JSON.stringify(anns);list.innerHTML=anns.length?anns.map(function(a,i){return '<li><span class="badge">'+a.t.toFixed(1)+'s</span><span class="grow">'+a.tag+'</span><button type="button" class="btn btn-ghost btn-sm" data-del="'+i+'">✕</button></li>';}).join(""):'<li class="muted small">No tags yet.</li>';}
+ document.querySelectorAll("[data-tag]").forEach(function(b){b.addEventListener("click",function(){anns.push({t:v.currentTime,tag:b.dataset.tag});anns.sort(function(a,b){return a.t-b.t;});render();});});
+ list.addEventListener("click",function(e){var d=e.target.closest("[data-del]");if(d){anns.splice(+d.dataset.del,1);render();}});})();
+</script>
+{% endblock %}

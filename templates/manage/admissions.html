@@ -1,0 +1,23 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Admissions{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Admissions</h1><p>Applications for programmes that require approval before enrolment.</p></div></div>
+<nav class="tabs"><a href="?status=open" class="{% if status == 'open' %}active{% endif %}">Open</a><a href="?status=admitted" class="{% if status == 'admitted' %}active{% endif %}">Admitted</a><a href="?status=rejected" class="{% if status == 'rejected' %}active{% endif %}">Not admitted</a></nav>
+<div class="stack">
+{% for a in applications %}
+  <div class="card">
+    <div class="row-between"><div><strong style="color:var(--primary)">{{ a.user }}</strong> <small class="muted">{{ a.user.email }} · {{ a.user.state }}</small><br><small class="muted">{{ a.course.title }} · applied {{ a.created_at|date:"j M Y" }}</small></div><span class="badge">{{ a.get_status_display }}</span></div>
+    <p class="mt-2">{{ a.statement|linebreaksbr }}</p>
+    {% if a.document %}<a class="small" href="{{ a.document.url }}">{% icon "file" %} Supporting document</a>{% endif %}
+    {% if a.status == "submitted" or a.status == "review" %}
+    <form method="post" action="{% url 'backoffice:admission_decide' a.pk %}" class="inline-form mt-2">{% csrf_token %}
+      <input name="note" placeholder="Note to applicant (optional)" aria-label="Decision note">
+      <button class="btn btn-primary btn-sm" name="decision" value="admitted">Admit</button>
+      <button class="btn btn-secondary btn-sm" name="decision" value="review">Mark under review</button>
+      <button class="btn btn-danger btn-sm" name="decision" value="rejected">Decline</button>
+    </form>
+    {% elif a.decision_note %}<p class="small muted mb-0">Decision: {{ a.decision_note }} ({{ a.decided_by }}, {{ a.decided_at|date:"j M Y" }})</p>{% endif %}
+  </div>
+{% empty %}<div class="card empty">{% icon "file" %}<p>No applications here.</p></div>{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ inst.name }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:institutions' %}">Institutions</a></div><h1>{{ inst.name }}</h1><p>{{ inst.get_kind_display }}{% if inst.state %} · {{ inst.state }}{% endif %}</p></div>
+  <a class="btn btn-secondary" href="{% url 'backoffice:org' inst.slug %}">{% icon "eye" %}Institution portal view</a></div>
+<div class="split">
+  <form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}{% include "components/form.html" with grid=True %}<button class="btn btn-primary">Save</button></form>
+  <div class="card"><h3>Members ({{ members|length }})</h3>
+    <ul class="list">{% for m in members %}<li><span class="grow"><a href="{% url 'backoffice:user_detail' m.user.pk %}">{{ m.user }}</a><br><small class="muted">{{ m.get_role_display }}</small></span></li>{% empty %}<li class="muted">No members.</li>{% endfor %}</ul>
+    <form method="post" class="mt-2">{% csrf_token %}<input type="hidden" name="action" value="add_member">
+      <div class="field"><label for="m-email">Add by email</label><input id="m-email" type="email" name="email" required></div>
+      <div class="field"><label for="m-role">Role</label><select id="m-role" name="role">{% for v, l in roles %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+      <button class="btn btn-secondary btn-sm">Add member</button></form>
+  </div>
+</div>
+{% endblock %}

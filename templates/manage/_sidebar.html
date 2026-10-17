@@ -1,0 +1,98 @@
+{% load sportiq %}<aside class="sidebar dark" aria-label="Back office navigation">
+  <a href="{% url 'backoffice:home' %}" class="logo"><span class="logo-mark"><span></span></span><span>Sport<b style="color:var(--accent)">IQ</b></span></a>
+  <a class="side-link {% active '/manage/' exact=True %}" href="{% url 'backoffice:home' %}">{% icon "home" %}Overview</a>
+  {% if user|has_role:"analyst,academic_manager" %}
+  <a class="side-link {% active '/manage/analytics' %}" href="{% url 'backoffice:analytics' %}">{% icon "chart" %}Analytics &amp; reports</a>
+  <a class="side-link {% active '/manage/impact' %}" href="{% url 'backoffice:impact' %}">{% icon "activity" %}Impact &amp; evaluation</a>
+  {% endif %}
+
+  {% if user|has_role:"course_creator,reviewer,academic_manager,instructor,external_reviewer" %}
+  <div class="side-label">Academic</div>
+  <a class="side-link {% active '/manage/studio' %}" href="{% url 'backoffice:studio' %}">{% icon "edit" %}Content studio</a>
+  {% if user|has_role:"reviewer,academic_manager,external_reviewer" %}<a class="side-link {% active '/manage/reviews' %}" href="{% url 'backoffice:review_queue' %}">{% icon "clipboard" %}Review queue</a>{% endif %}
+  {% if user|has_role:"instructor,academic_manager" %}
+  <a class="side-link {% active '/manage/assessments' exact=True %}" href="{% url 'backoffice:marking' %}">{% icon "check-circle" %}Assessment centre</a>
+  <a class="side-link {% active '/manage/assessments/appeals' %}" href="{% url 'backoffice:appeals' %}">{% icon "flag" %}Appeals &amp; resits</a>
+  <a class="side-link {% active '/manage/practicals' %}" href="{% url 'backoffice:practicals' %}">{% icon "clipboard" %}Practicals marking</a>
+  <a class="side-link {% active '/manage/records/live-sessions' %}" href="{% url 'backoffice:records' 'live-sessions' %}">{% icon "video" %}Live sessions</a>
+  <a class="side-link {% active '/manage/records/office-hours' %}" href="{% url 'backoffice:records' 'office-hours' %}">{% icon "calendar" %}Office hours</a>
+  <a class="side-link {% active '/manage/ai' %}" href="{% url 'backoffice:ai_centre' %}">{% icon "sparkles" %}AI &amp; learning risks</a>
+  {% endif %}
+  {% if user|has_role:"academic_manager,course_creator" %}
+  <a class="side-link {% active '/manage/records/practical-tasks' %}" href="{% url 'backoffice:records' 'practical-tasks' %}">{% icon "file" %}Practical tasks</a>
+  <a class="side-link {% active '/manage/records/labs' %}" href="{% url 'backoffice:records' 'labs' %}">{% icon "flask" %}Labs &amp; simulators</a>
+  <a class="side-link {% active '/manage/records/lesson-templates' %}" href="{% url 'backoffice:records' 'lesson-templates' %}">{% icon "layers" %}Lesson templates</a>
+  {% endif %}
+  {% if user|has_role:"academic_manager" %}
+  <a class="side-link {% active '/manage/admissions' %}" href="{% url 'backoffice:admissions' %}">{% icon "file" %}Admissions</a>
+  <a class="side-link {% active '/manage/cohorts' %}" href="{% url 'backoffice:cohorts' %}">{% icon "users" %}Cohorts &amp; enrolments</a>
+  <a class="side-link {% active '/manage/records/translations' %}" href="{% url 'backoffice:records' 'translations' %}">{% icon "globe" %}Translations</a>
+  <a class="side-link {% active '/manage/records/challenges' %}" href="{% url 'backoffice:records' 'challenges' %}">{% icon "trophy" %}Challenges</a>
+  <a class="side-link {% active '/manage/academic' %}" href="{% url 'backoffice:academic' %}">{% icon "settings" %}Academic settings</a>
+  {% endif %}
+  {% endif %}
+
+  {% if user|has_role:"librarian,academic_manager" %}
+  <a class="side-link {% active '/manage/records/library' %}" href="{% url 'backoffice:records' 'library' %}">{% icon "library" %}Library</a>
+  {% endif %}
+
+  {% if user|has_role:"registrar" %}
+  <div class="side-label">Credentials</div>
+  <a class="side-link {% active '/manage/credentials' %}" href="{% url 'backoffice:credentials' %}">{% icon "award" %}Credentials registry</a>
+  <a class="side-link {% active '/manage/registrar' %}" href="{% url 'backoffice:registrar' %}">{% icon "check-circle" %}CPD, renewals &amp; claims</a>
+  <a class="side-link {% active '/manage/records/programmes' %}" href="{% url 'backoffice:records' 'programmes' %}">{% icon "layers" %}Qualifications</a>
+  {% endif %}
+
+  {% if user|has_role:"nis_admin" %}
+  <div class="side-label">People</div>
+  <a class="side-link {% active '/manage/users' %}" href="{% url 'backoffice:users' %}">{% icon "user" %}Users &amp; roles</a>
+  <a class="side-link {% active '/manage/institutions' %}" href="{% url 'backoffice:institutions' %}">{% icon "building" %}Institutions</a>
+  {% endif %}
+  {% if user|has_role:"workforce_officer" %}<a class="side-link" href="{% url 'workforce:search' %}">{% icon "search" %}Workforce directory</a><a class="side-link" href="{% url 'workforce:skills_map' %}">{% icon "map" %}Skills map</a>{% endif %}
+  {% for m in user.memberships.all %}{% if m.role == "admin" %}
+  {% if forloop.first %}<div class="side-label">My institution</div>{% endif %}
+  <a class="side-link {% active '/manage/org/' %}" href="{% url 'backoffice:org' m.institution.slug %}">{% icon "building" %}{{ m.institution.name|truncatechars:24 }}</a>
+  {% if forloop.first %}<a class="side-link" href="{% url 'workforce:search' %}">{% icon "search" %}Find professionals</a>{% endif %}
+  {% endif %}{% endfor %}
+
+  {% if user|has_role:"finance_officer" %}
+  <div class="side-label">Finance</div>
+  <a class="side-link {% active '/manage/finance' %}" href="{% url 'backoffice:finance' %}">{% icon "card" %}Payments &amp; refunds</a>
+  {% endif %}
+
+  {% if user|has_role:"support_agent,comms_officer,community_moderator" %}
+  <div class="side-label">Engagement</div>
+  {% if user|has_role:"support_agent" %}<a class="side-link {% active '/manage/support' %}" href="{% url 'backoffice:tickets' %}">{% icon "headphones" %}Support desk</a>{% endif %}
+  {% if user|has_role:"community_moderator" %}<a class="side-link {% active '/manage/moderation' %}" href="{% url 'backoffice:moderation' %}">{% icon "shield" %}Community moderation</a>
+  <a class="side-link {% active '/manage/records/groups' %}" href="{% url 'backoffice:records' 'groups' %}">{% icon "users" %}Groups</a>{% endif %}
+  {% if user|has_role:"comms_officer" %}
+  <a class="side-link {% active '/manage/comms' %}" href="{% url 'backoffice:comms' %}">{% icon "megaphone" %}Communications</a>
+  <a class="side-link {% active '/manage/site' %}" href="{% url 'backoffice:site' %}">{% icon "globe" %}Site content</a>
+  {% endif %}
+  {% endif %}
+
+  {% if user|has_role:"research_officer" %}
+  <div class="side-label">Research</div>
+  <a class="side-link {% active '/manage/research' %}" href="{% url 'backoffice:research_office' %}">{% icon "flask" %}Research office</a>
+  <a class="side-link {% active '/manage/records/datasets' %}" href="{% url 'backoffice:records' 'datasets' %}">{% icon "file" %}Datasets</a>
+  {% endif %}
+
+  {% if user|has_role:"safeguarding_officer" %}
+  <div class="side-label">Restricted</div>
+  <a class="side-link {% active '/integrity/cases' %}" href="{% url 'integrity:cases' %}">{% icon "lock" %}Integrity cases</a>
+  {% endif %}
+
+  {% if user|has_role:"super_admin,analyst" %}
+  <div class="side-label">System</div>
+  {% if user|has_role:"analyst" %}<a class="side-link {% active '/manage/records/scheduled-reports' %}" href="{% url 'backoffice:records' 'scheduled-reports' %}">{% icon "mail" %}Scheduled reports</a>{% endif %}
+  {% if user|has_role:"super_admin" %}
+  <a class="side-link {% active '/manage/integrations' %}" href="{% url 'backoffice:integrations' %}">{% icon "layers" %}Integrations &amp; API</a>
+  <a class="side-link {% active '/manage/records/webhooks' %}" href="{% url 'backoffice:records' 'webhooks' %}">{% icon "refresh" %}Webhooks</a>
+  <a class="side-link {% active '/manage/records/lti-platforms' %}" href="{% url 'backoffice:records' 'lti-platforms' %}">{% icon "building" %}LTI platforms</a>
+  <a class="side-link {% active '/manage/settings' %}" href="{% url 'backoffice:settings' %}">{% icon "settings" %}Settings</a>
+  <a class="side-link {% active '/manage/audit' %}" href="{% url 'backoffice:audit' %}">{% icon "shield" %}Audit log</a>
+  <a class="side-link {% active '/manage/privacy' %}" href="{% url 'backoffice:data_requests' %}">{% icon "lock" %}Data requests</a>
+  {% endif %}
+  {% endif %}
+  <form method="post" action="{% url 'accounts:logout' %}" style="margin-top:auto;padding-top:1rem">{% csrf_token %}<button class="side-link w-full" style="border:0;background:none;cursor:pointer;font:inherit" type="submit">{% icon "logout" %}Log out</button></form>
+</aside>

@@ -1,0 +1,27 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ thread.title }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'learning:discussions' course.slug %}">{{ course.title }} discussion</a></div>
+<div class="card mb-2">
+  <div class="row-between"><h1 style="font-size:1.4rem;margin:0">{{ thread.title }}</h1>
+    {% if moderator %}<form method="post" class="row">{% csrf_token %}
+      <button class="btn btn-sm btn-secondary" name="action" value="pin">{% if thread.is_pinned %}Unpin{% else %}Pin{% endif %}</button>
+      <button class="btn btn-sm btn-secondary" name="action" value="hide">{% if thread.is_hidden %}Unhide{% else %}Hide{% endif %}</button></form>{% endif %}</div>
+  <small class="muted">{{ thread.author }} · {{ thread.created_at|date:"j M Y, H:i" }}</small>
+  <p class="mt-2 mb-0">{{ thread.body|linebreaksbr }}</p>
+</div>
+<div class="message-thread">
+  {% for p in posts %}
+  <div class="msg {% if p.is_instructor_answer %}staff{% endif %}">
+    <div class="row-between"><strong>{{ p.author }}{% if p.is_instructor_answer %} <span class="badge">Instructor</span>{% endif %}{% if p.is_hidden %} <span class="badge badge-red">Hidden</span>{% endif %}</strong>
+      <span class="row"><small class="muted">{{ p.created_at|timesince }} ago</small>
+      {% if moderator and not p.is_hidden %}<form method="post">{% csrf_token %}<input type="hidden" name="post" value="{{ p.pk }}"><button class="btn btn-ghost btn-sm" name="action" value="hide_post">Hide</button></form>{% endif %}</span></div>
+    <p class="mb-0 mt-1">{{ p.body|linebreaksbr }}</p>
+  </div>
+  {% endfor %}
+</div>
+<form method="post" class="card">{% csrf_token %}
+  <label for="reply">Your reply</label><textarea id="reply" name="body" rows="4" required></textarea>
+  <button class="btn btn-primary mt-1" name="action" value="reply">Reply</button>
+</form>
+{% endblock %}

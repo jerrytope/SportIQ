@@ -1,0 +1,82 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Home · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Welcome back, {{ user.first_name|default:"learner" }} 👋🏾</h1><p>Here's where you left off.</p></div>
+  <a class="btn btn-primary" href="{% url 'catalog:list' %}">{% icon "search" %}Explore courses</a></div>
+
+{% if not user.email_verified %}
+<div class="alert alert-warning row-between">Confirm your email address to secure your account and receive certificates.
+  <form method="post" action="{% url 'accounts:resend_verification' %}">{% csrf_token %}<button class="btn btn-sm btn-secondary">Resend link</button></form></div>
+{% endif %}
+{% for a in announcements %}<div class="alert alert-info"><strong>{{ a.title }}</strong> · {{ a.body|truncatechars:200 }}</div>{% endfor %}
+{% for s in surveys %}<div class="alert alert-info">{% icon "chart" %} Two quick questions about how <strong>{{ s.enrolment.course.title }}</strong> has helped you. <a href="{% url 'research:outcome_survey' s.pk %}">Answer now →</a></div>{% endfor %}
+{% for n in pending_nominations %}<div class="alert alert-success">{% icon "building" %} {{ n.institution.name }} nominated you for <strong>{{ n.course.title }}</strong>{% if n.due_date %}, due {{ n.due_date|date:"j M Y" }}{% endif %}. <a href="{% url 'learning:course' n.course.slug %}">Start now →</a></div>{% endfor %}
+
+<div class="kpis mb-3">
+  <div class="kpi green"><div class="label">{% icon "book" %}In progress</div><div class="value">{{ active|length }}</div><div class="sub">courses</div></div>
+  <div class="kpi"><div class="label">{% icon "check-circle" %}Completed</div><div class="value">{{ completed_count }}</div><div class="sub">courses</div></div>
+  <div class="kpi"><div class="label">{% icon "award" %}Credentials</div><div class="value">{{ credential_count }}</div><div class="sub">active</div></div>
+  <div class="kpi gold"><div class="label">🔥 Learning streak</div><div class="value">{{ streak }} day{{ streak|pluralize }}</div><div class="sub">keep it going</div></div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    {% if current %}
+    <div class="card">
+      <span class="eyebrow">Continue learning</span>
+      <div class="continue-card">
+        <div class="course-cover" style="background:{{ current.course.cover_color }}">{% if current.course.thumbnail %}<img src="{{ current.course.thumbnail.url }}" alt="">{% else %}<span class="cover-art"></span><span class="cover-art2"></span>{% endif %}</div>
+        <div>
+          <h2 style="font-size:1.3rem;margin-bottom:.25rem">{{ current.course.title }}</h2>
+          <p class="muted small mb-1">{% if next_lesson %}Next: {{ next_lesson.title }}{% else %}All lessons done. Take the final assessment.{% endif %}</p>
+          <div class="progress"><span style="width:{{ current.progress }}%"></span></div>
+          <small class="muted">{{ current.progress }}% complete</small>
+        </div>
+        <a class="btn btn-primary" href="{% url 'learning:course' current.course.slug %}">Resume {% icon "arrow-right" %}</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="card card-dark">
+      <h2>Start your first course</h2>
+      <p style="color:#a9c9b8">Free essentials in safeguarding and anti-doping are a great place to begin.</p>
+      <a class="btn btn-gold" href="{% url 'catalog:list' %}?price=free">Browse free courses</a>
+    </div>
+    {% endif %}
+
+    {% if active|length > 1 %}
+    <div class="card"><div class="row-between"><h3 class="mb-0">My courses</h3><a class="small" href="{% url 'learning:my_learning' %}">View all</a></div>
+      <ul class="list">{% for e in active|slice:"1:5" %}
+        <li><span class="grow"><a class="title" href="{% url 'learning:course' e.course.slug %}">{{ e.course.title }}</a><div class="progress mt-1"><span style="width:{{ e.progress }}%"></span></div></span><small class="muted">{{ e.progress }}%</small></li>
+      {% endfor %}</ul></div>
+    {% endif %}
+
+    <div><div class="row-between mb-2"><h3 class="mb-0">Recommended for you</h3><a class="small" href="{% url 'catalog:list' %}">See more</a></div>
+      <div class="grid grid-3">{% for course in recommended %}{% include "components/course_tile.html" %}{% endfor %}</div></div>
+  </div>
+
+  <div class="stack">
+    {% if required %}
+    <div class="card" style="border-color:var(--accent)">
+      <h3>{% icon "shield" %} Required for your role</h3>
+      <ul class="list">{% for r in required %}<li><span class="grow"><a class="title" href="{{ r.course.get_absolute_url }}">{{ r.course.title }}</a><br><small class="muted">Mandatory for {{ r.profession.plural|default:r.profession.name|lower }}</small></span></li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+    {% if renewals %}
+    <div class="card"><h3>{% icon "refresh" %} Renewals due</h3>
+      <ul class="list">{% for c in renewals %}<li><span class="grow"><span class="title">{{ c.title }}</span><br><small class="muted">{% if c.is_expired %}Expired{% else %}Expires{% endif %} {{ c.expires_at|date:"j M Y" }}</small></span></li>{% endfor %}</ul></div>
+    {% endif %}
+    {% if deadlines %}
+    <div class="card"><h3>{% icon "calendar" %} Deadlines</h3>
+      <ul class="list">{% for e in deadlines %}<li><span class="grow">{{ e.course.title }}</span><span class="badge badge-amber">{{ e.due_date|date:"j M" }}</span></li>{% endfor %}</ul></div>
+    {% endif %}
+    <div class="card"><div class="row-between"><h3 class="mb-0">Achievements</h3><a class="small" href="{% url 'learning:achievements' %}">All</a></div>
+      {% if badges %}<div class="row mt-2">{% for ub in badges %}<span class="badge badge-gold" title="{{ ub.badge.description }}">{{ ub.badge.icon }} {{ ub.badge.name }}</span>{% endfor %}</div>
+      {% else %}<p class="muted small mt-2 mb-0">Complete your first lesson to earn a badge.</p>{% endif %}
+    </div>
+    {% if live_soon %}<div class="card"><h3>{% icon "video" %} Your live sessions</h3><ul class="list">{% for s in live_soon %}<li><a class="grow" href="{{ s.get_absolute_url }}">{{ s.title }}</a><small class="muted">{{ s.starts_at|date:"D j M H:i" }}</small></li>{% endfor %}</ul></div>{% endif %}
+    <div class="card card-dark"><h3>{% icon "sparkles" %} Study assistant</h3><p style="color:#a9c9b8" class="small">Ask about anything in your courses, with sources.{% if study_plan %} Your plan: {{ study_plan.goal|truncatechars:50 }}.{% endif %}</p>
+      <div class="row"><a class="btn btn-gold btn-sm" href="{% url 'ai:assistant' %}">Ask a question</a><a class="btn btn-secondary btn-sm" href="{% url 'ai:study_plan' %}">{% if study_plan %}My plan{% else %}Plan my study{% endif %}</a></div></div>
+    <div class="card card-tint"><h3>Need help?</h3><p class="small muted">Our support team is available {{ site.support_hours }}.</p><a class="btn btn-secondary btn-sm" href="{% url 'support:help' %}">Help centre</a></div>
+  </div>
+</div>
+{% endblock %}

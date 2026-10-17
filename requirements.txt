@@ -1,0 +1,26 @@
+Django==5.2.18
+djangorestframework==3.18.3
+drf-spectacular==0.30.0
+django-otp==1.7.4
+qrcode==8.2
+pillow==12.3.0
+reportlab==5.0.1
+celery==5.6.3
+redis==8.1.0
+psycopg[binary]==3.3.6
+whitenoise==6.12.0
+python-dotenv==1.2.4
+dj-database-url==3.1.2
+Markdown==3.11.1
+bleach==6.4.0
+gunicorn==23.0.0
+cryptography==50.0.2
+PyJWT[crypto]==2.15.1
+openai==3.31.0
+anthropic==1.14.0
+
+# Development / testing
+pytest==9.1.1
+pytest-django==4.14.0
+factory_boy==3.3.3
+requests==2.34.2

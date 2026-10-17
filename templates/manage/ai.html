@@ -1,0 +1,17 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}AI & learning risks{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>AI assistant &amp; learning-risk alerts</h1><p>{% if live %}AI-written answers via {{ provider }} ({{ model }}){% else %}Source-only mode (no AI key configured){% endif %}. Answers use approved content only; learner data is not used to train models.</p></div>
+  <form method="post" class="row">{% csrf_token %}{% if user|has_role:"academic_manager" %}<button class="btn btn-secondary" name="action" value="reindex">{% icon "refresh" %}Rebuild index</button>{% endif %}<button class="btn btn-secondary" name="action" value="scan">Scan for risks</button></form></div>
+<div class="kpis mb-3">
+  <div class="kpi green"><div class="label">Indexed passages</div><div class="value">{{ chunks }}</div></div>
+  <div class="kpi"><div class="label">Answers given</div><div class="value">{{ answers }}</div><div class="sub">{{ refused }} declined by safeguards</div></div>
+  <div class="kpi"><div class="label">Rated helpful</div><div class="value">{{ helpful }}</div></div>
+  <div class="kpi gold"><div class="label">Rated unhelpful</div><div class="value">{{ unhelpful }}</div></div>
+</div>
+<div class="split">
+  <div class="card"><h3>Learners who may need support ({{ alerts|length }})</h3><ul class="list">{% for a in alerts %}<li><span class="grow"><strong>{{ a.enrolment.user }}</strong> · {{ a.enrolment.course.title|truncatechars:40 }}<br><small class="muted">{{ a.get_kind_display }}: {{ a.detail }}</small></span>
+    <form method="post">{% csrf_token %}<button class="btn btn-sm btn-ghost" name="resolve" value="{{ a.pk }}">Mark followed up</button></form></li>{% empty %}<li class="muted small">No open alerts.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Answers rated unhelpful</h3><p class="small muted">Use these to improve course content (the assistant can only be as good as the material).</p><ul class="list">{% for m in low_rated %}<li><small class="grow">{{ m.conversation.title|truncatechars:80 }}</small></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

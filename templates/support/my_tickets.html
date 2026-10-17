@@ -1,0 +1,21 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Help & support · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Help &amp; support</h1><p>Technical, academic, payment and accessibility support. Hours: {{ site.support_hours }}.</p></div>
+  <div class="row"><a class="btn btn-primary" href="{% url 'ai:support' %}">{% icon "sparkles" %}Instant answers</a><a class="btn btn-secondary" href="{% url 'support:help' %}">{% icon "book" %}Help centre</a></div></div>
+<div class="split">
+  <div class="card">
+    <h3>My tickets</h3>
+    <ul class="list">{% for t in tickets %}
+      <li><span class="grow"><a class="title" href="{% url 'support:ticket' t.pk %}">{{ t.reference }} · {{ t.subject }}</a><br><small class="muted">{{ t.get_category_display }} · {{ t.created_at|date:"j M Y" }}</small></span>
+        <span class="badge {% if t.status == 'open' %}badge-amber{% elif t.status == 'pending' %}badge-blue{% elif t.status == 'closed' %}badge-grey{% endif %}">{{ t.get_status_display }}</span></li>
+    {% empty %}<li class="empty">No tickets yet.</li>{% endfor %}</ul>
+  </div>
+  <form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <h3>Raise a ticket</h3>
+    {% include "components/form.html" %}
+    <button class="btn btn-primary" type="submit">Submit</button>
+    <p class="small muted mt-1 mb-0">Formal complaints are handled as high priority and logged for quality assurance.</p>
+  </form>
+</div>
+{% endblock %}

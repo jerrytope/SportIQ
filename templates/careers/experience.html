@@ -1,0 +1,11 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Experience & CV · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Experience &amp; CV</h1><p>Your work history feeds your CV, your professional profile and (if you opt in) the national workforce directory.</p></div>
+  <div class="row"><a class="btn btn-primary" href="{% url 'careers:cv' %}">{% icon "download" %}Download CV (PDF)</a><a class="btn btn-secondary" href="{% url 'credentials:portfolio' %}">Portfolio</a></div></div>
+<div class="split">
+  <div class="card"><ul class="timeline">{% for e in items %}<li><strong>{{ e.role }}</strong>, {{ e.organisation }}<br><small class="muted">{{ e.start_date|date:"M Y" }} – {% if e.end_date %}{{ e.end_date|date:"M Y" }}{% else %}present{% endif %} · {{ e.get_level_display }}{% if e.sport %} · {{ e.sport }}{% endif %}{% if e.verified_by_institution %} · <span class="badge">verified</span>{% endif %}</small>
+    {% if e.description %}<br><small>{{ e.description }}</small>{% endif %}<br><a class="small" href="?edit={{ e.pk }}">Edit</a> · <form method="post" style="display:inline">{% csrf_token %}<button class="btn btn-ghost btn-sm" name="delete" value="{{ e.pk }}">Delete</button></form></li>{% empty %}<li class="muted">Add your coaching, officiating, administration or other sports roles.</li>{% endfor %}</ul></div>
+  <form class="card" method="post">{% csrf_token %}<h3>{% if edit %}Edit role{% else %}Add a role{% endif %}</h3>{% include "components/form.html" %}<button class="btn btn-primary">Save</button></form>
+</div>
+{% endblock %}

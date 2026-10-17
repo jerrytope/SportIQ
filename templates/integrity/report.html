@@ -1,0 +1,15 @@
+{% extends base %}{% load sportiq %}
+{% block title %}Report a concern confidentially · SportIQ{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="page-title"><div><span class="eyebrow">Integrity &amp; safeguarding</span><h1>Report a concern confidentially</h1><p>Abuse, harassment, doping, match-fixing, corruption or athlete welfare. Reports go only to designated safeguarding officers and are encrypted.</p></div></div>
+<div class="alert alert-error"><strong>If anyone is in immediate danger, call the police (112) now.</strong> This form is not monitored 24/7.</div>
+<div class="split">
+  <form class="card" method="post">{% csrf_token %}{% include "components/form.html" %}<button class="btn btn-primary btn-lg">Send confidential report</button></form>
+  <div class="stack">
+    <div class="card card-tint small"><h3>What happens next</h3><ol style="padding-left:1.1rem;margin:0"><li>You get a reference and an access code to check progress, even if anonymous.</li><li>A trained safeguarding officer assesses it, usually within 2 working days (urgent child cases sooner).</li><li>Where required, concerns are referred to the police, NADC (doping) or the relevant authority.</li></ol></div>
+    <div class="card small"><strong>Already reported?</strong> <a href="{% url 'integrity:status' %}">Check the status of a report</a></div>
+  </div>
+</div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ exam.title }} · Attempt {{ attempt.number }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'learning:course' exam.course.slug %}">{{ exam.course.title }}</a></div>
+<div class="page-title"><div><h1>{{ exam.title }}</h1><p>Attempt {{ attempt.number }} of {{ exam.attempts_allowed }} · pass mark {{ exam.pass_mark }}%</p></div></div>
+
+{% if not review %}
+{% if webcam %}<div class="card card-tight mb-2 row" id="invig"><video id="cam" autoplay muted playsinline width="96" height="72" style="border-radius:8px;background:#000"></video><small class="muted">Webcam invigilation is on: a still image is taken about once a minute and seen only by examiners. If your camera is not available, submit an access request after the exam.</small></div>{% endif %}
+<form method="post" data-exam {% if webcam %}data-snapshot="{% url 'learning:attempt_snapshot' attempt.pk %}"{% endif %} data-seconds-left="{{ attempt.seconds_left }}" data-autosave="{% url 'learning:attempt_autosave' attempt.pk %}" data-flag="{% url 'learning:attempt_flag' attempt.pk %}">{% csrf_token %}
+  <div class="timer" role="timer" aria-live="off"><span>{% icon "clock" %} Time left</span><b id="clock">--:--</b></div>
+  {% for r in responses %}{% with q=r.question chosen=selected|get_item:r.pk %}
+  <fieldset class="exam-q">
+    <legend class="qn">Question {{ forloop.counter }} of {{ responses|length }} · {{ q.points }} mark{{ q.points|pluralize }}</legend>
+    {% if q.case_text %}<div class="transcript mb-1" style="max-height:none"><strong>Scenario.</strong> {{ q.case_text }}</div>{% endif %}
+    <div class="qtext">{{ q.text }}</div>
+    {% if q.image %}<img src="{{ q.image.url }}" alt="Question image" style="border-radius:12px;margin-bottom:.75rem">{% endif %}
+    {% if q.video %}<div class="player mb-1" style="max-width:560px"><video controls preload="metadata" src="{{ q.video.url }}"></video></div>{% endif %}
+    {% if q.kind == "mcq" or q.kind == "tf" %}
+      {% for c in q.choices.all %}<label class="option"><input type="radio" name="q{{ q.pk }}" value="{{ c.pk }}" {% if c.pk in chosen %}checked{% endif %}><span>{{ c.text }}</span></label>{% endfor %}
+    {% elif q.kind == "multi" %}
+      <p class="small muted">Select all that apply.</p>
+      {% for c in q.choices.all %}<label class="option"><input type="checkbox" name="q{{ q.pk }}" value="{{ c.pk }}" {% if c.pk in chosen %}checked{% endif %}><span>{{ c.text }}</span></label>{% endfor %}
+    {% else %}
+      <label class="sr-only" for="q{{ q.pk }}">Your answer</label>
+      <textarea id="q{{ q.pk }}" name="q{{ q.pk }}" rows="{% if q.kind == 'essay' or q.kind == 'case' %}10{% else %}3{% endif %}">{{ r.text }}</textarea>
+    {% endif %}
+  </fieldset>
+  {% endwith %}{% endfor %}
+  <div class="card row-between"><p class="small muted mb-0">Answers save automatically every 20 seconds. Submitting is final.</p>
+    <button class="btn btn-primary btn-lg" type="submit" data-confirm="Click again to submit">Submit answers</button></div>
+</form>
+
+{% else %}
+<div class="card mb-3 {% if released and attempt.passed %}card-tint{% endif %}">
+  {% if released %}
+    <div class="row-between">
+      <div><span class="eyebrow">Result</span><h2 style="margin:0">{{ attempt.percent }}% · {% if attempt.passed %}Passed 🎉{% else %}Not passed{% endif %}</h2>
+        <p class="muted mb-0">{{ attempt.score|floatformat:"-1" }} of {{ attempt.max_score|floatformat:"-1" }} marks · submitted {{ attempt.submitted_at|date:"j M Y, H:i" }}</p></div>
+      {% if lesson %}<a class="btn btn-primary" href="{% url 'learning:lesson' exam.course.slug lesson.pk %}">Back to course</a>{% endif %}
+    </div>
+    {% if not attempt.passed %}<p class="mt-2 mb-0">Review the explanations below, revisit the lessons, then try again{% if attempt.number < exam.attempts_allowed %} ({{ exam.attempts_allowed|add:"0" }} attempts allowed){% endif %}.</p>{% endif %}
+  {% else %}
+    <span class="eyebrow">Submitted</span><h2>Awaiting marking</h2>
+    <p class="muted mb-0">An examiner will mark your written answers against the rubric. We'll notify you when results are released.</p>
+  {% endif %}
+</div>
+{% if released or attempt.status == "submitted" %}
+<details class="card mb-3"><summary><strong>{% if appeal %}Your request: {{ appeal.get_kind_display }} ({{ appeal.get_status_display }}){% else %}Appeal this result or request a resit{% endif %}</strong></summary>
+  {% if appeal %}<p class="mt-2">{{ appeal.reason }}</p>{% if appeal.outcome %}<div class="alert alert-info">{{ appeal.outcome }}</div>{% endif %}
+  {% else %}<form method="post" action="{% url 'learning:exam_appeal' exam.pk %}" class="mt-2">{% csrf_token %}<input type="hidden" name="attempt" value="{{ attempt.pk }}">
+    <div class="field"><label for="ak">Request</label><select id="ak" name="kind"><option value="result">Appeal the result (marking error, procedural issue)</option><option value="resit">Request a resit</option><option value="access">Request an accessible alternative</option></select></div>
+    <div class="field"><label for="ar">Reason</label><textarea id="ar" name="reason" rows="3" required></textarea></div>
+    <button class="btn btn-secondary btn-sm">Submit request</button></form>{% endif %}
+</details>
+{% endif %}
+{% if released %}
+  {% for r in responses %}{% with q=r.question chosen=selected|get_item:r.pk %}
+  <div class="exam-q">
+    <div class="row-between"><span class="qn">Question {{ forloop.counter }}</span><span class="badge {% if r.score == q.points %}{% elif r.score > 0 %}badge-amber{% else %}badge-red{% endif %}">{{ r.score|floatformat:"-1" }} / {{ q.points }}</span></div>
+    <div class="qtext">{{ q.text }}</div>
+    {% if q.is_auto_marked %}
+      {% for c in q.choices.all %}<div class="option {% if c.is_correct %}correct{% elif c.pk in chosen %}wrong{% endif %}">{% if c.is_correct %}{% icon "check" %}{% elif c.pk in chosen %}{% icon "x" %}{% else %}<span style="width:1.15em"></span>{% endif %}<span>{{ c.text }}{% if c.pk in chosen %} <small class="muted">(your answer)</small>{% endif %}</span></div>{% endfor %}
+    {% else %}
+      <div class="transcript">{{ r.text|default:"(no answer)" }}</div>
+      {% if r.feedback %}<div class="alert alert-info mt-1"><strong>Examiner feedback:</strong> {{ r.feedback }}</div>{% endif %}
+    {% endif %}
+    {% if q.explanation %}<p class="small muted mt-1 mb-0">{% icon "help" %} {{ q.explanation }}</p>{% endif %}
+  </div>
+  {% endwith %}{% endfor %}
+{% endif %}
+{% endif %}
+{% endblock %}

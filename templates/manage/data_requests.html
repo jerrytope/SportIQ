@@ -1,0 +1,17 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Data requests{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Data-subject requests (NDPA 2023)</h1><p>Respond within 30 days. Completing a deletion anonymises the account and blocks sign-in; issued credentials remain as the institution's record.</p></div></div>
+<div class="stack">{% for r in requests %}
+  <div class="card">
+    <div class="row-between"><div><strong>{{ r.get_kind_display }}</strong> · {{ r.user }} <small class="muted">{{ r.user.email }} · {{ r.created_at|date:"j M Y" }} ({{ r.created_at|timesince }} ago)</small></div><span class="badge {% if r.status == 'open' %}badge-amber{% else %}badge-grey{% endif %}">{{ r.get_status_display }}</span></div>
+    {% if r.details %}<p class="mt-1 mb-0">{{ r.details }}</p>{% endif %}
+    {% if r.status == "open" %}
+    <form method="post" class="inline-form mt-2">{% csrf_token %}<input type="hidden" name="request" value="{{ r.pk }}">
+      <input name="note" placeholder="Resolution note" aria-label="Resolution note">
+      <button class="btn btn-primary btn-sm" name="status" value="done" {% if r.kind == 'delete' %}data-confirm="Click again: this anonymises the account"{% endif %}>Complete</button>
+      <button class="btn btn-secondary btn-sm" name="status" value="rejected">Reject</button></form>
+    {% else %}<p class="small muted mt-1 mb-0">{{ r.resolution_note }} · {{ r.resolved_at|date:"j M Y" }}</p>{% endif %}
+  </div>
+{% empty %}<div class="card empty">{% icon "lock" %}<p>No requests.</p></div>{% endfor %}</div>
+{% endblock %}

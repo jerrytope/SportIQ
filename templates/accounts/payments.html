@@ -1,0 +1,13 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Payments · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Payments &amp; receipts</h1><p>Course payments, sponsored seats and refunds.</p></div></div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Date</th><th>Reference</th><th>Course</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for o in orders %}
+    <tr><td>{{ o.created_at|date:"j M Y" }}</td><td><code>{{ o.reference }}</code></td><td>{{ o.course.title }}</td><td>{{ o.amount_kobo|naira }}</td>
+      <td><span class="badge {% if o.status == 'paid' %}{% elif o.status == 'pending' %}badge-amber{% elif o.status == 'refunded' %}badge-blue{% else %}badge-red{% endif %}">{{ o.get_status_display }}</span></td>
+      <td>{% if o.status == 'paid' or o.status == 'refunded' %}<a class="btn btn-sm btn-secondary" href="{% url 'commerce:receipt' o.reference %}">{% icon "download" %}Receipt</a>{% endif %}</td></tr>
+  {% empty %}<tr><td colspan="6" class="empty">No payments yet.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

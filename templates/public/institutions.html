@@ -1,0 +1,20 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}For institutions · SportIQ{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">For institutions</span>
+  <h1>Train, track and verify your sports workforce</h1>
+  <p>Federations, state sports councils, universities and clubs use SportIQ to nominate staff onto approved courses, track qualifications and identify training needs, while seeing only their own members' records.</p>
+  <div class="hero-cta"><a class="btn btn-primary btn-lg" href="{% url 'web:demo' %}">Request a demo</a><a class="btn btn-secondary btn-lg" href="{% url 'credentials:verify' %}">Verify a certificate</a></div>
+</div></section>
+<section class="section"><div class="container">
+  <div class="grid grid-3">
+    <div class="card"><span class="bento-icon">{% icon "users" %}</span><h3>Nominate learners</h3><p class="muted mb-0">Enrol coaches, officials and administrators onto NIS-approved programmes, with sponsored seats and scholarship codes.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "chart" %}</span><h3>Track progress</h3><p class="muted mb-0">See progress, completions, results and credential expiry for your staff, and no other organisation's.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "shield" %}</span><h3>Verify qualifications</h3><p class="muted mb-0">Check that the people you hire hold the credentials they claim, in seconds.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "map" %}</span><h3>Find skills gaps</h3><p class="muted mb-0">Aggregated reporting by sport, state and profession supports workforce planning.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "layers" %}</span><h3>Contribute courses</h3><p class="muted mb-0">Approved partners can co-create courses that go through NIS academic review before publication.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "lock" %}</span><h3>Privacy by design</h3><p class="muted mb-0">Granular, role-based permissions and full audit trails, in line with the NDPA 2023.</p></div>
+  </div>
+</div></section>
+{% endblock %}

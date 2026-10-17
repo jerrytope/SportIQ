@@ -1,0 +1,13 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{% if creating %}New course{% else %}Course settings{% endif %}{% endblock %}
+{% block content %}
+<div class="page-title"><div>
+  <div class="breadcrumbs"><a href="{% url 'backoffice:studio' %}">Content studio</a>{% if course %} / <a href="{% url 'backoffice:course_builder' course.pk %}">{{ course.title }}</a>{% endif %}</div>
+  <h1>{% if creating %}New course{% else %}Course settings{% endif %}</h1>
+  <p>Every course needs an owner, objectives, audience, assessment criteria, references, a revision date and a review date before it can go to review.</p></div></div>
+<form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}
+  {% include "components/form.html" with grid=True %}
+  <div class="row"><button class="btn btn-primary" type="submit">{% if creating %}Create draft{% else %}Save settings{% endif %}</button>
+    <a class="btn btn-ghost" href="{% if course %}{% url 'backoffice:course_builder' course.pk %}{% else %}{% url 'backoffice:studio' %}{% endif %}">Cancel</a></div>
+</form>
+{% endblock %}

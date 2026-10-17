@@ -1,0 +1,33 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}My learning · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>My learning</h1><p>Your courses, saved lessons and applications.</p></div></div>
+<nav class="tabs">
+  <a href="?tab=active" class="{% if tab == 'active' %}active{% endif %}">In progress</a>
+  <a href="?tab=completed" class="{% if tab == 'completed' %}active{% endif %}">Completed</a>
+  <a href="?tab=saved" class="{% if tab == 'saved' %}active{% endif %}">Saved lessons</a>
+  <a href="?tab=applications" class="{% if tab == 'applications' %}active{% endif %}">Applications</a>
+  <a href="?tab=offline" class="{% if tab == 'offline' %}active{% endif %}">On this device</a>
+</nav>
+{% if tab == "offline" %}
+  <div class="card"><p class="muted small">Lessons you saved with “Save offline” open without a connection (text, audio and downloads). Logging out removes them from this device.</p><ul class="list" id="offline-list"></ul></div>
+{% elif tab == "saved" %}
+  <ul class="list card">{% for b in bookmarks %}<li>{% icon "bookmark" %}<span class="grow"><a class="title" href="{{ b.lesson.get_absolute_url }}">{{ b.lesson.title }}</a><br><small class="muted">{{ b.lesson.module.course.title }}</small></span></li>{% empty %}<li class="empty">No saved lessons.</li>{% endfor %}</ul>
+{% elif tab == "applications" %}
+  <ul class="list card">{% for a in applications %}<li><span class="grow"><a class="title" href="{{ a.course.get_absolute_url }}">{{ a.course.title }}</a><br><small class="muted">Applied {{ a.created_at|date:"j M Y" }}{% if a.decision_note %} · {{ a.decision_note }}{% endif %}</small></span><span class="badge {% if a.status == 'admitted' %}{% elif a.status == 'rejected' %}badge-red{% else %}badge-amber{% endif %}">{{ a.get_status_display }}</span></li>{% empty %}<li class="empty">No applications.</li>{% endfor %}</ul>
+{% else %}
+<div class="grid grid-2">
+  {% for e in enrolments %}
+  <div class="card">
+    <div class="row-between"><span class="pill">{{ e.course.track.name }}</span>{% if e.due_date %}<span class="badge badge-amber">Due {{ e.due_date|date:"j M" }}</span>{% endif %}</div>
+    <h3 class="mt-2">{{ e.course.title }}</h3>
+    <div class="progress mb-1"><span style="width:{{ e.progress }}%"></span></div>
+    <div class="row-between"><small class="muted">{{ e.progress }}% · {{ e.get_source_display }}{% if e.completed_at %} · completed {{ e.completed_at|date:"j M Y" }}{% endif %}</small>
+      <a class="btn btn-sm {% if e.status == 'completed' %}btn-secondary{% else %}btn-primary{% endif %}" href="{% url 'learning:course' e.course.slug %}">{% if e.status == 'completed' %}Review{% else %}Continue{% endif %}</a></div>
+  </div>
+  {% empty %}
+  <div class="card empty" style="grid-column:1/-1">{% icon "book" %}<p>{% if tab == 'completed' %}No completed courses yet.{% else %}You're not enrolled in any courses.{% endif %}</p><a class="btn btn-primary" href="{% url 'catalog:list' %}">Explore courses</a></div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

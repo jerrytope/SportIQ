@@ -1,0 +1,15 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Impact & evaluation{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Impact &amp; evaluation</h1><p>Monitoring and evaluation of NIS programmes: learning gain, delivery comparisons, cohorts and long-term outcomes.</p></div>
+  <a class="btn btn-secondary" href="{% url 'observatory' %}" target="_blank" rel="noopener">{% icon "globe" %}Public observatory</a></div>
+<div class="split split-even mb-3">
+  <div class="card"><h3>Learning gain (pre-test → final)</h3><div class="table-wrap" style="border:0"><table><thead><tr><th>Course</th><th>n</th><th>Before</th><th>After</th><th>Gain</th></tr></thead><tbody>
+    {% for r in pre_post %}<tr><td>{{ r.course.title }}</td><td>{{ r.n }}</td><td>{{ r.before }}%</td><td>{{ r.after }}%</td><td><strong>+{{ r.gain }}</strong></td></tr>{% empty %}<tr><td colspan="5" class="empty">Add a pre-test (Exam → “is pretest”) to measure learning gain.</td></tr>{% endfor %}</tbody></table></div></div>
+  <div class="card"><h3>Completion by delivery mode</h3>{% for d in delivery %}<div class="hbar" style="grid-template-columns:1fr 1fr 60px"><span class="small">{{ d.format }} <small class="muted">(n={{ d.n }})</small></span><span class="track"><span style="width:{{ d.rate|default:0 }}%"></span></span><b>{% if d.rate is not None %}{{ d.rate }}%{% else %}–{% endif %}</b></div>{% endfor %}</div>
+</div>
+<div class="split split-even">
+  <div class="card"><h3>Cohort comparison</h3><ul class="list">{% for c in cohorts %}<li><span class="grow">{{ c.cohort.name }}<br><small class="muted">{{ c.cohort.course.title }} · n={{ c.n }}</small></span><strong>{{ c.rate }}%</strong></li>{% empty %}<li class="muted small">No cohorts.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Long-term outcomes (6 &amp; 12 months)</h3>{% if outcomes.n %}<p>{{ outcomes.n }} of {{ outcomes.sent }} surveys answered</p><ul class="list"><li><span class="grow">Applied learning (1–5)</span><strong>{{ outcomes.applied }}</strong></li><li><span class="grow">Progressed (new role, promotion, qualification)</span><strong>{{ outcomes.progressed }}%</strong></li><li><span class="grow">Working/volunteering in sport</span><strong>{{ outcomes.employed }}%</strong></li></ul>{% else %}<p class="muted">Surveys are sent automatically 6 and 12 months after completion.</p>{% endif %}</div>
+</div>
+{% endblock %}

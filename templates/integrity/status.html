@@ -1,0 +1,9 @@
+{% extends base %}
+{% block title %}Report status · SportIQ{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="page-title"><div><h1>Check a report</h1></div></div>
+{% if r %}<div class="card" style="max-width:560px"><dl class="details"><dt>Reference</dt><dd>{{ r.reference }}</dd><dt>Status</dt><dd>{{ r.get_status_display }}</dd><dt>Update</dt><dd style="font-weight:400">{{ r.public_update|default:"Your report is being handled. Thank you for speaking up." }}</dd></dl></div>
+{% else %}<form class="card" method="post" style="max-width:520px">{% csrf_token %}<div class="field"><label for="ref">Reference</label><input id="ref" name="reference" required></div><div class="field"><label for="code">Access code</label><input id="code" name="code" required autocomplete="off"></div><button class="btn btn-primary">Check</button></form>{% endif %}
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

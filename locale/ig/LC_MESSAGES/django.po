@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ig\n"
+
+#, fuzzy
+msgid "Home"
+msgstr "Ụlọ"
+
+#, fuzzy
+msgid "Explore courses"
+msgstr "Chọgharịa ọmụmụ"
+
+#, fuzzy
+msgid "My learning"
+msgstr "Mmụta m"
+
+#, fuzzy
+msgid "Academy"
+msgstr "Ụlọ akwụkwọ"
+
+#, fuzzy
+msgid "Live academy"
+msgstr "Klas ndụ"
+
+#, fuzzy
+msgid "Practical labs"
+msgstr "Ụlọ nyocha omume"
+
+#, fuzzy
+msgid "Sports library"
+msgstr "Ọba akwụkwọ egwuregwu"
+
+#, fuzzy
+msgid "AI study assistant"
+msgstr "Onye enyemaka ọmụmụ AI"
+
+#, fuzzy
+msgid "Research & insights"
+msgstr "Nchọcha"
+
+#, fuzzy
+msgid "Qualifications"
+msgstr "Asambodo"
+
+#, fuzzy
+msgid "Credentials"
+msgstr "Asambodo m"
+
+#, fuzzy
+msgid "CPD & renewals"
+msgstr "CPD na mmeghari"
+
+#, fuzzy
+msgid "Achievements"
+msgstr "Ihe m rụzuru"
+
+#, fuzzy
+msgid "Careers & community"
+msgstr "Ọrụ na obodo"
+
+#, fuzzy
+msgid "Community"
+msgstr "Obodo"
+
+#, fuzzy
+msgid "Opportunities"
+msgstr "Ohere"
+
+#, fuzzy
+msgid "Experience & CV"
+msgstr "Ahụmahụ na CV"
+
+#, fuzzy
+msgid "Challenges"
+msgstr "Ihe ịma aka"
+
+#, fuzzy
+msgid "Me"
+msgstr "Mụ"
+
+#, fuzzy
+msgid "Professional profile"
+msgstr "Profaịlụ ọrụ m"
+
+#, fuzzy
+msgid "Account settings"
+msgstr "Ntọala akaụntụ"
+
+#, fuzzy
+msgid "Help & support"
+msgstr "Enyemaka"
+
+#, fuzzy
+msgid "Report a concern"
+msgstr "Kọọ nsogbu"
+
+#, fuzzy
+msgid "Back office"
+msgstr "Back office"
+
+#, fuzzy
+msgid "Log out"
+msgstr "Pụọ"
+
+#, fuzzy
+msgid "Language"
+msgstr "Asụsụ"
+
+#, fuzzy
+msgid "Explore"
+msgstr "Chọgharịa"
+
+#, fuzzy
+msgid "Learning"
+msgstr "Mmụta"
+
+#, fuzzy
+msgid "Search courses, topics, sports…"
+msgstr "Chọọ ọmụmụ, isiokwu, egwuregwu…"
+
+#, fuzzy
+msgid "About SportIQ"
+msgstr "Maka SportIQ"
+
+#, fuzzy
+msgid "Resources"
+msgstr "Akụrụngwa"
+
+#, fuzzy
+msgid "For institutions"
+msgstr "Maka ụlọ ọrụ"
+
+#, fuzzy
+msgid "Verify"
+msgstr "Nyochaa"
+
+#, fuzzy
+msgid "Verify a certificate"
+msgstr "Nyochaa asambodo"
+
+#, fuzzy
+msgid "Course catalogue"
+msgstr "Ndepụta ọmụmụ"
+
+#, fuzzy
+msgid "Learning paths"
+msgstr "Ụzọ mmụta"
+
+#, fuzzy
+msgid "Certifications"
+msgstr "Asambodo"
+
+#, fuzzy
+msgid "FAQs"
+msgstr "Ajụjụ a na-ajụkarị"
+
+#, fuzzy
+msgid "Blog"
+msgstr "Blọọgụ"
+
+#, fuzzy
+msgid "Events"
+msgstr "Mmemme"
+
+#, fuzzy
+msgid "Help centre"
+msgstr "Ebe enyemaka"
+
+#, fuzzy
+msgid "Sign up"
+msgstr "Debanye aha"
+
+#, fuzzy
+msgid "Sign up free"
+msgstr "Debanye aha n'efu"
+
+#, fuzzy
+msgid "Login"
+msgstr "Banye"
+
+#, fuzzy
+msgid "Request a demo"
+msgstr "Rịọ ngosi"
+
+#, fuzzy
+msgid "Request demo"
+msgstr "Rịọ ngosi"
+
+#, fuzzy
+msgid "My dashboard"
+msgstr "Dashboard m"
+
+#, fuzzy
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#, fuzzy
+msgid "Organisation"
+msgstr "Nzukọ"
+
+#, fuzzy
+msgid "Observatory"
+msgstr "Ebe nleba anya"
+
+#, fuzzy
+msgid "Frequently asked questions"
+msgstr "Ajụjụ a na-ajụkarị"
+
+#, fuzzy
+msgid "Interface translations are drafts awaiting expert review."
+msgstr "Ntụgharị a bụ ụdị mbụ ndị ọkachamara ga-enyocha."

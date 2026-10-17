@@ -1,0 +1,12 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}You're offline · SportIQ{% endblock %}
+{% block content %}
+<section class="auth-wrap"><div class="card auth-card text-center">
+  <span class="bento-icon" style="margin:0 auto 1rem">{% icon "wifi-off" %}</span>
+  <h1 style="font-size:1.6rem">You're offline</h1>
+  <p class="muted">SportIQ can't reach the internet right now. Your progress is saved, so reconnect and refresh to continue learning.</p>
+  <button class="btn btn-primary" onclick="location.reload()">Try again</button>
+  <h3 class="mt-3">Lessons saved on this device</h3>
+  <ul class="list" id="offline-list" style="text-align:left"></ul>
+</div></section>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Service notices{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Service &amp; maintenance notices</h1><p>Active notices appear as a banner at the top of every page.</p></div></div>
+<div class="split">
+  <div class="card"><ul class="list">{% for n in notices %}<li><span class="grow"><span class="badge {% if n.level == 'danger' %}badge-red{% elif n.level == 'warning' %}badge-amber{% else %}badge-blue{% endif %}">{{ n.get_level_display }}</span> {{ n.message }}<br><small class="muted">{{ n.starts_at|date:"j M H:i" }} – {{ n.ends_at|date:"j M H:i"|default:"until ended" }}</small></span>
+    {% if n.is_active %}<form method="post">{% csrf_token %}<input type="hidden" name="notice" value="{{ n.pk }}"><button class="btn btn-sm btn-secondary" name="action" value="end">End now</button></form>{% else %}<span class="badge badge-grey">Ended</span>{% endif %}</li>{% empty %}<li class="muted">No notices.</li>{% endfor %}</ul></div>
+  <form class="card" method="post">{% csrf_token %}<h3>New notice</h3>{% include "components/form.html" %}<button class="btn btn-primary">Publish notice</button></form>
+</div>
+{% endblock %}

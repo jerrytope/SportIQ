@@ -1,0 +1,23 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Live academy · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Live academy</h1><p>Classes, webinars, masterclasses, CPD seminars and in-person practical sessions. Attending earns CPD points.</p></div></div>
+<div class="split">
+  <div class="stack">
+    {% for s in upcoming %}
+    <a class="card card-link" href="{{ s.get_absolute_url }}" style="display:flex;gap:1rem;align-items:flex-start">
+      <div class="card-tint" style="border-radius:14px;padding:.6rem .9rem;text-align:center;min-width:72px"><strong style="font-size:1.5rem;color:var(--primary);display:block;line-height:1">{{ s.starts_at|date:"j" }}</strong><small class="muted">{{ s.starts_at|date:"M" }}</small></div>
+      <div style="flex:1"><div class="row"><span class="badge {% if s.kind == 'in_person' %}badge-gold{% endif %}">{{ s.get_kind_display }}</span>{% if s.is_live %}<span class="badge badge-red">● Live now</span>{% endif %}{% if s.pk in mine %}<span class="badge badge-blue">Registered</span>{% endif %}</div>
+        <h3 class="mt-1 mb-0">{{ s.title }}</h3><small class="muted">{{ s.starts_at|date:"D j M, H:i" }} · {{ s.duration_minutes }} min · {% if s.kind == 'in_person' %}{{ s.location }}{% else %}online{% endif %} · {{ s.host }}{% if s.guest_speaker %} with {{ s.guest_speaker }}{% endif %}</small></div>
+    </a>
+    {% empty %}<div class="card empty">{% icon "video" %}<p>No sessions scheduled for your courses right now.</p></div>{% endfor %}
+  </div>
+  <div class="stack">
+    {% if my_slots %}<div class="card card-tint"><h3>My office hours</h3><ul class="list">{% for o in my_slots %}<li><span class="grow">{{ o.host }}<br><small class="muted">{{ o.starts_at|date:"D j M H:i" }} · {{ o.topic }}</small></span><a class="btn btn-sm btn-primary" href="{{ o.join_url }}" target="_blank" rel="noopener">Join</a></li>{% endfor %}</ul></div>{% endif %}
+    <div class="card"><h3>Book office hours</h3><p class="small muted">One-to-one time with an instructor (20 minutes).</p>
+      <ul class="list">{% for o in slots %}<li style="display:block"><strong>{{ o.host }}</strong> <small class="muted">· {{ o.starts_at|date:"D j M, H:i" }}</small>
+        <form method="post" action="{% url 'live:book_slot' o.pk %}" class="inline-form mt-1">{% csrf_token %}<input name="topic" placeholder="What would you like to discuss?" aria-label="Topic"><button class="btn btn-sm btn-secondary">Book</button></form></li>{% empty %}<li class="muted small">No free slots.</li>{% endfor %}</ul></div>
+    <div class="card"><h3>Recordings</h3><ul class="list">{% for s in recordings %}<li>{% icon "play" %}<a class="grow" href="{{ s.get_absolute_url }}">{{ s.title }}</a><small class="muted">{{ s.starts_at|date:"j M" }}</small></li>{% empty %}<li class="muted small">No recordings yet.</li>{% endfor %}</ul></div>
+  </div>
+</div>
+{% endblock %}

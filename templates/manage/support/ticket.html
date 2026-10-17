@@ -1,0 +1,31 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ ticket.reference }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:tickets' %}">Support desk</a></div><h1>{{ ticket.subject }}</h1>
+  <p>{{ ticket.reference }} · {{ ticket.get_category_display }} · opened {{ ticket.created_at|date:"j M Y H:i" }} · due {{ ticket.sla_due|date:"j M H:i" }}{% if ticket.is_overdue %} <span class="badge badge-red">Overdue</span>{% endif %}</p></div></div>
+<form method="post">{% csrf_token %}
+<div class="split">
+  <div>
+    <div class="message-thread">{% for m in thread %}
+      <div class="msg {% if m.is_internal %}internal{% elif m.author != ticket.user %}staff{% endif %}">
+        <div class="row-between"><strong>{{ m.author }}{% if m.is_internal %} <span class="badge badge-amber">Internal note</span>{% endif %}</strong><small class="muted">{{ m.created_at|date:"j M H:i" }}</small></div>
+        <p class="mb-0 mt-1">{{ m.body|linebreaksbr }}</p>{% if m.attachment %}<a class="small" href="{{ m.attachment.url }}">{% icon "file" %} Attachment</a>{% endif %}
+      </div>{% endfor %}</div>
+    <div class="card"><label for="reply">Reply</label><textarea id="reply" name="body" rows="5"></textarea>
+      <label class="check mt-1"><input type="checkbox" name="internal" value="1"> <span>Internal note (not visible to learner)</span></label>
+      <button class="btn btn-primary mt-1">Send &amp; update</button></div>
+  </div>
+  <div class="stack">
+    <div class="card">
+      <div class="field"><label for="st">Status</label><select id="st" name="status">{% for v, l in statuses %}<option value="{{ v }}" {% if v == ticket.status %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="pr">Priority</label><select id="pr" name="priority">{% for v, l in priorities %}<option value="{{ v }}" {% if v == ticket.priority %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="as">Assignee</label><select id="as" name="assignee"><option value="">Unassigned</option>{% for a in agents %}<option value="{{ a.pk }}" {% if a.pk == ticket.assignee_id %}selected{% endif %}>{{ a }}</option>{% endfor %}</select></div>
+      <button class="btn btn-secondary btn-sm">Update</button>
+    </div>
+    <div class="card"><h3>Learner</h3><p class="mb-1"><strong>{{ ticket.user }}</strong><br><small class="muted">{{ ticket.user.email }} · {{ ticket.user.phone }}</small></p>
+      {% if user|has_role:"nis_admin" %}<a class="small" href="{% url 'backoffice:user_detail' ticket.user.pk %}">Open user record</a>{% endif %}
+      {% if other_tickets %}<h4 class="mt-2">Other tickets</h4><ul class="list">{% for o in other_tickets %}<li><a class="small" href="{% url 'backoffice:ticket_detail' o.pk %}">{{ o.reference }} {{ o.subject|truncatechars:30 }}</a></li>{% endfor %}</ul>{% endif %}</div>
+  </div>
+</div>
+</form>
+{% endblock %}

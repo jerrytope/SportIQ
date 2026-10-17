@@ -1,0 +1,15 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Practical labs · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Practical labs</h1><p>Simulators and case studies to practise decisions. Results are <strong>training exercises</strong>: they are never qualifications. Real competence is assessed under supervision.</p></div></div>
+<div class="chip-list mb-2"><a class="chip {% if not kind %}on{% endif %}" href="?">All</a>{% for v, l in kinds %}<a class="chip {% if kind == v %}on{% endif %}" href="?kind={{ v }}">{{ l }}</a>{% endfor %}</div>
+<div class="grid grid-3">
+  {% for s in scenarios %}
+  <a class="card card-link" href="{{ s.get_absolute_url }}">
+    <div class="row-between"><span class="badge">{{ s.get_kind_display }}</span>{% if s.pk in best %}<span class="badge badge-gold">Best {{ best|get_item:s.pk }}%</span>{% endif %}</div>
+    <h3 class="mt-2">{{ s.title }}</h3><p class="muted small mb-0">{{ s.summary }}</p>
+    {% if s.requires_qualified %}<p class="small mt-1 mb-0">{% icon "lock" %} Verified professionals only</p>{% endif %}
+  </a>
+  {% empty %}<div class="card empty">{% icon "flask" %}<p>No labs yet.</p></div>{% endfor %}
+</div>
+{% endblock %}

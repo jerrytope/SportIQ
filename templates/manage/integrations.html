@@ -1,0 +1,25 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Integrations{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Integrations &amp; API</h1><p>Documented APIs, signed webhooks, xAPI, SCORM, LTI 1.3 and single sign-on, plus full data export so the platform is never locked in.</p></div>
+  <div class="row"><a class="btn btn-secondary" href="{% url 'api_docs' %}" target="_blank" rel="noopener">{% icon "file" %}API docs</a><a class="btn btn-secondary" href="{% url 'backoffice:data_export' %}">{% icon "download" %}Full data export</a></div></div>
+{% if new_key %}<div class="alert alert-warning"><strong>Copy this key now. It won't be shown again:</strong><br><code style="word-break:break-all">{{ new_key }}</code></div>{% endif %}
+<div class="split">
+  <div class="stack">
+    <div class="card"><h3>API keys</h3><div class="table-wrap" style="border:0"><table><thead><tr><th>Name</th><th>Institution</th><th>Scopes</th><th>Last used</th><th></th></tr></thead><tbody>
+      {% for k in keys %}<tr><td>{{ k.name }}<br><code class="small">{{ k.prefix }}…</code></td><td>{{ k.institution|default:"—" }}</td><td><small>{{ k.scopes|join:", " }}</small></td><td><small>{{ k.last_used_at|timesince|default:"never" }}</small></td>
+        <td>{% if k.is_active %}<form method="post">{% csrf_token %}<input type="hidden" name="key" value="{{ k.pk }}"><button class="btn btn-sm btn-ghost" name="action" value="revoke" data-confirm="Click again to revoke">Revoke</button></form>{% else %}<span class="badge badge-red">Revoked</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="5" class="empty">No keys.</td></tr>{% endfor %}</tbody></table></div></div>
+    <div class="card"><h3>Recent webhook deliveries</h3><ul class="list">{% for d in deliveries %}<li><small class="grow">{{ d.event }} → {{ d.webhook.url|truncatechars:40 }}</small><span class="badge {% if d.status_code and d.status_code < 300 %}{% else %}badge-red{% endif %}">{{ d.status_code|default:d.error|truncatechars:20 }}</span></li>{% empty %}<li class="muted small">None yet.</li>{% endfor %}</ul></div>
+    <div class="card small"><h3>Endpoints</h3><ul class="list">
+      <li><code>GET /api/v1/courses/</code> public catalogue</li><li><code>GET /api/v1/credentials/verify/&lt;code&gt;/</code> verification</li>
+      <li><code>GET /api/v1/institution/credentials/</code>, <code>/enrolments/</code> (API key, institution-scoped)</li>
+      <li><code>POST|GET /xapi/statements</code> learning record store (Bearer key with xapi scopes)</li>
+      <li>LTI 1.3: <code>/lti/login/</code>, <code>/lti/launch/</code>, <code>/lti/jwks.json</code></li><li>SSO (OIDC): <code>/sso/start/</code> (configure OIDC_* settings)</li></ul></div>
+  </div>
+  <form class="card" method="post">{% csrf_token %}<input type="hidden" name="action" value="create_key"><h3>New API key</h3>
+    <div class="field"><label for="kn">Name</label><input id="kn" name="name" required placeholder="e.g. Federation HR system"></div>
+    <div class="field"><label for="ki">Institution (scopes member data)</label><select id="ki" name="institution"><option value="">None</option>{% for i in institutions %}<option value="{{ i.pk }}">{{ i.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label>Scopes</label>{% for v, l in scopes %}<label class="check"><input type="checkbox" name="scopes" value="{{ v }}"> <span>{{ l }} <code class="small">{{ v }}</code></span></label>{% endfor %}</div>
+    <button class="btn btn-primary">Create key</button></form>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "public/base.html" %}
+{% block title %}Blog · SportIQ{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">Blog</span><h1>Insights for Nigerian sports professionals</h1><p>Coaching, officiating, governance, sports science and the business of sport.</p></div></section>
+<section class="section"><div class="container"><div class="grid grid-3">
+  {% for post in posts %}{% include "components/post_card.html" %}{% empty %}<p class="muted">No posts yet.</p>{% endfor %}
+</div></div></section>
+{% endblock %}

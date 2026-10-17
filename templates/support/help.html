@@ -1,0 +1,18 @@
+{% extends base %}{% load sportiq %}
+{% block title %}Help centre · SportIQ{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<section class="page-hero"><div class="container">{% endif %}
+<div class="page-title"><div><span class="eyebrow">Help centre</span><h1>How can we help?</h1><p>Support hours: {{ site.support_hours }}</p></div>
+  {% if user.is_authenticated %}<a class="btn btn-primary" href="{% url 'support:my_tickets' %}">{% icon "headphones" %}Contact support</a>{% else %}<a class="btn btn-primary" href="{% url 'accounts:login' %}?next={% url 'support:my_tickets' %}">Log in to contact support</a>{% endif %}</div>
+<form method="get" class="inline-form mb-3" style="max-width:640px"><label class="sr-only" for="hq">Search help</label><input id="hq" type="search" name="q" value="{{ q }}" placeholder="Search for answers, e.g. certificate, video, password"><button class="btn btn-secondary">{% icon "search" %}Search</button></form>
+{% if not user.is_authenticated %}</div></section><section class="section" style="padding-top:32px"><div class="container">{% endif %}
+{% if results is not None %}
+  <div class="card mb-3"><h3>Results for “{{ q }}”</h3><ul class="list">{% for a in results %}<li>{% icon "file" %}<a class="grow" href="{% url 'support:article' a.slug %}">{{ a.title }}</a></li>{% empty %}<li class="muted">No articles found. Try other words or contact support.</li>{% endfor %}</ul></div>
+{% endif %}
+<div class="grid grid-3">
+  {% for c in categories %}
+  <div class="card"><h3>{{ c.name }}</h3><ul class="list">{% for a in c.articles.all %}{% if a.is_published %}<li><a href="{% url 'support:article' a.slug %}">{{ a.title }}</a></li>{% endif %}{% endfor %}</ul></div>
+  {% endfor %}
+</div>
+{% if not user.is_authenticated %}</div></section>{% endif %}
+{% endblock %}

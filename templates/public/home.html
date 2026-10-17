@@ -1,0 +1,283 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block content %}
+
+{# ---------- Hero ---------- #}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="pill pill-gold">{{ site.hero_eyebrow }}</span>
+      <h1>{{ site.hero_title }}</h1>
+      <p class="lead">{{ site.hero_subtitle }}</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="{% if user.is_authenticated %}{% url 'catalog:list' %}{% else %}{% url 'accounts:signup' %}{% endif %}">Start learning free {% icon "arrow-right" %}</a>
+        <a class="btn btn-secondary btn-lg" href="{% url 'web:demo' %}">Request a demo</a>
+      </div>
+      <p class="hero-note">Have a certificate to check? <a href="{% url 'credentials:verify' %}">Verify it instantly →</a></p>
+    </div>
+    <div class="mock" aria-hidden="true">
+      <div class="mock-window">
+        <div class="mock-bar"><i></i><i></i><i></i></div>
+        <div class="mock-body">
+          <div class="mock-side"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="mock-main">
+            <div class="mock-row">
+              <div class="mock-stat"><small class="muted">Courses</small><b>6</b></div>
+              <div class="mock-stat gold"><small class="muted">Streak</small><b>4 days</b></div>
+              <div class="mock-stat"><small class="muted">CPD</small><b>18 pts</b></div>
+            </div>
+            <div class="mock-card">
+              <strong style="color:var(--primary);font-size:.9rem">Continue: Safeguarding Essentials</strong>
+              <div class="progress"><span style="width:68%"></span></div>
+              <div class="mock-line w60"></div>
+            </div>
+            <div class="mock-card">
+              <strong style="color:var(--primary);font-size:.9rem">Coaching Foundations · Module 3</strong>
+              <div class="mock-line w80"></div><div class="mock-line w40 green"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="float-chip"><span class="avatar">AO</span><span><strong style="color:var(--primary)">Certificate earned</strong><br><small class="muted">Anti-Doping Essentials</small></span></div>
+      <div class="mock-phone">
+        <div class="mock-cert"><small style="color:var(--brand);font-weight:700">VERIFIED ✓</small><div class="mock-qr"></div><small class="muted">SIQ-7KQ2-M8XD</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ---------- Trust strip ---------- #}
+<section class="logos">
+  <div class="container">
+    <p>Built for Nigeria's sports community</p>
+    <div class="logo-row">
+      {% for p in partners %}
+        {% if p.logo %}<img src="{{ p.logo.url }}" alt="{{ p.name }}">{% else %}<span>{% icon "shield" %}{{ p.name }}</span>{% endif %}
+      {% empty %}
+        <span>{% icon "shield" %}National Institute for Sports</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ---------- Course showcase ---------- #}
+<section class="section">
+  <div class="container">
+    <div class="row-between mb-3">
+      <div class="section-head mb-0">
+        <span class="eyebrow">Course catalogue</span>
+        <h2>Upskill coaches, officials and administrators with expert-led courses</h2>
+      </div>
+      <div class="row">
+        <a class="btn btn-secondary" href="{% url 'catalog:list' %}">View course catalogue</a>
+        <a class="btn btn-primary" href="{% url 'accounts:signup' %}">Get started</a>
+      </div>
+    </div>
+    <div class="grid grid-3">
+      {% for course in courses %}{% include "components/course_tile.html" %}{% empty %}<p class="muted">Courses are being prepared. Check back soon.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ---------- Feature bento ---------- #}
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">One connected platform</span>
+      <h2>Create, organise and manage sports education with ease</h2>
+      <p>Learning, assessment, credentials and institutional records live on one learner record, not separate apps with disconnected data.</p>
+    </div>
+    <div class="bento">
+      <a class="bento-card big" href="{% url 'catalog:paths' %}">
+        <span class="pill pill-gold" style="align-self:flex-start">Introducing 🎉 Learning paths</span>
+        <h3 class="mt-2">From beginner to specialist, one clear pathway</h3>
+        <p>Structured programmes take learners from introductory courses to advanced and specialist qualifications, with prerequisites and progress tracking at every step.</p>
+        <div class="path-steps">
+          <div class="path-step"><span class="n">1</span><b>Introductory</b><span class="bar"><span style="width:100%"></span></span></div>
+          <div class="path-step"><span class="n">2</span><b>Intermediate</b><span class="bar"><span style="width:70%"></span></span></div>
+          <div class="path-step"><span class="n">3</span><b>Advanced</b><span class="bar"><span style="width:35%"></span></span></div>
+          <div class="path-step"><span class="n">4</span><b>Specialist</b><span class="bar"><span style="width:8%"></span></span></div>
+        </div>
+        <p class="mt-2" style="color:var(--accent);font-weight:600">What are you learning today? 🙌🏾</p>
+      </a>
+      <a class="bento-card" href="{% url 'web:page' 'practical-labs' %}">
+        <span class="bento-icon">{% icon "flask" %}</span>
+        <h3>Practical labs</h3>
+        <p>Coaching, refereeing and match-analysis simulators. Learners prove application, not just recall.</p>
+      </a>
+      <a class="bento-card" href="{% url 'web:page' 'ai-study-assistant' %}">
+        <span class="bento-icon">{% icon "sparkles" %}</span>
+        <h3>AI study assistant</h3>
+        <p>A tutor grounded in approved NIS material that cites its sources and never hands out exam answers.</p>
+      </a>
+      <a class="bento-card" href="{% url 'web:institutions' %}">
+        <span class="bento-icon">{% icon "chart" %}</span>
+        <h3>Analytics for better decisions</h3>
+        <p>Registrations, active learners, completions and verified credentials by state, sport and profession.</p>
+        <div class="chart-bars" aria-hidden="true"><i style="height:35%"></i><i style="height:55%"></i><i style="height:45%"></i><i class="on" style="height:80%"></i><i style="height:62%"></i><i class="on" style="height:95%"></i></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+{# ---------- Credentials ---------- #}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Credentials</span>
+      <h2>Qualifications anyone can verify</h2>
+      <p>A trusted national registry for NIS-issued certificates, CPD and renewals, which keeps course completion, assessed competence and professional licensing clearly separate.</p>
+    </div>
+    <div class="feature-stack">
+      <div class="feature-row">
+        <div>
+          <h3>Earn certificates</h3>
+          <p class="muted">Finish every lesson, pass the final assessment and your certificate is issued automatically as a PDF with a unique code and QR link.</p>
+          <ul><li>{% icon "check" %}Unique identifier and issue date</li><li>{% icon "check" %}Downloadable PDF and digital wallet</li><li>{% icon "check" %}Email and SMS notification</li></ul>
+        </div>
+        <div class="feature-visual">
+          <div class="cred-card"><small>CERTIFICATE OF COMPLETION</small><h3 class="mt-1">Safeguarding Essentials for Coaches</h3><p class="mb-0">Amina Okafor · <span class="code">SIQ-7KQ2-M8XD</span></p></div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div>
+          <h3>Track CPD and renewals</h3>
+          <p class="muted">Credentials with an expiry date send reminders before they lapse, so coaches and officials stay current.</p>
+          <ul><li>{% icon "check" %}Expiry dates and renewal reminders</li><li>{% icon "check" %}Mandatory learning by role (e.g. safeguarding for coaches)</li><li>{% icon "check" %}Digital transcripts</li></ul>
+        </div>
+        <div class="feature-visual">
+          <ul class="list">
+            <li><span class="badge">Valid</span><span class="grow"><span class="title">Anti-Doping Essentials</span><br><small class="muted">Expires Oct 2028</small></span></li>
+            <li><span class="badge badge-amber">Renew soon</span><span class="grow"><span class="title">Safeguarding Essentials</span><br><small class="muted">Expires in 28 days</small></span></li>
+            <li><span class="badge badge-grey">Not started</span><span class="grow"><span class="title">First Aid in Sport</span><br><small class="muted">Required for your role</small></span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div>
+          <h3>Verify instantly</h3>
+          <p class="muted">Employers, federations and clubs scan the QR code or enter the code to see whether a credential is valid, expired, suspended or revoked.</p>
+          <a class="btn btn-primary mt-1" href="{% url 'credentials:verify' %}">{% icon "qr" %}Verify a certificate</a>
+        </div>
+        <div class="feature-visual">
+          <div class="verify-status verify-valid mb-0"><span class="big-icon">{% icon "check" %}</span><div><strong style="color:var(--primary)">Valid credential</strong><br><small class="muted">Certificate of Completion · issued by the National Institute for Sports</small></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ---------- For every profession ---------- #}
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow">Every sports profession</span>
+      <h2>Built for the whole sports ecosystem, not coaching alone</h2>
+    </div>
+    <div data-tabs>
+      <div class="role-tabs" role="tablist">
+        {% for p in professions %}<button type="button" role="tab" data-tab="p{{ p.pk }}" {% if forloop.first %}aria-selected="true"{% endif %}>{{ p.plural|default:p.name }}</button>{% endfor %}
+      </div>
+      {% for p in professions %}
+      <div class="role-panel grid grid-2" data-panel="p{{ p.pk }}" style="align-items:center">
+        <div>
+          <h3 style="font-size:1.6rem">{{ p.plural|default:p.name }}</h3>
+          <p class="muted">{{ p.description }}</p>
+          <a class="link-arrow" href="{% url 'catalog:list' %}?profession={{ p.slug }}">Browse courses for {{ p.plural|default:p.name|lower }} {% icon "arrow-right" %}</a>
+        </div>
+        <div class="stack">
+          {% for c in role_courses|get_item:p.pk %}
+            <a class="card card-link card-tight row" href="{{ c.get_absolute_url }}"><span class="bento-icon mb-0">{% icon "book" %}</span><span class="grow"><strong style="color:var(--primary)">{{ c.title }}</strong><br><small class="muted">{{ c.get_level_display }} · {{ c.duration_hours|floatformat:"-1" }}h · {{ c.price_kobo|naira }}</small></span></a>
+          {% empty %}<p class="muted">Courses for this profession are in development.</p>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ---------- Impact stats ---------- #}
+{% if stats %}
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow" style="color:var(--accent)">National reach</span>
+      <h2>One national platform. Measurable impact.</h2>
+    </div>
+    <div class="stats">
+      {% for s in stats %}<div class="stat"><b data-count="{{ s.value }}">{{ s.value }}</b><span>{{ s.label }}</span></div>{% endfor %}
+    </div>
+    {% if stats.0.is_illustrative %}<p class="illustrative">Illustrative targets. Figures will be replaced with verified platform data after launch.</p>{% endif %}
+  </div>
+</section>
+{% endif %}
+
+{# ---------- Testimonials ---------- #}
+{% if testimonials %}
+<section class="section">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow">Learner stories</span>
+      <h2>Our learners say it better than us</h2>
+      <p>Don't just take our word for it.</p>
+      {% if testimonials.0.is_sample %}<p class="small"><span class="badge badge-gold">Illustrative</span> Sample stories for this preview. They will be replaced with feedback from pilot learners.</p>{% endif %}
+    </div>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track">
+      {% for t in testimonials %}{% include "components/quote_card.html" %}{% endfor %}
+      {% for t in testimonials %}{% include "components/quote_card.html" with hidden=True %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ---------- Press ---------- #}
+{% if press %}
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head"><span class="eyebrow">Press</span><h2>We are in the news</h2></div>
+    <div class="press-grid">
+      {% for p in press %}<a class="press-card card" href="{{ p.url|default:'#' }}"><span class="outlet">{{ p.outlet }}</span><p>{{ p.headline }}</p><small class="muted">{{ p.published_on|date:"j M Y" }}</small></a>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ---------- Blog ---------- #}
+{% if posts %}
+<section class="section">
+  <div class="container">
+    <div class="row-between mb-3"><h2 class="mb-0">Recent posts ✍🏾</h2><a class="link-arrow" href="{% url 'web:blog' %}">Read all {% icon "arrow-right" %}</a></div>
+    <div class="grid grid-3">{% for post in posts %}{% include "components/post_card.html" %}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{# ---------- FAQs ---------- #}
+{% if faqs %}
+<section class="section">
+  <div class="container" style="max-width:860px">
+    <div class="section-head center"><span class="eyebrow">FAQs</span><h2>Frequently asked questions</h2></div>
+    <div class="accordion">
+      {% for f in faqs %}<details {% if forloop.first %}open{% endif %}><summary>{{ f.title }}</summary><div class="prose">{{ f.body|markdown }}</div></details>{% endfor %}
+    </div>
+    <p class="text-center mt-3"><a class="link-arrow" href="{% url 'support:faqs' %}">See all FAQs {% icon "arrow-right" %}</a></p>
+  </div>
+</section>
+{% endif %}
+
+{# ---------- Final CTA ---------- #}
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="cta-band">
+      <span class="eyebrow">Get started 🥳</span>
+      <h2>Ready to raise the standard of Nigerian sport?</h2>
+      <p>Join coaches, officials, administrators and athletes learning on SportIQ, or talk to us about bringing your federation, state council or institution on board.</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold btn-lg" href="{% url 'accounts:signup' %}">Start for free</a>
+        <a class="btn btn-secondary btn-lg" href="{% url 'web:demo' %}">Request a demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Assessment centre{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Assessment centre</h1><p>Mark written answers against rubrics, moderate and release results.</p></div>
+  {% if to_release %}<form method="post">{% csrf_token %}<button class="btn btn-primary" name="action" value="release_all" data-confirm="Click again to release all">Release {{ to_release|length }} result{{ to_release|length|pluralize }}</button></form>{% endif %}</div>
+<div class="split split-even mb-3">
+  <div class="card"><h3>To mark ({{ to_mark|length }})</h3>
+    <ul class="list">{% for a in to_mark %}<li><span class="grow"><a class="title" href="{% url 'backoffice:mark_attempt' a.pk %}">{{ a.user }}</a><br><small class="muted">{{ a.exam.title }} · attempt {{ a.number }} · {{ a.submitted_at|timesince }} ago</small></span>{% if a.integrity_flags %}<span class="badge badge-amber" title="{{ a.integrity_flags|join:', ' }}">{{ a.integrity_flags|length }} flag{{ a.integrity_flags|length|pluralize }}</span>{% endif %}<a class="btn btn-sm btn-primary" href="{% url 'backoffice:mark_attempt' a.pk %}">Mark</a></li>{% empty %}<li class="muted">Nothing to mark.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Marked, awaiting release ({{ to_release|length }})</h3>
+    <ul class="list">{% for a in to_release %}<li><span class="grow"><a class="title" href="{% url 'backoffice:mark_attempt' a.pk %}">{{ a.user }}</a><br><small class="muted">{{ a.exam.title }}</small></span><span class="badge {% if a.passed %}{% else %}badge-red{% endif %}">{{ a.percent }}%</span></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+</div>
+<div class="card mb-3"><h3>Exams</h3>
+  <div class="table-wrap" style="border:0"><table><thead><tr><th>Exam</th><th>Course</th><th>Attempts</th><th>Pass mark</th><th></th></tr></thead><tbody>
+  {% for e in exams %}<tr><td>{{ e.title }}</td><td>{{ e.course.title }}</td><td>{{ e.n }}</td><td>{{ e.pass_mark }}%</td><td><a class="small" href="{% url 'backoffice:item_analysis' e.pk %}">Item analysis</a></td></tr>{% endfor %}
+  </tbody></table></div></div>
+<div class="card"><h3>Recently released</h3>
+  <ul class="list">{% for a in recent %}<li><span class="grow">{{ a.user }} · {{ a.exam.title }}</span><span class="badge {% if a.passed %}{% else %}badge-red{% endif %}">{{ a.percent }}%</span><small class="muted">{{ a.released_at|date:"j M" }}</small></li>{% empty %}<li class="muted">None yet.</li>{% endfor %}</ul></div>
+{% endblock %}

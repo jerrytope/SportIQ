@@ -1,0 +1,13 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Institutions{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Institutions</h1><p>NIS departments, federations, state sports councils, universities, training centres and employers.</p></div></div>
+<div class="chip-list mb-2"><a class="chip {% if not request.GET.kind %}on{% endif %}" href="?">All</a>{% for v, l in kinds %}<a class="chip {% if request.GET.kind == v %}on{% endif %}" href="?kind={{ v }}">{{ l }}</a>{% endfor %}</div>
+<div class="split">
+  <div class="table-wrap"><table><thead><tr><th>Institution</th><th>Type</th><th>State</th><th>Members</th></tr></thead><tbody>
+    {% for i in institutions %}<tr><td><a href="{% url 'backoffice:institution_edit' i.pk %}"><strong>{{ i.name }}</strong></a>{% if not i.is_active %} <span class="badge badge-red">Inactive</span>{% endif %}</td><td>{{ i.get_kind_display }}</td><td>{{ i.state }}</td><td>{{ i.n }}</td></tr>
+    {% empty %}<tr><td colspan="4" class="empty">None.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}<h3>Add institution</h3>{% include "components/form.html" %}<button class="btn btn-primary">Create</button></form>
+</div>
+{% endblock %}

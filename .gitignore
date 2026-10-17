@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+media/
+staticfiles/
+runserver.log
+.pytest_cache/
+~$*.docx
+keys/
+SportIQ Blueprint for Digital Sports Academy.docx
+SportIQ Blueprint for Digital Sports Academy.pdf
+testing.pdf

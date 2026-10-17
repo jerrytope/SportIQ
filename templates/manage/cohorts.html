@@ -1,0 +1,12 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Cohorts{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Cohorts &amp; enrolments</h1><p>Group learners for instructor-led and blended delivery.</p></div></div>
+<div class="split">
+  <div class="table-wrap"><table><thead><tr><th>Cohort</th><th>Course</th><th>Dates</th><th>Learners</th></tr></thead><tbody>
+    {% for c in cohorts %}<tr><td><a href="{% url 'backoffice:cohort_detail' c.pk %}"><strong>{{ c.name }}</strong></a>{% if c.institution %}<br><small class="muted">{{ c.institution }}</small>{% endif %}</td><td>{{ c.course.title }}</td><td><small>{{ c.starts_on|date:"j M" }} – {{ c.ends_on|date:"j M Y" }}</small></td><td>{{ c.n }}{% if c.capacity %}/{{ c.capacity }}{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="4" class="empty">No cohorts yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <form class="card" method="post">{% csrf_token %}<h3>New cohort</h3>{% include "components/form.html" %}<button class="btn btn-primary">Create cohort</button></form>
+</div>
+{% endblock %}

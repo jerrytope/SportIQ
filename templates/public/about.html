@@ -1,0 +1,41 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}About SportIQ{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">About SportIQ</span>
+  <h1>The digital academy for Nigerian sport</h1>
+  <p>SportIQ (Sport + Intelligence Quotient) is a proposed national sports education and professional development platform in partnership with the National Institute for Sports.</p>
+</div></section>
+<section class="section"><div class="container">
+  <div class="grid grid-2" style="align-items:start">
+    <div class="prose">
+      <h2 class="mt-0">More than an e-learning app</h2>
+      <p>SportIQ combines a learning management system, a professional certification academy, a sports science knowledge hub, a research repository and a national sports workforce database on one connected platform.</p>
+      <p>It serves learners across Nigeria, accommodates different levels of digital access and supports professional standards that can be benchmarked against national and international frameworks.</p>
+      <blockquote>One national platform. Every sports profession. Continuous learning. Verifiable qualifications. Measurable impact.</blockquote>
+    </div>
+    <div class="card card-tint">
+      <h3>Design principles</h3>
+      <ul class="list">
+        <li>{% icon "check-circle" %}<span class="grow">Integrated learner records across courses, assessments, practical experience and qualifications</span></li>
+        <li>{% icon "check-circle" %}<span class="grow">Mobile-first and low-bandwidth access, with offline learning where feasible</span></li>
+        <li>{% icon "check-circle" %}<span class="grow">NIS control of academic standards, course approval and qualification rules</span></li>
+        <li>{% icon "check-circle" %}<span class="grow">Practical assessment alongside online learning</span></li>
+        <li>{% icon "check-circle" %}<span class="grow">Privacy, security, accessibility and interoperability from the outset</span></li>
+        <li>{% icon "check-circle" %}<span class="grow">Phased delivery: a credible core first, then evidence-led expansion</span></li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+<section class="section section-tint"><div class="container">
+  <div class="section-head"><span class="eyebrow">Six connected capabilities</span><h2>What the platform brings together</h2></div>
+  <div class="grid grid-3">
+    <div class="card"><span class="bento-icon">{% icon "book" %}</span><h3>Digital learning</h3><p class="muted mb-0">Structured courses, video lessons, live classes, assessments and learning paths.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "whistle" %}</span><h3>Professional training</h3><p class="muted mb-0">Specialised learning for coaches, referees, administrators, scientists, analysts and journalists.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "award" %}</span><h3>Certification &amp; CPD</h3><p class="muted mb-0">Digital certificates, qualification records, renewals and verifiable profiles.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "library" %}</span><h3>Sports intelligence</h3><p class="muted mb-0">A knowledge repository, research publications, data literacy and case studies.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "building" %}</span><h3>Education management</h3><p class="muted mb-0">Learner records, accreditation, quality assurance and skills-gap analysis.</p></div>
+    <div class="card"><span class="bento-icon">{% icon "users" %}</span><h3>Community &amp; careers</h3><p class="muted mb-0">Mentorship, professional networks, internships and career progression.</p></div>
+  </div>
+</div></section>
+{% endblock %}

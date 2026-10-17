@@ -1,0 +1,13 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Appeals & resits{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Appeals, resits &amp; access requests</h1><p>Upholding grants one extra attempt; an upheld result appeal also reopens the attempt for re-marking. Every decision is audited.</p></div></div>
+<div class="stack">{% for a in open %}
+  <div class="card"><div class="row-between"><div><span class="badge badge-amber">{{ a.get_kind_display }}</span> <strong>{{ a.user }}</strong> · {{ a.exam.title }}{% if a.attempt %} · attempt {{ a.attempt.number }} ({{ a.attempt.percent|default:"unmarked" }}{% if a.attempt.percent %}%{% endif %}){% endif %}</div><small class="muted">{{ a.created_at|timesince }} ago</small></div>
+    <p class="mt-1">{{ a.reason }}</p>
+    <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="appeal" value="{{ a.pk }}"><input name="outcome" placeholder="Explanation to the learner" aria-label="Outcome" required>
+      <button class="btn btn-primary btn-sm" name="decision" value="uphold">Uphold</button><button class="btn btn-secondary btn-sm" name="decision" value="dismiss">Dismiss</button>
+      {% if a.attempt %}<a class="btn btn-ghost btn-sm" href="{% url 'backoffice:mark_attempt' a.attempt.pk %}">Open attempt</a>{% endif %}</form></div>
+{% empty %}<div class="card empty">No open requests.</div>{% endfor %}</div>
+<div class="card mt-3"><h3>Recently decided</h3><ul class="list">{% for a in closed %}<li><span class="grow">{{ a.user }} · {{ a.get_kind_display }} · {{ a.exam.title|truncatechars:40 }}</span><span class="badge {% if a.status == 'upheld' %}{% else %}badge-grey{% endif %}">{{ a.get_status_display }}</span></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+{% endblock %}

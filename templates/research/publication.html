@@ -1,0 +1,11 @@
+{% extends base %}{% load sportiq %}
+{% block title %}{{ pub.title }}{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="breadcrumbs"><a href="{% url 'research:index' %}">Research</a></div>
+<div class="card prose" style="max-width:900px"><span class="badge">{{ pub.get_kind_display }}</span> <span class="badge badge-grey">{{ pub.get_status_display }}</span>
+  <h1 style="font-size:1.8rem;margin-top:.5rem">{{ pub.title }}</h1><p class="muted">{{ pub.authors }}{% if pub.published_on %} · {{ pub.published_on|date:"F Y" }}{% endif %}{% if pub.doi %} · DOI {{ pub.doi }}{% endif %}</p>
+  <h3>Abstract</h3><p>{{ pub.abstract|linebreaksbr }}</p>
+  {% if pub.file %}<a class="btn btn-primary" href="{{ pub.file.url }}">{% icon "download" %}Download</a>{% endif %}</div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

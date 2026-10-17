@@ -1,0 +1,25 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}Supervisor confirmation · SportIQ{% endblock %}
+{% block content %}
+<section class="auth-wrap"><div class="card auth-card wide">
+  <span class="eyebrow">Supervisor confirmation</span>
+  <h1 style="font-size:1.6rem">{{ sub.user.get_full_name }}: {{ sub.task.title }}</h1>
+  <p class="muted">{{ sub.task.course.title }} · named supervisor: {{ sub.supervisor_name }} ({{ sub.supervisor_role }})</p>
+  {% if messages %}{% endif %}
+  {% if sub.supervisor_signed_at %}
+    <div class="alert alert-success">{% icon "check" %} Confirmed on {{ sub.supervisor_signed_at|date:"j F Y" }}. Thank you.</div>
+  {% elif sub.supervisor_comment %}
+    <div class="alert alert-info">You declined to confirm this competence. Thank you for your honesty.</div>
+  {% else %}
+    <div class="card card-tint mb-2"><h3>What the learner submitted</h3>{% if sub.text %}<div class="transcript">{{ sub.text|truncatewords:300 }}</div>{% endif %}
+      {% if sub.video_url %}<p><a href="{{ sub.video_url }}" target="_blank" rel="noopener">Video evidence</a></p>{% endif %}</div>
+    <div class="prose small mb-2" style="max-width:none">{{ sub.task.instructions|markdown }}</div>
+    <form method="post">{% csrf_token %}
+      <div class="field"><label for="comment">Comments (optional)</label><textarea id="comment" name="comment" rows="3"></textarea></div>
+      <label class="check mb-2"><input type="checkbox" name="declare"> <span>I personally observed {{ sub.user.first_name }} demonstrate this competence, and I am qualified to judge it.</span></label>
+      <div class="row"><button class="btn btn-primary" name="decision" value="confirm">Confirm competence</button><button class="btn btn-secondary" name="decision" value="decline">I can't confirm this</button></div>
+    </form>
+  {% endif %}
+  <p class="small muted mt-2 mb-0">Your response is recorded in the learner's SportIQ record and audit log.</p>
+</div></section>
+{% endblock %}

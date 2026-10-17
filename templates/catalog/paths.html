@@ -1,0 +1,18 @@
+{% extends base %}{% load sportiq %}
+{% block title %}Learning paths · SportIQ{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<section class="page-hero"><div class="container">{% endif %}
+<div class="page-title"><div><span class="eyebrow">Learning paths</span><h1>From beginner to specialist</h1><p>Structured sequences of courses for each sports profession.</p></div></div>
+{% if not user.is_authenticated %}</div></section><section class="section" style="padding-top:32px"><div class="container">{% endif %}
+<div class="grid grid-2">
+  {% for p in paths %}
+  <a class="card card-link" href="{{ p.get_absolute_url }}">
+    <div class="row-between"><span class="pill">{% icon "layers" %}{{ p.items.count }} courses</span>{% if p.profession %}<span class="badge badge-grey">{{ p.profession.name }}</span>{% endif %}</div>
+    <h3 class="mt-2">{{ p.title }}</h3>
+    <p class="muted">{{ p.summary }}</p>
+    <ol class="small muted" style="padding-left:1.1rem;margin:0">{% for i in p.items.all %}<li>{{ i.course.title }} <span class="badge badge-grey">{{ i.get_stage_display }}</span></li>{% endfor %}</ol>
+  </a>
+  {% empty %}<p class="muted">No learning paths yet.</p>{% endfor %}
+</div>
+{% if not user.is_authenticated %}</div></section>{% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Study plan · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'ai:assistant' %}">AI study assistant</a></div><h1>My study plan</h1><p>Built from your role's mandatory training, the courses you've started and your available time.</p></div></div>
+<div class="split">
+  <div class="stack">
+    {% if plan %}
+      <div class="card card-tint"><strong>Goal:</strong> {{ plan.goal }} · {{ plan.hours_per_week }} h/week<p class="mb-0 mt-1">{{ plan.narrative }}</p></div>
+      {% for w in plan.weeks %}<div class="card"><div class="row-between"><h3 class="mb-0">Week {{ w.week }}</h3><small class="muted">{{ w.minutes }} min</small></div>
+        <ul class="list">{% for i in w.items %}<li>{% icon "book" %}<span class="grow">{% if i.enrolled %}<a href="/learn/{{ i.course_slug }}/lessons/{{ i.lesson_id }}/">{{ i.lesson }}</a>{% else %}{{ i.lesson }}{% endif %}<br><small class="muted">{{ i.course }}{% if not i.enrolled %} · <a href="/courses/{{ i.course_slug }}/">enrol first</a>{% endif %}</small></span><small class="muted">{{ i.minutes }} min</small></li>{% endfor %}</ul></div>
+      {% empty %}<div class="card empty">You're all caught up. Nothing left in your courses.</div>{% endfor %}
+    {% else %}<div class="card empty">{% icon "calendar" %}<p>Create a plan to see week-by-week lessons.</p></div>{% endif %}
+  </div>
+  <form class="card" method="post">{% csrf_token %}<h3>{% if plan %}Rebuild{% else %}Create{% endif %} my plan</h3>
+    <div class="field"><label for="goal">What's your goal?</label><input id="goal" name="goal" value="{{ plan.goal|default:'' }}" placeholder="e.g. Become a qualified Level 1 coach by March"></div>
+    <div class="field"><label for="hours">Hours per week</label><input id="hours" type="number" min="1" max="20" name="hours" value="{{ plan.hours_per_week|default:3 }}"></div>
+    <button class="btn btn-primary">Build plan</button></form>
+</div>
+{% endblock %}

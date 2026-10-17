@@ -1,0 +1,11 @@
+{% extends "app/base.html" %}
+{% block title %}Propose a research project{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'research:index' %}">Research</a></div><h1>Propose a research project</h1><p>Projects with human participants go to the NIS research office for ethics review before starting.</p></div></div>
+<form class="card" method="post" style="max-width:900px">{% csrf_token %}
+  {% include "components/form.html" with grid=True %}
+  <h3 class="mt-2">Ethics checklist</h3>
+  {% for k, label in ethics %}<label class="check mb-1"><input type="checkbox" name="ethics_{{ k }}"> <span>{{ label }}</span></label>{% endfor %}
+  <button class="btn btn-primary mt-2">Submit proposal</button>
+</form>
+{% endblock %}

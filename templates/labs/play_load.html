@@ -1,0 +1,18 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ s.title }} · Performance lab{% endblock %}
+{% block content %}
+{% include "labs/_header.html" %}
+<div class="alert alert-info small">Sample (fictional) athlete data for teaching. Weekly training load = session RPE × minutes, summed per week. Flag athletes whose acute:chronic workload ratio (this week ÷ average of the previous 4 weeks) is above {{ s.data.threshold|default:1.5 }}.</div>
+<form method="post">{% csrf_token %}
+<div class="grid grid-2">
+  {% for a in athletes %}
+  <div class="card">
+    <div class="row-between"><strong style="color:var(--primary)">{{ a.name }}</strong><small class="muted">{{ a.position }}</small></div>
+    <div class="chart" style="height:110px">{% for w in a.weeks %}<div class="col"><small>{{ w }}</small><div class="bar" style="flex:none;height:{% widthratio w a.peak 70 %}px;{% if forloop.last %}background:var(--accent){% endif %}"></div><small>W{{ forloop.counter }}</small></div>{% endfor %}</div>
+    <label class="check mt-1"><input type="checkbox" name="flag" value="{{ a.name }}"> <span>Flag as high injury risk this week</span></label>
+  </div>
+  {% endfor %}
+</div>
+<button class="btn btn-primary btn-lg mt-2">Submit assessment</button>
+</form>
+{% endblock %}

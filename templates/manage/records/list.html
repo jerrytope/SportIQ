@@ -1,0 +1,10 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ label }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>{{ label }}</h1>{% if help %}<p>{{ help }}</p>{% endif %}</div><a class="btn btn-primary" href="{% url 'backoffice:record_new' key %}">{% icon "plus" %}Add</a></div>
+<div class="table-wrap"><table><thead><tr>{% for c in columns %}<th>{{ c|capfirst }}</th>{% endfor %}<th></th></tr></thead><tbody>
+  {% for r in rows %}<tr>{% for cell in r.cells %}<td>{% if forloop.first %}<a href="{% url 'backoffice:record_edit' key r.obj.pk %}"><strong>{{ cell|default_if_none:"—" }}</strong></a>{% elif cell is True %}<span class="badge">Yes</span>{% elif cell is False %}<span class="badge badge-grey">No</span>{% else %}{{ cell|default_if_none:"—" }}{% endif %}</td>{% endfor %}
+    <td><a class="small" href="{% url 'backoffice:record_edit' key r.obj.pk %}">Edit</a></td></tr>
+  {% empty %}<tr><td colspan="{{ columns|length|add:1 }}" class="empty">Nothing yet.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

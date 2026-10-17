@@ -1,0 +1,4 @@
+{% load sportiq %}<div class="breadcrumbs"><a href="{% url 'labs:index' %}">Practical labs</a> / {{ s.get_kind_display }}</div>
+<div class="page-title"><div><span class="pill pill-gold">{% icon "flask" %}Training exercise</span><h1 class="mt-1">{{ s.title }}</h1><p>{{ s.summary }}</p></div>
+  {% if run %}<a class="btn btn-ghost" href="?restart=1">Restart</a>{% endif %}</div>
+{% if s.intro and not run %}<div class="card prose mb-2" style="max-width:none">{{ s.intro|markdown }}</div>{% endif %}

@@ -1,0 +1,19 @@
+{% extends base %}{% load sportiq %}
+{% block title %}{{ p.title }} · Research{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="breadcrumbs"><a href="{% url 'research:index' %}">Research</a></div>
+<div class="split">
+  <div class="card"><span class="badge">{{ p.get_status_display }}</span>{% if p.ethics_reference %} <span class="badge badge-grey">Ethics ref {{ p.ethics_reference }}</span>{% endif %}
+    <h1 style="font-size:1.7rem;margin-top:.5rem">{{ p.title }}</h1><p class="muted">Lead: {{ p.lead }}{% if p.institution %} · {{ p.institution }}{% endif %}</p>
+    <h3>Summary</h3><p>{{ p.summary|linebreaksbr }}</p><h3>Research question</h3><p>{{ p.research_question|linebreaksbr }}</p>
+    {% if p.methods %}<h3>Methods</h3><p>{{ p.methods|linebreaksbr }}</p>{% endif %}
+    {% if p.publications.exists %}<h3>Outputs</h3><ul class="list">{% for pub in p.publications.all %}{% if pub.status == "published" %}<li><a href="{% url 'research:publication' pub.pk %}">{{ pub.title }}</a></li>{% endif %}{% endfor %}</ul>{% endif %}</div>
+  <div class="stack">
+    {% if is_member %}<div class="card"><h3>Ethics checklist</h3><ul class="list">{% for label, ok in ethics %}<li>{% if ok %}{% icon "check-circle" %}{% else %}{% icon "alert" %}{% endif %}<span class="grow small">{{ label }}</span></li>{% endfor %}</ul></div>{% endif %}
+    <div class="card"><h3>Team</h3><ul class="list">{% for m in p.members.all %}<li>{{ m }}</li>{% endfor %}</ul>
+      {% if p.recruiting and user.is_authenticated and not is_member %}<form method="post" class="mt-2">{% csrf_token %}<input type="hidden" name="action" value="join"><textarea name="note" rows="2" placeholder="What could you contribute?" aria-label="Note"></textarea><button class="btn btn-sm btn-primary mt-1">Express interest</button></form>{% endif %}</div>
+  </div>
+</div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

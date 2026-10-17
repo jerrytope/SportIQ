@@ -1,0 +1,21 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ ticket.reference }} · Support{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'support:my_tickets' %}">Help &amp; support</a></div>
+<div class="page-title"><div><h1>{{ ticket.subject }}</h1><p>{{ ticket.reference }} · {{ ticket.get_category_display }} · <span class="badge">{{ ticket.get_status_display }}</span>{% if ticket.status == 'open' %} · response due {{ ticket.sla_due|date:"j M, H:i" }}{% endif %}</p></div></div>
+<div class="message-thread">
+  {% for m in thread %}
+  <div class="msg {% if m.author != ticket.user %}staff{% endif %}">
+    <div class="row-between"><strong>{% if m.author == ticket.user %}You{% else %}{{ m.author.first_name }} · SportIQ support{% endif %}</strong><small class="muted">{{ m.created_at|date:"j M Y, H:i" }}</small></div>
+    <p class="mb-0 mt-1">{{ m.body|linebreaksbr }}</p>
+    {% if m.attachment %}<a class="small" href="{{ m.attachment.url }}">{% icon "file" %} Attachment</a>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% if ticket.status != "closed" %}
+<form method="post" class="card">{% csrf_token %}
+  <label for="body">Reply</label><textarea id="body" name="body" rows="4"></textarea>
+  <div class="row mt-1"><button class="btn btn-primary" name="action" value="reply">Send reply</button><button class="btn btn-ghost" name="action" value="close">Close ticket</button></div>
+</form>
+{% endif %}
+{% endblock %}

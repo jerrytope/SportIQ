@@ -1,0 +1,12 @@
+{% load sportiq %}<div class="message-thread">
+{% for m in msgs %}
+  <div class="msg {% if m.role == 'assistant' %}staff{% endif %}">
+    <div class="row-between"><strong>{% if m.role == 'assistant' %}{% icon "sparkles" %} SportIQ assistant{% else %}You{% endif %}</strong>
+      {% if m.role == 'assistant' %}<small class="muted">{% if m.engine == 'retrieval' %}Quoted from approved material{% elif m.engine == 'guardrail' %}Safeguard{% else %}AI answer · {{ m.engine }}{% endif %}</small>{% endif %}</div>
+    <div class="mt-1 prose" style="max-width:none">{{ m.content|markdown }}</div>
+    {% if m.citations %}<div class="row mt-1" style="gap:.35rem">{% for c in m.citations %}<a class="chip" href="{{ c.url }}">[{{ c.n }}] {{ c.title|truncatechars:48 }}{% if c.version %} · {{ c.version }}{% endif %}</a>{% endfor %}</div>{% endif %}
+    {% if m.role == 'assistant' and not m.refused %}<form method="post" action="{% url 'ai:rate' m.pk %}" class="row mt-1">{% csrf_token %}<small class="muted">Helpful?</small>
+      <button class="btn btn-ghost btn-sm" name="helpful" value="yes" {% if m.helpful %}style="color:var(--brand)"{% endif %}>👍</button><button class="btn btn-ghost btn-sm" name="helpful" value="no" {% if m.helpful == False %}style="color:var(--danger)"{% endif %}>👎</button></form>{% endif %}
+  </div>
+{% endfor %}
+</div>

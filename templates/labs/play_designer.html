@@ -1,0 +1,19 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ s.title }} · Session designer{% endblock %}
+{% block content %}
+{% include "labs/_header.html" %}
+<form method="post" id="designer">{% csrf_token %}<input type="hidden" name="order" id="order">
+<div class="split split-even">
+  <div class="card"><h3>Drill library</h3><p class="small muted">Add drills in the order you'd run them. Target: about {{ s.data.target_minutes }} minutes.</p>
+    <ul class="list">{% for d in s.data.drills %}<li><span class="grow"><strong>{{ d.name }}</strong><br><small class="muted">{{ d.phase }} · {{ d.minutes }} min · {{ d.intensity }} intensity</small></span><button type="button" class="btn btn-sm btn-secondary" data-add="{{ d.id }}" data-name="{{ d.name }}" data-min="{{ d.minutes }}">Add</button></li>{% endfor %}</ul></div>
+  <div class="card"><h3>My session <small class="muted" id="total">0 min</small></h3><ol class="list" id="plan"></ol>
+    <button class="btn btn-primary mt-2">Get feedback</button></div>
+</div></form>
+<script>
+(function(){var plan=[],ol=document.getElementById("plan"),order=document.getElementById("order"),total=document.getElementById("total");
+ function render(){order.value=plan.map(function(p){return p.id}).join(",");total.textContent=plan.reduce(function(s,p){return s+p.min},0)+" min";
+  ol.innerHTML=plan.map(function(p,i){return '<li><span class="grow">'+(i+1)+'. '+p.name+'</span><small class="muted">'+p.min+' min</small><button type="button" class="btn btn-ghost btn-sm" data-up="'+i+'">↑</button><button type="button" class="btn btn-ghost btn-sm" data-rm="'+i+'">✕</button></li>'}).join("")||'<li class="muted small">Add drills from the library.</li>';}
+ document.querySelectorAll("[data-add]").forEach(function(b){b.addEventListener("click",function(){plan.push({id:b.dataset.add,name:b.dataset.name,min:+b.dataset.min});render();});});
+ ol.addEventListener("click",function(e){var r=e.target.closest("[data-rm]"),u=e.target.closest("[data-up]");if(r){plan.splice(+r.dataset.rm,1);}if(u&&+u.dataset.up>0){var i=+u.dataset.up;var t=plan[i-1];plan[i-1]=plan[i];plan[i]=t;}render();});render();})();
+</script>
+{% endblock %}

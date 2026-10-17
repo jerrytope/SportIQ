@@ -1,0 +1,12 @@
+{% extends base %}{% load sportiq %}
+{% block title %}{{ article.title }} · Help{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="breadcrumbs"><a href="{% url 'support:help' %}">Help centre</a> / {{ article.category.name }}</div>
+<div class="split">
+  <article class="card prose" style="max-width:none"><h1 style="font-size:1.8rem">{{ article.title }}</h1>{{ article.body|markdown }}
+    <p class="small muted mt-3 mb-0">Still stuck? <a href="{% url 'support:my_tickets' %}">Contact support</a>.</p></article>
+  {% if related %}<div class="card"><h3>Related</h3><ul class="list">{% for a in related %}<li><a href="{% url 'support:article' a.slug %}">{{ a.title }}</a></li>{% endfor %}</ul></div>{% endif %}
+</div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

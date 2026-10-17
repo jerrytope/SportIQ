@@ -1,0 +1,15 @@
+{% extends base %}{% load sportiq %}
+{% block title %}{{ person.get_full_name }} · SportIQ professional profile{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="card mb-3 row"><span class="avatar avatar-lg">{% if person.photo %}<img src="{{ person.photo.url }}" alt="">{% else %}{{ person.initials }}{% endif %}</span>
+  <div><h1 style="font-size:1.8rem;margin:0">{{ person.get_full_name }}</h1><p class="muted mb-0">{% for p in person.professions.all %}{{ p.name }}{% if not forloop.last %} · {% endif %}{% endfor %}{% if person.state %} · {{ person.state }}{% endif %}</p>
+    {% if person.is_verified_professional %}<span class="badge">{% icon "check" %}Verified professional</span>{% else %}<span class="badge badge-grey">Profile not verified: listed credentials are verified individually</span>{% endif %}</div></div>
+<div class="split">
+  <div class="stack">{% if person.bio %}<div class="card"><p class="mb-0">{{ person.bio }}</p></div>{% endif %}
+    <div class="card"><h3>Experience</h3><ul class="timeline">{% for e in experience %}<li><strong>{{ e.role }}</strong>, {{ e.organisation }} <small class="muted">{{ e.start_date|date:"Y" }}–{% if e.end_date %}{{ e.end_date|date:"Y" }}{% else %}now{% endif %}</small></li>{% empty %}<li class="muted">Not listed.</li>{% endfor %}</ul></div></div>
+  <div class="card"><h3>Verifiable credentials</h3><ul class="list">{% for c in credentials %}{% if c.is_valid %}<li>{% icon "award" %}<span class="grow">{{ c.title }}<br><small class="muted">{{ c.credential_type.get_kind_display }} · <a href="{{ c.get_verify_url }}">verify {{ c.code }}</a></small></span></li>{% endif %}{% empty %}<li class="muted small">None.</li>{% endfor %}
+    {% for q in external %}<li>{% icon "check-circle" %}<span class="grow">{{ q.title }}<br><small class="muted">{{ q.awarding_body }} · verified by NIS registrar</small></span></li>{% endfor %}</ul></div>
+</div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

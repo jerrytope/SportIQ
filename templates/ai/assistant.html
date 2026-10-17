@@ -1,0 +1,25 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}AI study assistant · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>AI study assistant</h1><p>Answers come only from approved NIS course material and the library, with sources. It helps you understand; it won't do your assessments for you.</p></div>
+  <div class="row"><a class="btn btn-secondary" href="{% url 'ai:study_plan' %}">{% icon "calendar" %}Study plan</a><a class="btn btn-secondary" href="{% url 'ai:revise' %}">{% icon "refresh" %}Revise &amp; practise</a></div></div>
+{% if not ai_live %}<div class="alert alert-info small">{% icon "alert" %} Running in source-only mode: the assistant quotes the most relevant approved passages instead of writing its own answer. (An administrator can enable AI-written answers.)</div>{% endif %}
+<div class="split">
+  <div class="stack">
+    {% if blocked %}<div class="alert alert-warning">The assistant is switched off while your assessment “{{ blocked.exam.title }}” is in progress.</div>{% endif %}
+    {% if conv %}{% include "ai/_messages.html" %}{% else %}
+      <div class="card card-tint"><h3>Try asking</h3><div class="row">{% for s in suggestions %}<form method="post" action="{% url 'ai:ask' %}">{% csrf_token %}<input type="hidden" name="q" value="{{ s }}"><button class="chip" style="cursor:pointer">{{ s }}</button></form>{% endfor %}</div></div>
+    {% endif %}
+    <form class="card" method="post" action="{% url 'ai:ask' %}">{% csrf_token %}
+      {% if conv %}<input type="hidden" name="conversation" value="{{ conv.pk }}">{% endif %}
+      <label for="q">{% if conv %}Follow-up question{% else %}Your question{% endif %}</label>
+      <textarea id="q" name="q" rows="3" required placeholder="Ask about anything in your courses…" {% if blocked %}disabled{% endif %}></textarea>
+      <div class="inline-form mt-1">{% if not conv %}<select name="course" aria-label="Focus on a course"><option value="">All my courses</option>{% for c in courses %}<option value="{{ c.pk }}">{{ c.title }}</option>{% endfor %}</select>{% endif %}
+        <button class="btn btn-primary" {% if blocked %}disabled{% endif %}>{% icon "sparkles" %}Ask</button></div>
+      <p class="small muted mt-1 mb-0">AI can make mistakes: check the cited sources. Medical, safeguarding and anti-doping questions need qualified professionals and official procedures. Don't share personal or sensitive information.</p>
+    </form>
+  </div>
+  <div class="card"><div class="row-between"><h3 class="mb-0">Conversations</h3><a class="small" href="{% url 'ai:assistant' %}">New</a></div>
+    <ul class="list">{% for c in convs %}<li><a class="grow {% if conv and c.pk == conv.pk %}title{% endif %}" href="{% url 'ai:conversation' c.pk %}">{{ c.title|truncatechars:50 }}</a><small class="muted">{{ c.updated_at|date:"j M" }}</small></li>{% empty %}<li class="muted small">None yet.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

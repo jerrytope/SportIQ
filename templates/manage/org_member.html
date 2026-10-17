@@ -1,0 +1,9 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ member }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:org' inst.slug %}">{{ inst.name }}</a></div><h1>{{ member }}</h1><p>{% for p in member.professions.all %}{{ p.name }}{% if not forloop.last %} · {% endif %}{% endfor %}{% if member.state %} · {{ member.state }}{% endif %}</p></div></div>
+<div class="split split-even">
+  <div class="card"><h3>Learning</h3><ul class="list">{% for e in enrolments %}<li><span class="grow">{{ e.course.title }}<div class="progress mt-1"><span style="width:{{ e.progress }}%"></span></div></span><span class="badge {% if e.status != 'completed' %}badge-grey{% endif %}">{{ e.get_status_display }}</span></li>{% empty %}<li class="muted">No enrolments.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Credentials</h3><ul class="list">{% for c in credentials %}<li><span class="grow">{{ c.title }}<br><small class="muted">{{ c.credential_type.get_kind_display }} · {{ c.code }}{% if c.expires_at %} · expires {{ c.expires_at|date:"j M Y" }}{% endif %}</small></span>{% include "credentials/_status.html" with s=c.effective_status %}</li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

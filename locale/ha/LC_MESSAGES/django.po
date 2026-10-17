@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ha\n"
+
+#, fuzzy
+msgid "Home"
+msgstr "Gida"
+
+#, fuzzy
+msgid "Explore courses"
+msgstr "Bincika kwasa-kwasai"
+
+#, fuzzy
+msgid "My learning"
+msgstr "Karatuna"
+
+#, fuzzy
+msgid "Academy"
+msgstr "Makaranta"
+
+#, fuzzy
+msgid "Live academy"
+msgstr "Aji kai tsaye"
+
+#, fuzzy
+msgid "Practical labs"
+msgstr "Dakunan gwaji"
+
+#, fuzzy
+msgid "Sports library"
+msgstr "Ɗakin karatun wasanni"
+
+#, fuzzy
+msgid "AI study assistant"
+msgstr "Mataimakin karatu na AI"
+
+#, fuzzy
+msgid "Research & insights"
+msgstr "Bincike"
+
+#, fuzzy
+msgid "Qualifications"
+msgstr "Cancanta"
+
+#, fuzzy
+msgid "Credentials"
+msgstr "Takardun shaida"
+
+#, fuzzy
+msgid "CPD & renewals"
+msgstr "CPD da sabuntawa"
+
+#, fuzzy
+msgid "Achievements"
+msgstr "Nasarori"
+
+#, fuzzy
+msgid "Careers & community"
+msgstr "Sana'a da al'umma"
+
+#, fuzzy
+msgid "Community"
+msgstr "Al'umma"
+
+#, fuzzy
+msgid "Opportunities"
+msgstr "Damammaki"
+
+#, fuzzy
+msgid "Experience & CV"
+msgstr "Ƙwarewa da CV"
+
+#, fuzzy
+msgid "Challenges"
+msgstr "Ƙalubale"
+
+#, fuzzy
+msgid "Me"
+msgstr "Ni"
+
+#, fuzzy
+msgid "Professional profile"
+msgstr "Bayanan sana'ata"
+
+#, fuzzy
+msgid "Account settings"
+msgstr "Saitunan asusu"
+
+#, fuzzy
+msgid "Help & support"
+msgstr "Taimako"
+
+#, fuzzy
+msgid "Report a concern"
+msgstr "Kai rahoton damuwa"
+
+#, fuzzy
+msgid "Back office"
+msgstr "Back office"
+
+#, fuzzy
+msgid "Log out"
+msgstr "Fita"
+
+#, fuzzy
+msgid "Language"
+msgstr "Harshe"
+
+#, fuzzy
+msgid "Explore"
+msgstr "Bincika"
+
+#, fuzzy
+msgid "Learning"
+msgstr "Karatu"
+
+#, fuzzy
+msgid "Search courses, topics, sports…"
+msgstr "Nemo kwas, batu, wasa…"
+
+#, fuzzy
+msgid "About SportIQ"
+msgstr "Game da SportIQ"
+
+#, fuzzy
+msgid "Resources"
+msgstr "Albarkatu"
+
+#, fuzzy
+msgid "For institutions"
+msgstr "Don cibiyoyi"
+
+#, fuzzy
+msgid "Verify"
+msgstr "Tabbatar"
+
+#, fuzzy
+msgid "Verify a certificate"
+msgstr "Tabbatar da takardar shaida"
+
+#, fuzzy
+msgid "Course catalogue"
+msgstr "Jerin kwasa-kwasai"
+
+#, fuzzy
+msgid "Learning paths"
+msgstr "Hanyoyin karatu"
+
+#, fuzzy
+msgid "Certifications"
+msgstr "Takardun shaida"
+
+#, fuzzy
+msgid "FAQs"
+msgstr "Tambayoyi da ake yawan yi"
+
+#, fuzzy
+msgid "Blog"
+msgstr "Blog"
+
+#, fuzzy
+msgid "Events"
+msgstr "Abubuwan da ke tafe"
+
+#, fuzzy
+msgid "Help centre"
+msgstr "Cibiyar taimako"
+
+#, fuzzy
+msgid "Sign up"
+msgstr "Yi rajista"
+
+#, fuzzy
+msgid "Sign up free"
+msgstr "Yi rajista kyauta"
+
+#, fuzzy
+msgid "Login"
+msgstr "Shiga"
+
+#, fuzzy
+msgid "Request a demo"
+msgstr "Nemi nunin"
+
+#, fuzzy
+msgid "Request demo"
+msgstr "Nemi nunin"
+
+#, fuzzy
+msgid "My dashboard"
+msgstr "Allon bayanaina"
+
+#, fuzzy
+msgid "Dashboard"
+msgstr "Allon bayanai"
+
+#, fuzzy
+msgid "Organisation"
+msgstr "Ƙungiya"
+
+#, fuzzy
+msgid "Observatory"
+msgstr "Cibiyar sa ido"
+
+#, fuzzy
+msgid "Frequently asked questions"
+msgstr "Tambayoyi da ake yawan yi"
+
+#, fuzzy
+msgid "Interface translations are drafts awaiting expert review."
+msgstr "Wannan fassara daftari ce da ƙwararru za su duba."

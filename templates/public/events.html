@@ -1,0 +1,17 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}Events · SportIQ{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">Events</span><h1>Seminars, masterclasses and clinics</h1><p>Continuing education events for coaches, officials, administrators and sports scientists.</p></div></section>
+<section class="section"><div class="container">
+  <h2>Upcoming</h2>
+  <div class="grid grid-2">
+  {% for e in upcoming %}
+    <div class="card row" style="align-items:flex-start">
+      <div class="card-tint" style="border-radius:14px;padding:.75rem 1rem;text-align:center;min-width:78px"><strong style="font-size:1.6rem;color:var(--primary);display:block;line-height:1">{{ e.starts_at|date:"j" }}</strong><small class="muted">{{ e.starts_at|date:"M Y" }}</small></div>
+      <div class="grow" style="flex:1"><h3>{{ e.title }}</h3><p class="muted small mb-1">{% icon "clock" %} {{ e.starts_at|date:"D j M, H:i" }} · {% icon "map" %} {{ e.location }}</p><p class="mb-1">{{ e.description }}</p>{% if e.url %}<a class="link-arrow" href="{{ e.url }}">Register {% icon "arrow-right" %}</a>{% endif %}</div>
+    </div>
+  {% empty %}<p class="muted">No upcoming events. Subscribe to the newsletter to hear about new ones.</p>{% endfor %}
+  </div>
+  {% if past %}<h2 class="mt-4">Past events</h2><ul class="list">{% for e in past %}<li><span class="grow"><span class="title">{{ e.title }}</span><br><small class="muted">{{ e.starts_at|date:"j M Y" }} · {{ e.location }}</small></span></li>{% endfor %}</ul>{% endif %}
+</div></section>
+{% endblock %}

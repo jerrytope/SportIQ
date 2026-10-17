@@ -1,0 +1,29 @@
+{% load static sportiq %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SportIQ — The digital academy for Nigerian sport{% endblock %}</title>
+  <meta name="description" content="{% block description %}SportIQ is the NIS Digital Sports Academy: expert-led courses, verifiable qualifications and continuous professional development for Nigerian sport.{% endblock %}">
+  <meta name="theme-color" content="#008751">
+  <meta property="og:title" content="{% block og_title %}SportIQ — The digital academy for Nigerian sport{% endblock %}">
+  <meta property="og:description" content="One national platform. Every sports profession. Continuous learning. Verifiable qualifications.">
+  <meta property="og:type" content="website">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="{% static 'img/icon.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/sportiq.css' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}">
+  <script>try{var t=localStorage.getItem("siq-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}{% if user.is_authenticated and user.data_saver %} data-saver{% endif %}">
+  <a class="skip-link" href="#main">Skip to content</a>
+  {% for n in status_notices %}<div class="notice notice-{{ n.level }}" role="status">{{ n.message }}</div>{% endfor %}
+  {% block body %}{% endblock %}
+  <script src="{% static 'js/sportiq.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}" defer></script>
+  <script src="{% static 'js/offline.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

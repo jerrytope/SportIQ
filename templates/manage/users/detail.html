@@ -1,0 +1,42 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ person }}{% endblock %}
+{% block content %}
+<div class="page-title"><div class="row"><span class="avatar avatar-lg">{{ person.initials }}</span><div>
+  <div class="breadcrumbs"><a href="{% url 'backoffice:users' %}">Users</a></div>
+  <h1>{{ person.get_full_name|default:person.email }}</h1>
+  <p>{{ person.email }} · joined {{ person.date_joined|date:"j M Y" }} · last login {{ person.last_login|timesince|default:"never" }}{% if person.last_login %} ago{% endif %}
+    {% if person.email_verified %}<span class="badge">Email verified</span>{% else %}<span class="badge badge-amber">Email unverified</span>{% endif %}</p></div></div>
+  <form method="post">{% csrf_token %}<button class="btn btn-secondary" name="action" value="reset">{% icon "mail" %}Send password reset</button></form></div>
+<div class="split">
+  <div class="stack">
+    <form class="card" method="post">{% csrf_token %}
+      <h3>Account &amp; roles</h3>
+      {% include "components/form.html" with grid=True %}
+      <button class="btn btn-primary" name="action" value="save">Save changes</button>
+      <p class="small muted mt-1 mb-0">Staff with any back-office role must use two-factor authentication. Role changes are recorded in the audit log.</p>
+    </form>
+    <div class="card"><h3>Enrolments</h3>
+      <ul class="list">{% for e in enrolments %}<li><span class="grow">{{ e.course.title }}<br><small class="muted">{{ e.get_source_display }} · {{ e.created_at|date:"j M Y" }}</small></span><span class="badge {% if e.status == 'completed' %}{% else %}badge-grey{% endif %}">{{ e.get_status_display }} {{ e.progress }}%</span></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul>
+      <form method="post" class="inline-form mt-2">{% csrf_token %}<select name="course" aria-label="Course">{% for c in courses %}<option value="{{ c.pk }}">{{ c.title }}</option>{% endfor %}</select><button class="btn btn-secondary btn-sm" name="action" value="enrol">Enrol</button></form>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card"><h3>Institutions</h3>
+      <ul class="list">{% for m in memberships %}<li><span class="grow">{{ m.institution.name }}<br><small class="muted">{{ m.get_role_display }}</small></span>
+        <form method="post">{% csrf_token %}<input type="hidden" name="membership" value="{{ m.pk }}"><button class="btn btn-ghost btn-sm" name="action" value="remove_membership" aria-label="Remove">{% icon "x" %}</button></form></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul>
+      <form method="post" class="mt-2">{% csrf_token %}
+        <div class="field"><label for="inst">Link to institution</label><select id="inst" name="institution">{% for i in institutions %}<option value="{{ i.pk }}">{{ i.name }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="role">As</label><select id="role" name="role"><option value="member">Member / learner</option><option value="staff">Staff member</option><option value="admin">Institution administrator</option></select></div>
+        <button class="btn btn-secondary btn-sm" name="action" value="membership">Link</button></form>
+    </div>
+    <form class="card" method="post">{% csrf_token %}<h3>Federation registry</h3><p class="small muted">Check this person's registration with a connected federation system (only where a data-sharing agreement exists).</p>
+      <div class="inline-form"><input name="registration_number" placeholder="Registration no. (optional)" aria-label="Registration number"><button class="btn btn-secondary btn-sm" name="action" value="registry">Look up</button></div></form>
+    <div class="card"><h3>Credentials</h3><ul class="list">{% for c in credentials %}<li><a class="grow" href="{% url 'backoffice:credential_manage' c.pk %}">{{ c.title }}</a>{% include "credentials/_status.html" with s=c.effective_status %}</li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+    <div class="card"><h3>Payments &amp; tickets</h3><ul class="list">
+      {% for o in orders %}<li><small class="grow">{{ o.reference }} · {{ o.course.title|truncatechars:30 }}</small><span class="badge badge-grey">{{ o.get_status_display }}</span></li>{% endfor %}
+      {% for t in tickets %}<li><small class="grow">{{ t.reference }} · {{ t.subject|truncatechars:30 }}</small><span class="badge badge-grey">{{ t.get_status_display }}</span></li>{% endfor %}
+      {% if not orders and not tickets %}<li class="muted">None.</li>{% endif %}</ul></div>
+    <div class="card"><h3>Recent activity</h3><ul class="timeline">{% for a in activity %}<li><strong>{{ a.action }}</strong> <small class="muted">{{ a.created_at|date:"j M H:i" }}{% if a.actor and a.actor != person %} by {{ a.actor }}{% endif %}</small></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+  </div>
+</div>
+{% endblock %}

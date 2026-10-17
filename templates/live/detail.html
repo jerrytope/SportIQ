@@ -1,0 +1,50 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ s.title }} · Live academy{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'live:index' %}">Live academy</a></div>
+<div class="page-title"><div><span class="badge">{{ s.get_kind_display }}</span><h1 class="mt-1">{{ s.title }}</h1>
+  <p>{{ s.starts_at|date:"l j F Y, H:i" }} WAT · {{ s.duration_minutes }} min · {{ s.cpd_points }} CPD point{{ s.cpd_points|pluralize }} · {{ count }} registered{% if s.capacity %} of {{ s.capacity }}{% endif %}</p></div></div>
+<div class="split">
+  <div class="stack">
+    <div class="card">
+      {% if s.description %}<div class="prose" style="max-width:none">{{ s.description|markdown }}</div>{% endif %}
+      <ul class="list">
+        <li>{% icon "user" %}<span class="grow">Host: {{ s.host }}{% for c in s.co_hosts.all %}, {{ c }}{% endfor %}{% if s.guest_speaker %} · Guest: {{ s.guest_speaker }}{% endif %}</span></li>
+        {% if s.course %}<li>{% icon "book" %}<a class="grow" href="{{ s.course.get_absolute_url }}">{{ s.course.title }}</a></li>{% endif %}
+        {% for i in s.partner_institutions.all %}<li>{% icon "building" %}<span class="grow">Co-taught with {{ i.name }}</span></li>{% endfor %}
+        {% if s.kind == "in_person" %}<li>{% icon "map" %}<span class="grow">{{ s.location }}. Attendance is recorded by the instructor on the day.</span></li>{% endif %}
+        {% if s.record %}<li>{% icon "video" %}<span class="grow">This session is recorded. Recordings are kept until {{ s.recording_available_until|date:"j M Y"|default:"the end of the course" }}.</span></li>{% endif %}
+      </ul>
+      {% if s.status == "cancelled" %}<div class="alert alert-error">This session has been cancelled.</div>
+      {% elif s.is_over %}
+        {% if s.recording_url %}<a class="btn btn-primary" href="{{ s.recording_url }}" target="_blank" rel="noopener">{% icon "play" %}Watch recording</a>{% else %}<p class="muted">This session has ended.</p>{% endif %}
+      {% elif s.kind == "in_person" %}
+        {% if reg %}<span class="badge">{% icon "check" %}You're registered</span>{% else %}<form method="post" action="{% url 'live:register' s.pk %}">{% csrf_token %}<button class="btn btn-primary">Reserve a place</button></form>{% endif %}
+      {% else %}
+        {% if not reg %}<form method="post" action="{% url 'live:register' s.pk %}" class="mb-1">{% csrf_token %}<button class="btn btn-secondary">Register</button></form>{% endif %}
+        <form method="post" action="{% url 'live:join' s.pk %}">{% csrf_token %}
+          {% if s.record and not host %}<label class="check mb-1"><input type="checkbox" name="consent"> <span>I understand this session is recorded</span></label>{% endif %}
+          <button class="btn btn-primary btn-lg" {% if not s.is_live and not host %}disabled{% endif %}>{% icon "video" %}{% if s.is_live or host %}Join now{% else %}Opens 15 min before start{% endif %}</button></form>
+      {% endif %}
+    </div>
+
+    <div class="card" id="qa"><h3>Questions ({{ questions|length }})</h3>
+      <form method="post" action="{% url 'live:ask' s.pk %}" class="inline-form mb-2">{% csrf_token %}<input name="text" placeholder="Ask the host a question" aria-label="Your question" required><button class="btn btn-secondary">Ask</button></form>
+      <ul class="list">{% for q in questions %}<li><span class="grow">{{ q.text }}<br><small class="muted">{{ q.user.first_name }}{% if not q.is_approved %} · <span class="badge badge-amber">awaiting approval</span>{% endif %}{% if q.is_answered %} · answered{% endif %}{% if q.is_hidden %} · hidden{% endif %}</small></span>
+        <form method="post" action="{% url 'live:question_action' q.pk %}" class="row">{% csrf_token %}{% if q.is_approved %}<button class="btn btn-ghost btn-sm" name="action" value="upvote">▲ {{ q.n }}</button>{% endif %}
+          {% if host and not q.is_approved and not q.is_hidden %}<button class="btn btn-secondary btn-sm" name="action" value="approve">Approve</button>{% endif %}
+          {% if host and not q.is_answered %}<button class="btn btn-ghost btn-sm" name="action" value="answered">Answered</button><button class="btn btn-ghost btn-sm" name="action" value="hide">Hide</button>{% endif %}</form></li>{% empty %}<li class="muted small">No questions yet.</li>{% endfor %}</ul>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card" id="polls"><h3>Polls</h3>
+      {% for p in polls %}<div class="mb-2"><strong>{{ p.question }}</strong>
+        {% if p.pk in voted or host %}{% for r in p.results %}<div class="hbar" style="grid-template-columns:1fr 2fr 40px"><span class="small">{{ r.option }}</span><span class="track"><span style="width:{{ r.pct }}%"></span></span><b>{{ r.pct }}%</b></div>{% endfor %}
+        {% else %}<form method="post" action="{% url 'live:vote' p.pk %}">{% csrf_token %}{% for o in p.options %}<label class="option"><input type="radio" name="option" value="{{ forloop.counter0 }}" required> {{ o }}</label>{% endfor %}<button class="btn btn-sm btn-primary">Vote</button></form>{% endif %}</div>
+      {% empty %}<p class="muted small">No polls yet.</p>{% endfor %}
+      {% if host %}<form method="post" action="{% url 'live:poll_create' s.pk %}" class="mt-2">{% csrf_token %}<input name="question" placeholder="Poll question" aria-label="Poll question" class="mb-1"><textarea name="options" rows="3" placeholder="One option per line" aria-label="Options"></textarea><button class="btn btn-sm btn-secondary mt-1">Launch poll</button></form>{% endif %}
+    </div>
+    {% if attendees is not None %}<div class="card"><h3>Attendance register</h3><ul class="list">{% for r in attendees %}<li><span class="grow">{{ r.user }}</span>{% if r.attended %}<span class="badge">Attended {{ r.joined_at|date:"H:i" }}</span>{% else %}<span class="badge badge-grey">Registered</span>{% endif %}</li>{% empty %}<li class="muted small">No registrations.</li>{% endfor %}</ul></div>{% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "app/base.html" %}
+{% block title %}Follow-up survey{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>{{ s.get_wave_display }} on from {{ s.enrolment.course.title }}</h1><p>Two minutes. Your answers help NIS understand whether training improves practice and careers. Responses are reported only in aggregate.</p></div></div>
+{% if s.responded_at %}<div class="alert alert-success">Thanks, you've already responded.</div>{% else %}
+<form class="card" method="post" style="max-width:720px">{% csrf_token %}
+  <div class="field"><label>How much have you applied what you learned? (1 = not at all, 5 = a lot)</label><div class="row">{% for i in "12345" %}<label class="option" style="margin:0"><input type="radio" name="applied_learning" value="{{ i }}" required> {{ i }}</label>{% endfor %}</div></div>
+  <div class="field"><label for="rc">Since the course, has your role changed?</label><select id="rc" name="role_change">{% for v, l in roles %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="em">Are you currently working or volunteering in sport?</label><select id="em" name="employed"><option value="">Prefer not to say</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+  <div class="field"><label for="cm">Anything else?</label><textarea id="cm" name="comment" rows="3"></textarea></div>
+  <label class="check mb-2"><input type="checkbox" name="consent"> <span>NIS may use my anonymised answers in research and evaluation reports</span></label>
+  <button class="btn btn-primary">Submit</button></form>{% endif %}
+{% endblock %}

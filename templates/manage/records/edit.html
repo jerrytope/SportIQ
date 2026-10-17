@@ -1,0 +1,15 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ label }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:records' key %}">{{ label }}</a></div><h1>{% if obj %}{{ obj }}{% else %}New{% endif %}</h1>{% if help %}<p>{{ help }}</p>{% endif %}</div>
+  {% if obj and obj.get_absolute_url %}<a class="btn btn-secondary" href="{{ obj.get_absolute_url }}" target="_blank" rel="noopener">{% icon "eye" %}View</a>{% endif %}</div>
+<form class="card" method="post" enctype="multipart/form-data" style="max-width:960px">{% csrf_token %}
+  {% include "components/form.html" with grid=True %}
+  <div class="row"><button class="btn btn-primary" name="action" value="save">Save</button>{% if obj %}<button class="btn btn-danger" name="action" value="delete" data-confirm="Click again to delete">Delete</button>{% endif %}</div>
+</form>
+{% if registrations is not None %}
+<form class="card mt-3" method="post" action="{% url 'backoffice:mark_attendance' obj.pk %}" style="max-width:960px">{% csrf_token %}<h3>Attendance register (in person)</h3>
+  {% for r in registrations %}<label class="check mb-1"><input type="checkbox" name="present" value="{{ r.user.pk }}" {% if r.attended %}checked{% endif %}> <span>{{ r.user }}</span></label>{% empty %}<p class="muted">No registrations.</p>{% endfor %}
+  {% if registrations %}<button class="btn btn-secondary">Save attendance</button>{% endif %}</form>
+{% endif %}
+{% endblock %}

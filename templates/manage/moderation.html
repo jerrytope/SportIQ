@@ -1,0 +1,13 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Moderation{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Community moderation</h1><p>Reported content, opportunities awaiting approval and new mentor profiles.</p></div></div>
+<div class="stack">
+  <div class="card"><h3>Reports ({{ reports|length }})</h3><ul class="list">{% for r in reports %}<li><span class="grow"><span class="badge {% if r.reason == 'safeguarding' %}badge-red{% else %}badge-amber{% endif %}">{{ r.get_reason_display }}</span> {{ r.content_type.name }}: <strong>{{ r.target|truncatechars:60 }}</strong><br><small class="muted">by {{ r.reporter }} · {{ r.created_at|timesince }} ago{% if r.detail %} · “{{ r.detail|truncatechars:100 }}”{% endif %}</small></span>
+    <form method="post" class="row">{% csrf_token %}<input type="hidden" name="kind" value="report"><input type="hidden" name="id" value="{{ r.pk }}"><input name="note" placeholder="Note" aria-label="Note" style="width:120px"><button class="btn btn-sm btn-danger" name="decision" value="remove">Remove content</button><button class="btn btn-sm btn-ghost" name="decision" value="dismiss">Dismiss</button></form></li>{% empty %}<li class="muted small">No open reports.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Opportunities to approve ({{ opportunities|length }})</h3><ul class="list">{% for o in opportunities %}<li><span class="grow"><a class="title" href="{{ o.get_absolute_url }}" target="_blank" rel="noopener">{{ o.title }}</a><br><small class="muted">{{ o.get_kind_display }} · {{ o.organisation }} · by {{ o.posted_by }}</small></span>
+    <form method="post" class="row">{% csrf_token %}<input type="hidden" name="kind" value="opportunity"><input type="hidden" name="id" value="{{ o.pk }}"><button class="btn btn-sm btn-primary" name="decision" value="approve">Approve</button><button class="btn btn-sm btn-ghost" name="decision" value="reject">Reject</button></form></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Mentor profiles ({{ mentors|length }})</h3><ul class="list">{% for m in mentors %}<li><span class="grow"><strong>{{ m.user }}</strong> · {{ m.headline }}<br><small class="muted">{{ m.areas }}</small></span>
+    <form method="post" class="row">{% csrf_token %}<input type="hidden" name="kind" value="mentor"><input type="hidden" name="id" value="{{ m.pk }}"><button class="btn btn-sm btn-primary" name="decision" value="approve">Approve</button><button class="btn btn-sm btn-ghost" name="decision" value="reject">Not now</button></form></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

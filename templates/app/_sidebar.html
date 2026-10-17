@@ -1,0 +1,29 @@
+{% load sportiq i18n %}<aside class="sidebar" aria-label="Learner navigation">
+  <a href="{% url 'web:home' %}" class="logo"><span class="logo-mark"><span></span></span><span>Sport<b>IQ</b></span></a>
+  <a class="side-link {% active '/learn/' exact=True %}" href="{% url 'learning:dashboard' %}">{% icon "home" %}{% trans "Home" %}</a>
+  <a class="side-link {% active '/courses/' %}" href="{% url 'catalog:list' %}">{% icon "search" %}{% trans "Explore courses" %}</a>
+  <a class="side-link {% active '/learn/courses' %}" href="{% url 'learning:my_learning' %}">{% icon "book" %}{% trans "My learning" %}</a>
+  <div class="side-label">{% trans "Academy" %}</div>
+  <a class="side-link {% active '/live/' %}" href="{% url 'live:index' %}">{% icon "video" %}{% trans "Live academy" %}</a>
+  <a class="side-link {% active '/labs/' %}" href="{% url 'labs:index' %}">{% icon "flask" %}{% trans "Practical labs" %}</a>
+  <a class="side-link {% active '/library/' %}" href="{% url 'library:index' %}">{% icon "library" %}{% trans "Sports library" %}</a>
+  <a class="side-link {% active '/ai/' %}" href="{% url 'ai:assistant' %}">{% icon "sparkles" %}{% trans "AI study assistant" %}</a>
+  <a class="side-link {% active '/research/' %}" href="{% url 'research:index' %}">{% icon "chart" %}{% trans "Research & insights" %}</a>
+  <div class="side-label">{% trans "Qualifications" %}</div>
+  <a class="side-link {% active '/credentials/' exact=True %}" href="{% url 'credentials:wallet' %}">{% icon "award" %}{% trans "Credentials" %}</a>
+  <a class="side-link {% active '/credentials/programmes' %}" href="{% url 'credentials:programmes' %}">{% icon "layers" %}{% trans "Qualifications" %}</a>
+  <a class="side-link {% active '/credentials/cpd' %}" href="{% url 'credentials:cpd' %}">{% icon "refresh" %}{% trans "CPD & renewals" %}</a>
+  <a class="side-link {% active '/learn/achievements' %}" href="{% url 'learning:achievements' %}">{% icon "trophy" %}{% trans "Achievements" %}</a>
+  <div class="side-label">{% trans "Careers & community" %}</div>
+  <a class="side-link {% active '/community/' %}" href="{% url 'community:home' %}">{% icon "users" %}{% trans "Community" %}</a>
+  <a class="side-link {% active '/community/opportunities' %}" href="{% url 'community:opportunities' %}">{% icon "briefcase" %}{% trans "Opportunities" %}</a>
+  <a class="side-link {% active '/careers/' %}" href="{% url 'careers:experience' %}">{% icon "file" %}{% trans "Experience & CV" %}</a>
+  <a class="side-link {% active '/careers/challenges' %}" href="{% url 'careers:challenges' %}">{% icon "flag" %}{% trans "Challenges" %}</a>
+  <div class="side-label">{% trans "Me" %}</div>
+  <a class="side-link {% active '/account/profile' %}" href="{% url 'accounts:profile' %}">{% icon "user" %}{% trans "Professional profile" %}</a>
+  <a class="side-link {% active '/account/settings' %}" href="{% url 'accounts:settings' %}">{% icon "settings" %}{% trans "Account settings" %}</a>
+  <a class="side-link {% active '/help/tickets' %}" href="{% url 'support:my_tickets' %}">{% icon "help" %}{% trans "Help & support" %}</a>
+  <a class="side-link" href="{% url 'integrity:report' %}">{% icon "shield" %}{% trans "Report a concern" %}</a>
+  {% if user.is_backoffice %}<a class="side-link" href="{% url 'backoffice:home' %}">{% icon "building" %}{% trans "Back office" %}</a>{% endif %}
+  <form method="post" action="{% url 'accounts:logout' %}" style="margin-top:auto">{% csrf_token %}<button class="side-link btn-ghost w-full" style="border:0;cursor:pointer;font:inherit" type="submit">{% icon "logout" %}{% trans "Log out" %}</button></form>
+</aside>

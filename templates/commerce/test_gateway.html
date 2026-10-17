@@ -1,0 +1,14 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}Test payment · SportIQ{% endblock %}
+{% block content %}
+<section class="auth-wrap"><div class="card auth-card">
+  <span class="pill pill-gold">Test mode: Paystack is not configured</span>
+  <h1 style="font-size:1.5rem;margin-top:1rem">Simulated payment</h1>
+  <dl class="details"><dt>Reference</dt><dd>{{ order.reference }}</dd><dt>Course</dt><dd>{{ order.course.title }}</dd><dt>Amount</dt><dd>{{ order.amount_kobo|naira }}</dd></dl>
+  <form method="post" class="row mt-2">{% csrf_token %}
+    <button class="btn btn-primary" name="outcome" value="success">Simulate successful payment</button>
+    <button class="btn btn-secondary" name="outcome" value="fail">Simulate failure</button>
+  </form>
+  <p class="small muted mt-2 mb-0">Set PAYSTACK_SECRET_KEY to use the real Paystack checkout.</p>
+</div></section>
+{% endblock %}

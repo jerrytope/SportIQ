@@ -1,0 +1,21 @@
+{% extends base %}{% load sportiq %}
+{% block title %}{{ o.title }} · Opportunities{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="breadcrumbs"><a href="{% url 'community:opportunities' %}">Opportunities</a></div>
+<div class="split">
+  <div class="card"><span class="badge">{{ o.get_kind_display }}</span><h1 style="font-size:1.8rem;margin-top:.5rem">{{ o.title }}</h1>
+    <p class="muted">{{ o.organisation }}{% if o.location %} · {{ o.location }}{% endif %}{% if o.state %} · {{ o.state }}{% endif %} · {% if o.paid %}Paid{% else %}Unpaid / voluntary{% endif %}{% if o.closes_on %} · closes {{ o.closes_on|date:"j F Y" }}{% endif %}</p>
+    <div class="prose" style="max-width:none">{{ o.description|linebreaks }}</div>
+    {% if o.requirements %}<h3>Requirements</h3><p>{{ o.requirements|linebreaksbr }}</p>{% endif %}
+    {% if user.is_authenticated %}{% include "community/_report.html" with kind="opportunity" obj_id=o.pk %}{% endif %}</div>
+  <div class="stack">
+    {% if o.required_credential %}<div class="card card-tint small">Requires: <strong>{{ o.required_credential.name }}</strong>{% if user.is_authenticated %}{% if eligible %} <span class="badge">You hold this</span>{% else %} <span class="badge badge-amber">You don't hold this yet</span>{% endif %}{% endif %}</div>{% endif %}
+    {% if o.apply_url %}<a class="btn btn-primary btn-lg btn-block" href="{{ o.apply_url }}" target="_blank" rel="noopener">Apply on organiser's site</a>
+    {% elif not user.is_authenticated %}<a class="btn btn-primary btn-block" href="{% url 'accounts:login' %}?next={{ request.path }}">Log in to apply</a>
+    {% elif applied %}<div class="alert alert-success">Applied {{ applied.created_at|date:"j M" }} · {{ applied.get_status_display }}</div>
+    {% else %}<form class="card" method="post">{% csrf_token %}<h3>Apply</h3><div class="field"><label for="cn">Cover note</label><textarea id="cn" name="cover_note" rows="5" required></textarea></div><label class="check mb-1"><input type="checkbox" name="share_profile" checked> <span>Share my verified credentials and CV</span></label><button class="btn btn-primary">Send application</button></form>{% endif %}
+  </div>
+</div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

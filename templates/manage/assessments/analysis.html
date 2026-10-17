@@ -1,0 +1,12 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Item analysis{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:marking' %}">Assessment centre</a></div><h1>Item analysis: {{ exam.title }}</h1>
+  <p>{{ n }} released attempt{{ n|pluralize }} · pass rate {{ pass_rate }}%. Facility = average share of marks earned; discrimination = facility among the top 27% minus the bottom 27% (below 0.2 suggests a weak item). Very low or very high facility suggests a question to review.</p></div></div>
+<div class="table-wrap"><table><thead><tr><th>Question</th><th>Topic</th><th>Responses</th><th>Facility</th><th>Discrimination</th><th></th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{ r.question.text|truncatechars:90 }}</td><td>{{ r.question.topic }}</td><td>{{ r.responses }}</td>
+  <td><div class="hbar" style="grid-template-columns:1fr 48px;margin:0"><span class="track"><span style="width:{{ r.facility }}%"></span></span><b>{{ r.facility }}%</b></div></td><td>{% if r.discrimination is not None %}<span class="{% if r.discrimination < 0.2 %}badge badge-amber{% endif %}">{{ r.discrimination }}</span>{% else %}–{% endif %}</td>
+  <td>{% if r.facility < 30 %}<span class="badge badge-red">Too hard?</span>{% elif r.facility > 95 %}<span class="badge badge-amber">Too easy?</span>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="6" class="empty">No marked responses yet.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Professional profile · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title">
+  <div class="row"><span class="avatar avatar-lg">{% if user.photo %}<img src="{{ user.photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span>
+    <div><h1>{{ user.get_full_name|default:user.email }}</h1>
+    <p>{% for p in user.professions.all %}{{ p.name }}{% if not forloop.last %} · {% endif %}{% endfor %}{% if user.state %} · {{ user.state }}{% endif %}
+      {% if user.is_verified_professional %}<span class="badge">{% icon "check" %}Verified professional</span>{% else %}<span class="badge badge-grey">Unverified profile</span>{% endif %}</p></div></div>
+  <a class="btn btn-secondary" href="{% url 'credentials:transcript' %}">{% icon "download" %}Download transcript</a>
+</div>
+{% if not user.email_verified %}
+<div class="alert alert-warning row-between">Please confirm your email address to secure your account.
+  <form method="post" action="{% url 'accounts:resend_verification' %}">{% csrf_token %}<button class="btn btn-sm btn-secondary">Resend link</button></form></div>
+{% endif %}
+<div class="split">
+  <form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <h2 style="font-size:1.25rem">Edit profile</h2>
+    {% include "components/form.html" with grid=True %}
+    <button class="btn btn-primary" type="submit">Save profile</button>
+  </form>
+  <div class="stack">
+    <div class="card">
+      <div class="row-between"><h3 class="mb-0">Credentials</h3><a href="{% url 'credentials:wallet' %}" class="small">View all</a></div>
+      <ul class="list">{% for c in credentials %}
+        <li>{% icon "award" %}<span class="grow"><a class="title" href="{{ c.get_absolute_url }}">{{ c.title }}</a><br><small class="muted">{{ c.credential_type.name }} · {{ c.code }}</small></span></li>
+      {% empty %}<li class="muted">No credentials yet.</li>{% endfor %}</ul>
+    </div>
+    <div class="card">
+      <h3>Completed courses</h3>
+      <ul class="list">{% for e in completed %}<li>{% icon "check-circle" %}<span class="grow">{{ e.course.title }}<br><small class="muted">{{ e.completed_at|date:"j M Y" }}</small></span></li>{% empty %}<li class="muted">None yet.</li>{% endfor %}</ul>
+    </div>
+    <div class="card">
+      <h3>Institutions</h3>
+      <ul class="list">{% for m in memberships %}<li>{% icon "building" %}<span class="grow">{{ m.institution.name }}<br><small class="muted">{{ m.get_role_display }}{% if m.job_title %} · {{ m.job_title }}{% endif %}{% if m.is_verified %} · verified{% endif %}</small></span></li>{% empty %}<li class="muted">Not linked to any institution. Your federation or state council can invite you.</li>{% endfor %}</ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ d.title }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'community:home' %}">Community</a> / <a href="{{ g.get_absolute_url }}">{{ g.name }}</a></div>
+<div class="card mb-2">
+  <div class="row-between"><h1 style="font-size:1.4rem;margin:0">{{ d.title }}</h1>
+    {% if mod %}<form method="post" class="row">{% csrf_token %}<button class="btn btn-sm btn-secondary" name="action" value="pin">{% if d.is_pinned %}Unpin{% else %}Pin{% endif %}</button><button class="btn btn-sm btn-secondary" name="action" value="hide">{% if d.is_hidden %}Unhide{% else %}Hide{% endif %}</button></form>{% endif %}</div>
+  <small class="muted">{% if d.author.profile_public %}<a href="{% url 'community:profile' d.author.pk %}">{{ d.author }}</a>{% else %}{{ d.author }}{% endif %}{% if d.author.is_verified_professional %} <span class="badge">Verified</span>{% endif %} · {{ d.created_at|date:"j M Y, H:i" }}</small>
+  <p class="mt-2">{{ d.body|linebreaksbr }}</p>
+  {% include "community/_report.html" with kind="discussion" obj_id=d.pk %}
+</div>
+<div class="message-thread">{% for r in replies %}
+  <div class="msg"><div class="row-between"><strong>{{ r.author }}{% if r.author.is_verified_professional %} <span class="badge">Verified</span>{% endif %}{% if r.is_hidden %} <span class="badge badge-red">Hidden</span>{% endif %}</strong><span class="row"><small class="muted">{{ r.created_at|timesince }} ago</small>
+    {% if mod and not r.is_hidden %}<form method="post">{% csrf_token %}<input type="hidden" name="reply" value="{{ r.pk }}"><button class="btn btn-ghost btn-sm" name="action" value="hide_reply">Hide</button></form>{% endif %}</span></div>
+    <p class="mb-0 mt-1">{{ r.body|linebreaksbr }}</p>{% include "community/_report.html" with kind="reply" obj_id=r.pk %}</div>
+{% endfor %}</div>
+{% if member %}<form class="card" method="post">{% csrf_token %}<label for="body">Reply</label><textarea id="body" name="body" rows="4" required></textarea><button class="btn btn-primary mt-1" name="action" value="reply">Reply</button></form>{% endif %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% load sportiq %}<a class="post-card" href="{{ post.get_absolute_url }}">
+  <div class="post-cover" style="background:{{ post.cover_color }}">{% if post.cover %}<img src="{{ post.cover.url }}" alt="" loading="lazy">{% else %}<span class="cover-art"></span>{% endif %}</div>
+  <div class="post-body">
+    <div class="post-meta"><span class="badge">{{ post.kind }}</span><span>{{ post.published_at|date:"M j, Y" }}</span><span>· {{ post.read_minutes }} min read</span></div>
+    <h3>{{ post.title }}</h3>
+    <p class="muted small mb-0">{{ post.excerpt|truncatechars:120 }}</p>
+    <span class="link-arrow mt-1" style="margin-top:auto">Read more {% icon "arrow-right" %}</span>
+  </div>
+</a>

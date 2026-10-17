@@ -1,0 +1,32 @@
+{% extends base %}{% load sportiq %}
+{% block title %}Course catalogue · SportIQ{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<section class="page-hero"><div class="container">{% endif %}
+<div class="page-title" {% if not user.is_authenticated %}style="margin-bottom:0"{% endif %}>
+  <div><span class="eyebrow">Explore courses</span><h1>Course catalogue</h1><p>{{ total }} course{{ total|pluralize }} for coaches, officials, administrators, scientists, athletes and more.</p></div>
+  <a class="btn btn-secondary" href="{% url 'catalog:paths' %}">{% icon "layers" %}Learning paths</a>
+</div>
+{% if not user.is_authenticated %}</div></section><section class="section" style="padding-top:32px"><div class="container">{% endif %}
+<div class="catalog-layout">
+  <form class="filters card card-tight" method="get" aria-label="Filter courses">
+    <div class="field mb-0"><label for="f-q">Search</label><input id="f-q" type="search" name="q" value="{{ q }}" placeholder="e.g. anti-doping"></div>
+    <div class="field mb-0"><label for="f-prof">Profession</label><select id="f-prof" name="profession"><option value="">All professions</option>{% for p in professions %}<option value="{{ p.slug }}" {% if request.GET.profession == p.slug %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></div>
+    <div class="field mb-0"><label for="f-track">Subject area</label><select id="f-track" name="track"><option value="">All areas</option>{% for t in tracks %}<option value="{{ t.slug }}" {% if request.GET.track == t.slug %}selected{% endif %}>{{ t.name }}</option>{% endfor %}</select></div>
+    <div class="field mb-0"><label for="f-sport">Sport</label><select id="f-sport" name="sport"><option value="">All sports</option>{% for s in sports %}<option value="{{ s.slug }}" {% if request.GET.sport == s.slug %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></div>
+    <div class="field mb-0"><label for="f-level">Level</label><select id="f-level" name="level"><option value="">Any level</option>{% for v, l in levels %}<option value="{{ v }}" {% if request.GET.level == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field mb-0"><label for="f-format">Delivery format</label><select id="f-format" name="format"><option value="">Any format</option>{% for v, l in formats %}<option value="{{ v }}" {% if request.GET.format == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field mb-0"><label for="f-lang">Language</label><select id="f-lang" name="language"><option value="">Any language</option>{% for v, l in languages %}<option value="{{ v }}" {% if request.GET.language == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field mb-0"><label for="f-price">Price</label><select id="f-price" name="price"><option value="">Free and paid</option><option value="free" {% if request.GET.price == 'free' %}selected{% endif %}>Free</option><option value="paid" {% if request.GET.price == 'paid' %}selected{% endif %}>Paid</option></select></div>
+    <div class="field mb-0"><label for="f-sort">Sort by</label><select id="f-sort" name="sort"><option value="featured">Featured</option><option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest</option><option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>A–Z</option><option value="shortest" {% if request.GET.sort == 'shortest' %}selected{% endif %}>Shortest</option></select></div>
+    <div class="row"><button class="btn btn-primary" type="submit">Apply</button><a class="btn btn-ghost" href="{% url 'catalog:list' %}">Clear</a></div>
+  </form>
+  <div>
+    <div class="grid grid-3">
+      {% for course in page %}{% include "components/course_tile.html" %}{% empty %}
+      <div class="card empty" style="grid-column:1/-1">{% icon "search" %}<p>No courses match those filters.</p><a class="btn btn-secondary" href="{% url 'catalog:list' %}">Clear filters</a></div>{% endfor %}
+    </div>
+    {% include "components/pagination.html" %}
+  </div>
+</div>
+{% if not user.is_authenticated %}</div></section>{% endif %}
+{% endblock %}

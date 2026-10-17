@@ -1,0 +1,4 @@
+<details class="small" style="display:inline-block"><summary class="muted" style="cursor:pointer">Report</summary>
+<form method="post" action="{% url 'community:report' kind obj_id %}" class="inline-form mt-1">{% csrf_token %}
+  <select name="reason" aria-label="Reason"><option value="abuse">Harassment or abuse</option><option value="spam">Spam or scam</option><option value="misinfo">False information</option><option value="safeguarding">Safeguarding concern</option><option value="other">Other</option></select>
+  <input name="detail" placeholder="Details (optional)" aria-label="Details"><button class="btn btn-sm btn-secondary">Send</button></form></details>

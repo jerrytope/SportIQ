@@ -1,0 +1,25 @@
+{% extends "public/base.html" %}{% load sportiq humanize %}
+{% block title %}National sports education observatory · SportIQ{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">Observatory</span><h1>National sports education observatory</h1>
+  <p>Live, aggregated figures on the reach, quality and impact of NIS sports education. Groups smaller than {{ suppress }} people are not shown, to protect individuals.</p></div></section>
+<section class="section" style="padding-top:40px"><div class="container">
+  <div class="kpis mb-3">
+    <div class="kpi green"><div class="label">Registered learners</div><div class="value">{{ learners|intcomma }}</div></div>
+    <div class="kpi"><div class="label">Course completions</div><div class="value">{{ completions|intcomma }}</div><div class="sub">completion is not the same as competence</div></div>
+    <div class="kpi gold"><div class="label">Active credentials</div><div class="value">{{ credentials|intcomma }}</div><div class="sub">{{ verifications|intcomma }} verification checks</div></div>
+    <div class="kpi"><div class="label">States represented</div><div class="value">{{ states }}</div><div class="sub">of 37 (36 + FCT)</div></div>
+  </div>
+  <div class="split split-even mb-3">
+    <div class="card"><h3>New learners per month</h3><div class="chart">{% for m in monthly %}<div class="col"><small>{{ m.n }}</small><div class="bar" style="height:{{ m.h }}%"></div><small>{{ m.label }}</small></div>{% endfor %}</div></div>
+    <div class="card"><h3>Reach by state</h3>{% for r in by_state|slice:":10" %}<div class="hbar"><span>{{ r.state }}</span><span class="track"><span style="width:{% widthratio r.n by_state.0.n 100 %}%"></span></span><b>{{ r.n }}</b></div>{% empty %}<p class="muted">Not enough data yet.</p>{% endfor %}</div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><h3>Learning gain</h3><p class="small muted">Average score before (pre-test) and after (final assessment) for the same learners.</p>
+      {% for r in pre_post %}<p class="mb-1"><strong>{{ r.course.title }}</strong><br><small>{{ r.before }}% → {{ r.after }}% (+{{ r.gain }} points, n={{ r.n }})</small></p>{% empty %}<p class="muted small">Not enough paired results yet.</p>{% endfor %}</div>
+    <div class="card"><h3>Completion by delivery mode</h3>{% for d in delivery %}<div class="hbar" style="grid-template-columns:1fr 1fr 48px"><span class="small">{{ d.format }}</span><span class="track"><span style="width:{{ d.rate|default:0 }}%"></span></span><b>{% if d.rate is not None %}{{ d.rate }}%{% else %}–{% endif %}</b></div>{% endfor %}</div>
+    <div class="card"><h3>Long-term outcomes</h3>{% if outcomes.n >= suppress %}<p>{{ outcomes.n }} follow-up responses</p><ul class="list"><li><span class="grow">Applied learning (1–5)</span><strong>{{ outcomes.applied }}</strong></li><li><span class="grow">New role, promotion or further qualification</span><strong>{{ outcomes.progressed }}%</strong></li><li><span class="grow">Working or volunteering in sport</span><strong>{{ outcomes.employed }}%</strong></li></ul>{% else %}<p class="muted small">Follow-up surveys at 6 and 12 months will populate this.</p>{% endif %}</div>
+  </div>
+  <p class="small muted mt-3">Definitions: registered learners exclude staff accounts; completions meet each course's completion rules; credentials are counted only while active. Increases in registrations or certificates alone are not proof of improved sporting performance.</p>
+</div></section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Research & insights · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Research &amp; insights</h1><p>Research projects, teaching datasets, publications and evidence summaries from the NIS research community.</p></div>
+  <div class="row"><a class="btn btn-secondary" href="{% url 'research:publication_new' %}">Submit a publication</a><a class="btn btn-primary" href="{% url 'research:project_new' %}">{% icon "plus" %}Propose a project</a></div></div>
+{% if reviews %}<div class="alert alert-info">You have {{ reviews|length }} peer review{{ reviews|length|pluralize }} to complete: {% for r in reviews %}<a href="{% url 'research:review' r.pk %}">{{ r.publication.title|truncatechars:40 }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+<div class="split">
+  <div class="stack">
+    <div class="card"><h3>Datasets</h3><p class="small muted">Athlete-level data is minimised, anonymised and released only on approved request.</p>
+      <ul class="list">{% for d in datasets %}<li><span class="grow"><strong>{{ d.title }}</strong> <span class="badge badge-grey">{{ d.get_access_display }}</span><br><small class="muted">{{ d.description|truncatechars:140 }}</small></span>
+        {% with r=my_requests|get_item:d.pk %}{% if d.access == "open" or r.status == "approved" %}<a class="btn btn-sm btn-primary" href="{% url 'research:dataset_download' d.pk %}">Download</a>
+        {% elif r %}<span class="badge badge-amber">{{ r.get_status_display }}</span>
+        {% else %}<details><summary class="btn btn-sm btn-secondary">Request</summary><form method="post" action="{% url 'research:dataset_request' d.pk %}" class="mt-1" style="min-width:260px">{% csrf_token %}<textarea name="purpose" rows="2" placeholder="Purpose of use" aria-label="Purpose" required></textarea><label class="check small"><input type="checkbox" name="agree"> <span>I'll use it only for the stated purpose, not re-identify anyone, and delete it when done</span></label><button class="btn btn-sm btn-primary mt-1">Send</button></form></details>{% endif %}{% endwith %}</li>{% empty %}<li class="muted small">None yet.</li>{% endfor %}</ul></div>
+    <div class="card"><h3>Publications &amp; evidence summaries</h3><ul class="list">{% for p in publications %}<li>{% icon "file" %}<span class="grow"><a class="title" href="{% url 'research:publication' p.pk %}">{{ p.title }}</a><br><small class="muted">{{ p.get_kind_display }} · {{ p.authors }} · {{ p.published_on|date:"Y" }}</small></span></li>{% empty %}<li class="muted small">None yet.</li>{% endfor %}</ul></div>
+  </div>
+  <div class="stack">
+    <div class="card"><h3>My projects</h3><ul class="list">{% for p in mine %}<li><a class="grow" href="{{ p.get_absolute_url }}">{{ p.title }}</a><span class="badge badge-grey">{{ p.get_status_display }}</span></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+    <div class="card"><h3>Active research</h3><ul class="list">{% for p in projects %}<li><span class="grow"><a class="title" href="{{ p.get_absolute_url }}">{{ p.title }}</a><br><small class="muted">{{ p.lead }}{% if p.recruiting %} · recruiting{% endif %}</small></span></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+  </div>
+</div>
+{% endblock %}

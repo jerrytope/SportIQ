@@ -1,0 +1,147 @@
+{% extends "base.html" %}{% load sportiq i18n %}
+{% block body %}
+{% if site.announcement_text %}
+<div class="announce"><div class="container">
+  <span class="pill pill-gold">New</span>
+  <span>{{ site.announcement_text }}</span>
+  {% if site.announcement_link %}<a href="{{ site.announcement_link }}">Learn more →</a>{% endif %}
+</div></div>
+{% endif %}
+<header class="nav">
+  <div class="container">
+    <a href="{% url 'web:home' %}" class="logo" aria-label="SportIQ home"><span class="logo-mark"><span></span></span><span>Sport<b>IQ</b></span></a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="{% url 'web:home' %}">{% trans "Home" %}</a>
+      <div class="nav-drop">
+        <button type="button" aria-haspopup="true">{% trans "Academy" %} {% icon "chevron-down" %}</button>
+        <div class="mega" role="menu">
+          <a href="{% url 'catalog:list' %}"><span class="mi">{% icon "book" %}</span><span><strong>{% trans "Course catalogue" %}</strong><small>Expert-led courses for every sports profession</small></span></a>
+          <a href="{% url 'catalog:paths' %}"><span class="mi">{% icon "layers" %}</span><span><strong>{% trans "Learning paths" %}</strong><small>From beginner to specialist, step by step</small></span></a>
+          <a href="{% url 'web:page' 'live-academy' %}"><span class="mi">{% icon "video" %}</span><span><strong>{% trans "Live academy" %}</strong><small>Classes, webinars, workshops and seminars</small></span></a>
+          <a href="{% url 'web:page' 'practical-labs' %}"><span class="mi">{% icon "flask" %}</span><span><strong>{% trans "Practical labs" %}</strong><small>Simulations, case studies and skills assessment</small></span></a>
+          <a href="{% url 'web:page' 'certifications' %}"><span class="mi">{% icon "award" %}</span><span><strong>{% trans "Certifications" %}</strong><small>Certificates, CPD and renewals</small></span></a>
+          <a href="{% url 'library:index' %}"><span class="mi">{% icon "library" %}</span><span><strong>{% trans "Sports library" %}</strong><small>Manuals, research and video resources</small></span></a>
+          <a href="{% url 'web:page' 'ai-study-assistant' %}"><span class="mi">{% icon "sparkles" %}</span><span><strong>{% trans "AI study assistant" %}</strong><small>Answers grounded in approved NIS material</small></span></a>
+          <a href="{% url 'web:page' 'careers-community' %}"><span class="mi">{% icon "briefcase" %}</span><span><strong>{% trans "Careers & community" %}</strong><small>Mentorship, networks and opportunities</small></span></a>
+        </div>
+      </div>
+      <a href="{% url 'web:about' %}">{% trans "About SportIQ" %}</a>
+      <div class="nav-drop">
+        <button type="button" aria-haspopup="true">{% trans "Resources" %} {% icon "chevron-down" %}</button>
+        <div class="mega narrow" role="menu">
+          <a href="{% url 'support:faqs' %}"><span class="mi">{% icon "help" %}</span><span><strong>{% trans "FAQs" %}</strong><small>Answers to common questions</small></span></a>
+          <a href="{% url 'web:blog' %}"><span class="mi">{% icon "file" %}</span><span><strong>{% trans "Blog" %}</strong><small>Insights for sports professionals</small></span></a>
+          <a href="{% url 'web:events' %}"><span class="mi">{% icon "calendar" %}</span><span><strong>{% trans "Events" %}</strong><small>Seminars, masterclasses and clinics</small></span></a>
+          <a href="{% url 'support:help' %}"><span class="mi">{% icon "headphones" %}</span><span><strong>{% trans "Help centre" %}</strong><small>Guides and support</small></span></a>
+        </div>
+      </div>
+      <a href="{% url 'web:institutions' %}">{% trans "For institutions" %}</a>
+      <a href="{% url 'credentials:verify' %}">{% trans "Verify" %}</a>
+    </nav>
+    <div class="nav-actions">
+      {% include "components/language_switcher.html" with switcher_id="lang-top" %}
+      {% if user.is_authenticated %}
+        {% if user.is_backoffice %}<a class="btn btn-ghost" href="{% url 'backoffice:home' %}">Back office</a>{% endif %}
+        <a class="btn btn-primary" href="{% url 'learning:dashboard' %}">{% trans "My dashboard" %}</a>
+      {% else %}
+        <a class="btn btn-ghost" href="{% url 'accounts:signup' %}">{% trans "Sign up" %}</a>
+        <a class="btn btn-ghost" href="{% url 'accounts:login' %}">{% trans "Login" %}</a>
+        <a class="btn btn-dark" href="{% url 'web:demo' %}">{% trans "Request a demo" %}</a>
+      {% endif %}
+    </div>
+    <a class="btn btn-dark btn-sm nav-mobile-cta" href="{% if user.is_authenticated %}{% url 'learning:dashboard' %}{% else %}{% url 'web:demo' %}{% endif %}">{% if user.is_authenticated %}{% trans "Dashboard" %}{% else %}{% trans "Request demo" %}{% endif %}</a>
+    <button class="burger" type="button" data-open="drawer" aria-label="Open menu" aria-controls="drawer">{% icon "menu" %}</button>
+  </div>
+</header>
+<div class="drawer" id="drawer" aria-modal="true" role="dialog" aria-label="Menu">
+  <div class="drawer-head">
+    <a href="{% url 'web:home' %}" class="logo"><span class="logo-mark"><span></span></span><span>Sport<b>IQ</b></span></a>
+    <button class="burger" type="button" data-close="drawer" aria-label="Close menu">{% icon "x" %}</button>
+  </div>
+  {% if site.announcement_text %}<p class="alert alert-success small">{{ site.announcement_text }}</p>{% endif %}
+  <nav>
+    <a href="{% url 'web:home' %}">{% trans "Home" %}</a>
+    <details><summary>{% trans "Academy" %} {% icon "chevron-down" %}</summary>
+      <a href="{% url 'catalog:list' %}">{% trans "Course catalogue" %}</a>
+      <a href="{% url 'catalog:paths' %}">{% trans "Learning paths" %}</a>
+      <a href="{% url 'web:page' 'live-academy' %}">{% trans "Live academy" %}</a>
+      <a href="{% url 'web:page' 'practical-labs' %}">{% trans "Practical labs" %}</a>
+      <a href="{% url 'web:page' 'certifications' %}">{% trans "Certifications" %}</a>
+      <a href="{% url 'web:page' 'sports-library' %}">{% trans "Sports library" %}</a>
+      <a href="{% url 'web:page' 'ai-study-assistant' %}">{% trans "AI study assistant" %}</a>
+      <a href="{% url 'web:page' 'careers-community' %}">{% trans "Careers & community" %}</a>
+    </details>
+    <details><summary>{% trans "Resources" %} {% icon "chevron-down" %}</summary>
+      <a href="{% url 'support:faqs' %}">{% trans "FAQs" %}</a>
+      <a href="{% url 'web:blog' %}">{% trans "Blog" %}</a>
+      <a href="{% url 'web:events' %}">{% trans "Events" %}</a>
+      <a href="{% url 'support:help' %}">{% trans "Help centre" %}</a>
+    </details>
+    <a href="{% url 'web:about' %}">{% trans "About SportIQ" %}</a>
+    <a href="{% url 'web:institutions' %}">{% trans "For institutions" %}</a>
+    <a href="{% url 'credentials:verify' %}">{% trans "Verify a certificate" %}</a>
+    {% if user.is_authenticated %}
+      <a class="btn btn-primary btn-block" href="{% url 'learning:dashboard' %}">{% trans "My dashboard" %}</a>
+    {% else %}
+      <a class="btn btn-secondary btn-block" href="{% url 'accounts:login' %}">{% trans "Login" %}</a>
+      <a class="btn btn-primary btn-block" href="{% url 'accounts:signup' %}">{% trans "Sign up free" %}</a>
+    {% endif %}
+  </nav>
+</div>
+<main id="main">
+  {% if messages %}<div class="container mt-2">{% for m in messages %}<div class="alert alert-{% if m.tags == 'error' %}error{% elif m.tags == 'warning' %}warning{% elif m.tags == 'info' %}info{% else %}success{% endif %}">{{ m }}</div>{% endfor %}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <a href="{% url 'web:home' %}" class="logo"><span class="logo-mark"><span></span></span><span>Sport<b>IQ</b></span></a>
+        <p class="muted mt-2">The digital academy for Nigerian sport. Powered by knowledge, built for sporting excellence. A national sports education platform in partnership with the National Institute for Sports.</p>
+        <p class="mb-0">{% icon "mail" %} <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></p>
+        <p>{% icon "phone" %} {{ site.contact_phone }}</p>
+        <form class="newsletter" method="post" action="{% url 'web:newsletter' %}">{% csrf_token %}
+          <label class="sr-only" for="nl-email">Email address</label>
+          <input id="nl-email" type="email" name="email" placeholder="Get the SportIQ newsletter" required>
+          <button class="btn btn-primary" type="submit" aria-label="Subscribe">{% icon "arrow-right" %}</button>
+        </form>
+      </div>
+      <div><h4>{% trans "Academy" %}</h4><ul>
+        <li><a href="{% url 'catalog:list' %}">{% trans "Course catalogue" %}</a></li>
+        <li><a href="{% url 'catalog:paths' %}">{% trans "Learning paths" %}</a></li>
+        <li><a href="{% url 'web:page' 'certifications' %}">{% trans "Certifications" %}</a></li>
+        <li><a href="{% url 'library:index' %}">{% trans "Sports library" %}</a></li>
+        <li><a href="{% url 'community:opportunities' %}">{% trans "Opportunities" %}</a></li>
+        <li><a href="{% url 'credentials:verify' %}">{% trans "Verify a certificate" %}</a></li>
+      </ul></div>
+      <div><h4>{% trans "Resources" %}</h4><ul>
+        <li><a href="{% url 'web:blog' %}">{% trans "Blog" %}</a></li>
+        <li><a href="{% url 'support:faqs' %}">{% trans "FAQs" %}</a></li>
+        <li><a href="{% url 'web:events' %}">{% trans "Events" %}</a></li>
+        <li><a href="{% url 'support:help' %}">{% trans "Help centre" %}</a></li>
+        <li><a href="{% url 'observatory' %}">{% trans "Observatory" %}</a></li>
+      </ul></div>
+      <div><h4>{% trans "Organisation" %}</h4><ul>
+        <li><a href="{% url 'web:about' %}">{% trans "About SportIQ" %}</a></li>
+        <li><a href="{% url 'web:institutions' %}">{% trans "For institutions" %}</a></li>
+        <li><a href="{% url 'web:demo' %}">{% trans "Request a demo" %}</a></li>
+        <li><a href="{% url 'web:page' 'accessibility' %}">Accessibility</a></li>
+        <li><a href="{% url 'integrity:report' %}">{% trans "Report a concern" %}</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© {% now "Y" %} SportIQ · National Institute for Sports. All rights reserved.</span>
+      {% include "components/language_switcher.html" with switcher_id="lang-foot" %}
+      <span class="row"><a href="{% url 'web:page' 'terms' %}">Terms of use</a><a href="{% url 'web:page' 'privacy' %}">Privacy (NDPA 2023)</a>
+        <button type="button" class="btn btn-ghost btn-sm" data-theme-toggle aria-label="Toggle dark mode">{% icon "sun" %}</button></span>
+      <span class="socials">
+        <a href="{{ site.linkedin_url|default:'#' }}" aria-label="LinkedIn">{% icon "linkedin" %}</a>
+        <a href="{{ site.instagram_url|default:'#' }}" aria-label="Instagram">{% icon "instagram" %}</a>
+        <a href="{{ site.x_url|default:'#' }}" aria-label="X">{% icon "twitter" %}</a>
+        <a href="{{ site.youtube_url|default:'#' }}" aria-label="YouTube">{% icon "youtube" %}</a>
+      </span>
+    </div>
+  </div>
+  <div class="tricolour"></div>
+</footer>
+{% endblock %}

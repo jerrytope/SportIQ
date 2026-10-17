@@ -1,0 +1,16 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ g.name }} · Community{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'community:home' %}">Community</a></div>
+<div class="page-title"><div><span class="badge">{{ g.get_kind_display }}</span>{% if g.is_private %} <span class="badge badge-grey">{% icon "lock" %}Private</span>{% endif %}{% if g.verified_only %} <span class="badge badge-gold">Verified professionals post</span>{% endif %}
+  <h1 class="mt-1">{{ g.name }}</h1><p>{{ g.description }} · {{ count }} members</p></div>
+  <form method="post" action="{% url 'community:join' g.slug %}">{% csrf_token %}{% if member %}<button class="btn btn-ghost" name="leave" value="1">Leave group</button>{% elif pending %}<span class="badge badge-amber">Request pending</span>{% else %}<button class="btn btn-primary">Join group</button>{% endif %}</form></div>
+<div class="alert alert-info small">Be respectful. No harassment, discrimination or sharing of personal data about athletes. Use “Report” for problems; safeguarding concerns go through the confidential integrity report.</div>
+<div class="split">
+  <div class="card"><ul class="list">{% for d in discussions %}<li>{% if d.is_pinned %}{% icon "flag" %}{% else %}{% icon "message" %}{% endif %}<span class="grow"><a class="title" href="{% url 'community:discussion' d.pk %}">{{ d.title }}</a><br><small class="muted">{{ d.author }} · {{ d.created_at|timesince }} ago{% if d.is_hidden %} · hidden{% endif %}</small></span><small class="muted">{{ d.n }}</small></li>{% empty %}<li class="empty">{% if g.is_private and not member %}Join to see discussions.{% else %}No discussions yet.{% endif %}</li>{% endfor %}</ul></div>
+  <div class="stack">
+    {% if member %}<form class="card" method="post">{% csrf_token %}<h3>Start a discussion</h3><div class="field"><label for="t">Title</label><input id="t" name="title" required></div><div class="field"><label for="b">Message</label><textarea id="b" name="body" rows="5" required></textarea></div><button class="btn btn-primary">Post</button></form>{% endif %}
+    {% if requests %}<div class="card"><h3>Join requests</h3><ul class="list">{% for r in requests %}<li><span class="grow">{{ r.user }}</span><form method="post" action="{% url 'community:approve_member' g.slug r.user.pk %}" class="row">{% csrf_token %}<button class="btn btn-sm btn-primary" name="decision" value="approve">Approve</button><button class="btn btn-sm btn-ghost" name="decision" value="decline">Decline</button></form></li>{% endfor %}</ul></div>{% endif %}
+  </div>
+</div>
+{% endblock %}

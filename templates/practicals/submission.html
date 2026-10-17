@@ -1,0 +1,22 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ sub.task.title }} · Submission{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'practicals:task' sub.task.pk %}">{{ sub.task.title }}</a></div>
+<div class="page-title"><div><h1>Submission, attempt {{ sub.attempt }}</h1><p>{{ sub.created_at|date:"j M Y, H:i" }} · <span class="badge">{{ sub.get_status_display }}</span>{% if sub.score_percent is not None %} · {{ sub.score_percent }}%{% endif %}</p></div></div>
+<div class="split">
+  <div class="stack">
+    {% if sub.text %}<div class="card"><h3>Your work</h3><div class="transcript">{{ sub.text }}</div></div>{% endif %}
+    {% if sub.file %}<a class="card card-link row" href="{{ sub.file.url }}">{% icon "file" %}<strong>Uploaded document</strong></a>{% endif %}
+    {% if sub.video %}<div class="player"><video controls preload="metadata" src="{{ sub.video.url }}"></video></div>{% endif %}
+    {% if sub.video_url %}<a class="card card-link row" href="{{ sub.video_url }}" rel="noopener" target="_blank">{% icon "video" %}<strong>Video link</strong></a>{% endif %}
+    {% if sub.feedback %}<div class="card card-tint"><h3>Assessor feedback</h3><p class="mb-0">{{ sub.feedback|linebreaksbr }}</p><small class="muted">{{ sub.assessed_by }} · {{ sub.assessed_at|date:"j M Y" }}</small></div>{% endif %}
+  </div>
+  <div class="stack">
+    {% if criteria %}<div class="card"><h3>Rubric</h3><ul class="list">{% for c in criteria %}<li><span class="grow">{{ c.title }}</span><strong>{{ c.score|default:"–" }}/{{ c.max }}</strong></li>{% endfor %}</ul></div>{% endif %}
+    {% if sub.task.requires_supervisor %}<div class="card"><h3>Supervisor sign-off</h3><p class="mb-1">{{ sub.supervisor_name }} · {{ sub.supervisor_role }}</p>
+      {% if sub.supervisor_signed_at %}<span class="badge">{% icon "check" %}Confirmed {{ sub.supervisor_signed_at|date:"j M Y" }}</span>{% if sub.supervisor_comment %}<p class="small mt-1 mb-0">“{{ sub.supervisor_comment }}”</p>{% endif %}
+      {% elif sub.supervisor_comment %}<span class="badge badge-red">Not confirmed</span><p class="small mt-1">{{ sub.supervisor_comment }}</p>
+      {% else %}<span class="badge badge-amber">Waiting for supervisor</span>{% endif %}</div>{% endif %}
+  </div>
+</div>
+{% endblock %}

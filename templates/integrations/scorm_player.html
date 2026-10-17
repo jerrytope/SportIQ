@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ lesson.title }}</title>
+<style>html,body{margin:0;height:100%;background:#fff}iframe{border:0;width:100%;height:100%}</style>
+<script>
+/* SCORM 1.2 (window.API) and 2004 (window.API_1484_11) runtime adapter. Data is committed to SportIQ. */
+(function () {
+  var cmi = {{ cmi|safe }};
+  var defaults = {"cmi.core.student_id": "{{ learner_id }}", "cmi.core.student_name": "{{ learner_name|escapejs }}",
+                  "cmi.learner_id": "{{ learner_id }}", "cmi.learner_name": "{{ learner_name|escapejs }}"};
+  Object.keys(defaults).forEach(function (k) { if (!(k in cmi)) cmi[k] = defaults[k]; });
+  if (!cmi["cmi.core.lesson_status"]) cmi["cmi.core.lesson_status"] = "not attempted";
+  var dirty = {}, lastError = "0";
+  function csrf() { var m = document.cookie.match(/csrftoken=([^;]+)/); return m ? m[1] : ""; }
+  function commit() {
+    if (!Object.keys(dirty).length) return "true";
+    var body = JSON.stringify(dirty); dirty = {};
+    fetch("{{ commit_url }}", {method: "POST", body: body, credentials: "same-origin", keepalive: true,
+      headers: {"Content-Type": "application/json", "X-CSRFToken": csrf()}});
+    return "true";
+  }
+  function get(k) { lastError = "0"; return k in cmi ? String(cmi[k]) : ""; }
+  function set(k, v) { lastError = "0"; cmi[k] = String(v); dirty[k] = String(v); return "true"; }
+  window.API = {LMSInitialize: function () { return "true"; }, LMSFinish: function () { return commit(); },
+    LMSGetValue: get, LMSSetValue: set, LMSCommit: commit, LMSGetLastError: function () { return lastError; },
+    LMSGetErrorString: function () { return ""; }, LMSGetDiagnostic: function () { return ""; }};
+  window.API_1484_11 = {Initialize: function () { return "true"; }, Terminate: function () { return commit(); },
+    GetValue: get, SetValue: set, Commit: commit, GetLastError: function () { return lastError; },
+    GetErrorString: function () { return ""; }, GetDiagnostic: function () { return ""; }};
+  setInterval(commit, 30000);
+  window.addEventListener("pagehide", commit);
+})();
+</script></head>
+<body><iframe src="{{ content_url }}" title="{{ lesson.title }}" allowfullscreen></iframe></body></html>

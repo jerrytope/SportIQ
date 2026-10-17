@@ -1,0 +1,30 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Checkout · {{ course.title }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></div><h1>Checkout</h1></div></div>
+<div class="split" style="max-width:980px">
+  <form class="card" method="post">{% csrf_token %}
+    <h3>{{ course.title }}</h3>
+    <p class="muted">{{ course.summary }}</p>
+    <div class="field"><label for="voucher">Scholarship or sponsor code</label>
+      <div class="inline-form"><input id="voucher" name="voucher" value="{{ code }}" placeholder="e.g. NFF-COACH-2026"><button class="btn btn-secondary" name="action" value="apply">Apply</button></div>
+      {% if voucher_error %}<div class="error">{{ voucher_error }}</div>{% elif voucher %}<div class="help" style="color:var(--brand)">{% icon "check" %} {{ voucher.discount_percent }}% discount applied{% if voucher.sponsor %}, sponsored by {{ voucher.sponsor.name }}{% endif %}</div>{% endif %}
+    </div>
+    <table><tbody>
+      <tr><td>Course fee</td><td style="text-align:right">{{ course.price_kobo|naira }}</td></tr>
+      {% if discount %}<tr><td>Discount</td><td style="text-align:right;color:var(--brand)">−₦{{ discount|naira|cut:"₦" }}</td></tr>{% endif %}
+      <tr><th>Total</th><th style="text-align:right;font-size:1.1rem;color:var(--primary)">{% if total %}{{ total|naira }}{% else %}₦0{% endif %}</th></tr>
+    </tbody></table>
+    <button class="btn btn-primary btn-lg btn-block mt-2" name="action" value="pay">{% if total %}Pay {{ total|naira }} securely{% else %}Enrol with scholarship{% endif %}</button>
+    <p class="small muted mt-1 mb-0 text-center">{% icon "lock" %} Payments are processed by Paystack. {% if not live %}<strong>Test mode:</strong> no real money is taken.{% endif %}</p>
+  </form>
+  <div class="card card-tint">
+    <h3>What's included</h3>
+    <ul class="list">
+      <li>{% icon "book" %}<span class="grow">{{ course.lesson_count }} lessons · {{ course.duration_hours|floatformat:"-1" }} hours</span></li>
+      <li>{% icon "award" %}<span class="grow">{% if course.issues_certificate %}Verifiable certificate on completion{% else %}No certificate{% endif %}</span></li>
+      <li>{% icon "refresh" %}<span class="grow">Refunds within 14 days if you have completed less than 20% of the course</span></li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

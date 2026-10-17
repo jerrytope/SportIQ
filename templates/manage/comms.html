@@ -1,0 +1,15 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Communications{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Communications</h1><p>Dashboard announcements and targeted email, SMS or in-platform messages.</p></div></div>
+<div class="split split-even mb-3">
+  <form class="card" method="post">{% csrf_token %}<input type="hidden" name="form" value="announcement"><h3>New announcement</h3>{% include "components/form.html" with form=a_form %}<button class="btn btn-primary">Publish</button></form>
+  <form class="card" method="post">{% csrf_token %}<input type="hidden" name="form" value="campaign"><h3>Send a message</h3>{% include "components/form.html" with form=c_form %}<button class="btn btn-primary" data-confirm="Click again to send now">Send now</button>
+    <p class="small muted mt-1 mb-0">Messages respect each learner's notification preferences only for routine notices. Campaigns go to everyone in the audience.</p></form>
+</div>
+<div class="split split-even">
+  <div class="card"><h3>Announcements</h3><ul class="list">{% for a in announcements %}<li><span class="grow"><strong>{{ a.title }}</strong><br><small class="muted">{{ a.get_audience_display }} · {{ a.created_at|date:"j M Y" }}</small></span>
+    <form method="post">{% csrf_token %}<input type="hidden" name="announcement" value="{{ a.pk }}"><button class="btn btn-sm {% if a.is_active %}btn-secondary{% else %}btn-ghost{% endif %}" name="action" value="toggle">{% if a.is_active %}Active · hide{% else %}Hidden · show{% endif %}</button></form></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Sent messages</h3><ul class="list">{% for c in campaigns %}<li><span class="grow"><strong>{{ c.subject }}</strong><br><small class="muted">{{ c.get_channel_display }} · {{ c.get_audience_display }} · {{ c.sent_at|date:"j M Y H:i" }}</small></span><span class="badge">{{ c.sent_count }} sent</span></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

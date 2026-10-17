@@ -1,0 +1,14 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Import users{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:users' %}">Users</a></div><h1>Import learners from CSV</h1>
+  <p>Columns (header row required): <code>email</code>, <code>first_name</code>, <code>last_name</code>, <code>phone</code>, <code>state</code>, <code>profession</code>, <code>institution</code>. Only email is required. New users get an email inviting them to set a password.</p></div></div>
+<form class="card" method="post" enctype="multipart/form-data" style="max-width:640px">{% csrf_token %}
+  <div class="field"><label for="file">CSV file</label><input id="file" type="file" name="file" accept=".csv,text/csv" required></div>
+  <button class="btn btn-primary">{% icon "upload" %}Import</button>
+</form>
+{% if results %}
+<div class="card mt-2" style="max-width:640px"><h3>Result</h3><p>{{ results.created }} created · {{ results.existing }} already existed</p>
+  {% if results.errors %}<ul class="small" style="color:var(--danger)">{% for e in results.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}</div>
+{% endif %}
+{% endblock %}

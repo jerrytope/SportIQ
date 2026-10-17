@@ -1,0 +1,15 @@
+{% load sportiq %}<a class="course-tile" href="{{ course.get_absolute_url }}">
+  <div class="course-cover" style="background:{{ course.cover_color }}">
+    {% if course.thumbnail %}<img src="{{ course.thumbnail.url }}" alt="" loading="lazy">{% else %}<span class="cover-art"></span><span class="cover-art2"></span>{% endif %}
+    <span class="pill">{{ course.track.name|truncatechars:34 }}</span>
+  </div>
+  <div class="course-body">
+    <h3>{{ course.title }}</h3>
+    <p class="muted small mb-0">{{ course.summary|truncatechars:110 }}</p>
+    <div class="course-meta">
+      <span>{% icon "layers" %}{{ course.get_level_display }}</span>
+      <span>{% icon "clock" %}{{ course.duration_hours|floatformat:"-1" }}h</span>
+      <span class="price {% if course.is_free %}free{% endif %}">{{ course.price_kobo|naira }}</span>
+    </div>
+  </div>
+</a>

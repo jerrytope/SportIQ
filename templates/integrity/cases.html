@@ -1,0 +1,11 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Integrity cases{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Integrity &amp; safeguarding cases</h1><p>Restricted to designated safeguarding officers. Every case you open is logged.</p></div></div>
+<div class="chip-list mb-2"><a class="chip {% if not request.GET.status %}on{% endif %}" href="?">All</a>{% for v, l in statuses %}<a class="chip {% if request.GET.status == v %}on{% endif %}" href="?status={{ v }}">{{ l }}</a>{% endfor %}</div>
+<div class="table-wrap"><table><thead><tr><th>Reference</th><th>Category</th><th>Flags</th><th>Status</th><th>Assigned</th><th>Received</th></tr></thead><tbody>
+{% for c in cases %}<tr><td><a href="{% url 'integrity:case' c.pk %}"><code>{{ c.reference }}</code></a></td><td>{{ c.get_category_display }}</td>
+  <td>{% if c.immediate_danger %}<span class="badge badge-red">Danger</span>{% endif %}{% if c.involves_child %}<span class="badge badge-amber">Child</span>{% endif %}{% if c.anonymous %}<span class="badge badge-grey">Anonymous</span>{% endif %}</td>
+  <td>{{ c.get_status_display }}</td><td>{{ c.assigned_to|default:"—" }}</td><td><small>{{ c.created_at|date:"j M Y H:i" }}</small></td></tr>
+{% empty %}<tr><td colspan="6" class="empty">No cases.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

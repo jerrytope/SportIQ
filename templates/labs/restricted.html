@@ -1,0 +1,6 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block content %}
+<div class="card text-center" style="max-width:560px;margin:3rem auto"><span class="bento-icon" style="margin:0 auto 1rem">{% icon "lock" %}</span>
+  <h1 style="font-size:1.5rem">{{ s.title }}</h1><p class="muted">This case study is for verified professionals working within their professional scope (for example, registered medical staff). Ask the registrar to verify your professional profile.</p>
+  <a class="btn btn-primary" href="{% url 'labs:index' %}">Back to labs</a></div>
+{% endblock %}

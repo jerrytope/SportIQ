@@ -1,0 +1,12 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ title }} · SportIQ{% endblock %}
+{% block content %}
+<div class="card text-center" style="max-width:620px;margin:3rem auto">
+  <span class="bento-icon" style="margin:0 auto 1rem">{% icon icon %}</span>
+  <span class="pill pill-gold">{{ phase }}</span>
+  <h1 style="font-size:1.8rem;margin-top:1rem">{{ title }}</h1>
+  <p class="muted">{{ text }}</p>
+  <p class="small muted">This part of SportIQ is on the delivery roadmap. Your learning records already support it, so nothing you do now will be lost.</p>
+  <a class="btn btn-primary" href="{% url 'catalog:list' %}">Browse available courses</a>
+</div>
+{% endblock %}

@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: yo\n"
+
+#, fuzzy
+msgid "Home"
+msgstr "Ilé"
+
+#, fuzzy
+msgid "Explore courses"
+msgstr "Ṣàwárí àwọn ẹ̀kọ́"
+
+#, fuzzy
+msgid "My learning"
+msgstr "Ẹ̀kọ́ mi"
+
+#, fuzzy
+msgid "Academy"
+msgstr "Ilé-ẹ̀kọ́"
+
+#, fuzzy
+msgid "Live academy"
+msgstr "Kíláàsì tààrà"
+
+#, fuzzy
+msgid "Practical labs"
+msgstr "Yàrá ìdánrawò"
+
+#, fuzzy
+msgid "Sports library"
+msgstr "Ilé-ìkàwé eré ìdárayá"
+
+#, fuzzy
+msgid "AI study assistant"
+msgstr "Olùrànlọ́wọ́ ẹ̀kọ́ AI"
+
+#, fuzzy
+msgid "Research & insights"
+msgstr "Ìwádìí"
+
+#, fuzzy
+msgid "Qualifications"
+msgstr "Ìwé-ẹ̀rí"
+
+#, fuzzy
+msgid "Credentials"
+msgstr "Ìwé-ẹ̀rí mi"
+
+#, fuzzy
+msgid "CPD & renewals"
+msgstr "CPD àti ìsọdọ̀tun"
+
+#, fuzzy
+msgid "Achievements"
+msgstr "Àṣeyọrí"
+
+#, fuzzy
+msgid "Careers & community"
+msgstr "Iṣẹ́ àti àwùjọ"
+
+#, fuzzy
+msgid "Community"
+msgstr "Àwùjọ"
+
+#, fuzzy
+msgid "Opportunities"
+msgstr "Àǹfààní"
+
+#, fuzzy
+msgid "Experience & CV"
+msgstr "Ìrírí àti CV"
+
+#, fuzzy
+msgid "Challenges"
+msgstr "Ìpèníjà"
+
+#, fuzzy
+msgid "Me"
+msgstr "Èmi"
+
+#, fuzzy
+msgid "Professional profile"
+msgstr "Àkọsílẹ̀ iṣẹ́ mi"
+
+#, fuzzy
+msgid "Account settings"
+msgstr "Ètò àkáǹtì"
+
+#, fuzzy
+msgid "Help & support"
+msgstr "Ìrànlọ́wọ́"
+
+#, fuzzy
+msgid "Report a concern"
+msgstr "Fi ẹ̀sùn kan hàn"
+
+#, fuzzy
+msgid "Back office"
+msgstr "Back office"
+
+#, fuzzy
+msgid "Log out"
+msgstr "Jáde"
+
+#, fuzzy
+msgid "Language"
+msgstr "Èdè"
+
+#, fuzzy
+msgid "Explore"
+msgstr "Ṣàwárí"
+
+#, fuzzy
+msgid "Learning"
+msgstr "Ẹ̀kọ́"
+
+#, fuzzy
+msgid "Search courses, topics, sports…"
+msgstr "Wá ẹ̀kọ́, àkòrí, eré…"
+
+#, fuzzy
+msgid "About SportIQ"
+msgstr "Nípa SportIQ"
+
+#, fuzzy
+msgid "Resources"
+msgstr "Àwọn ohun èlò"
+
+#, fuzzy
+msgid "For institutions"
+msgstr "Fún àwọn ilé-iṣẹ́"
+
+#, fuzzy
+msgid "Verify"
+msgstr "Ṣàyẹ̀wò"
+
+#, fuzzy
+msgid "Verify a certificate"
+msgstr "Ṣàyẹ̀wò ìwé-ẹ̀rí"
+
+#, fuzzy
+msgid "Course catalogue"
+msgstr "Àkójọ ẹ̀kọ́"
+
+#, fuzzy
+msgid "Learning paths"
+msgstr "Ọ̀nà ẹ̀kọ́"
+
+#, fuzzy
+msgid "Certifications"
+msgstr "Ìwé-ẹ̀rí"
+
+#, fuzzy
+msgid "FAQs"
+msgstr "Àwọn ìbéèrè tí a máa ń béèrè"
+
+#, fuzzy
+msgid "Blog"
+msgstr "Búlọ́ọ̀gù"
+
+#, fuzzy
+msgid "Events"
+msgstr "Àwọn ìṣẹ̀lẹ̀"
+
+#, fuzzy
+msgid "Help centre"
+msgstr "Ibùdó ìrànlọ́wọ́"
+
+#, fuzzy
+msgid "Sign up"
+msgstr "Forúkọsílẹ̀"
+
+#, fuzzy
+msgid "Sign up free"
+msgstr "Forúkọsílẹ̀ lọ́fẹ̀ẹ́"
+
+#, fuzzy
+msgid "Login"
+msgstr "Wọlé"
+
+#, fuzzy
+msgid "Request a demo"
+msgstr "Béèrè àfihàn"
+
+#, fuzzy
+msgid "Request demo"
+msgstr "Béèrè àfihàn"
+
+#, fuzzy
+msgid "My dashboard"
+msgstr "Pátákó mi"
+
+#, fuzzy
+msgid "Dashboard"
+msgstr "Pátákó"
+
+#, fuzzy
+msgid "Organisation"
+msgstr "Àjọ"
+
+#, fuzzy
+msgid "Observatory"
+msgstr "Ibùdó àkíyèsí"
+
+#, fuzzy
+msgid "Frequently asked questions"
+msgstr "Àwọn ìbéèrè tí a máa ń béèrè"
+
+#, fuzzy
+msgid "Interface translations are drafts awaiting expert review."
+msgstr "Ìtumọ̀ yìí ṣì jẹ́ àkọ́kọ́ tí àwọn amòye yóò ṣàyẹ̀wò."

@@ -1,0 +1,11 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}FAQs · SportIQ{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">FAQs</span><h1>Frequently asked questions</h1><p>Quick answers about courses, certificates, payments and your account.</p></div></section>
+<section class="section"><div class="container" style="max-width:860px">
+  <div class="accordion">
+    {% for f in faqs %}<details {% if forloop.first %}open{% endif %}><summary>{{ f.title }}</summary><div class="prose">{{ f.body|markdown }}</div></details>{% empty %}<p class="muted">No FAQs yet.</p>{% endfor %}
+  </div>
+  <p class="text-center mt-3">Can't find your answer? <a href="{% url 'support:help' %}">Visit the help centre</a>.</p>
+</div></section>
+{% endblock %}

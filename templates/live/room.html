@@ -1,0 +1,11 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Live: {{ s.title }}{% endblock %}
+{% block content %}
+<div class="row-between mb-2"><div><span class="badge badge-red">● Live</span> <strong style="color:var(--primary)">{{ s.title }}</strong></div>
+  <div class="row"><a class="btn btn-secondary btn-sm" href="{{ s.join_url }}" target="_blank" rel="noopener">Open in new tab / app</a><a class="btn btn-ghost btn-sm" href="{{ s.get_absolute_url }}">Polls &amp; Q&amp;A</a></div></div>
+{% if s.record %}<div class="alert alert-warning small">{% icon "video" %} This session is being recorded.</div>{% endif %}
+<div style="aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000">
+  <iframe src="{{ s.join_url }}#userInfo.displayName=%22{{ user.get_full_name|urlencode }}%22&config.startWithVideoMuted=true" allow="camera; microphone; display-capture; fullscreen; autoplay" style="width:100%;height:100%;border:0" title="Live classroom"></iframe>
+</div>
+<p class="small muted mt-1">Low bandwidth? Turn your camera off. Your attendance has been recorded and {{ s.cpd_points }} CPD point{{ s.cpd_points|pluralize }} added.</p>
+{% endblock %}

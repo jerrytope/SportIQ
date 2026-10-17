@@ -1,0 +1,10 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Applicants · {{ o.title }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'community:my_postings' %}">My postings</a></div><h1>Applicants: {{ o.title }}</h1></div></div>
+<div class="stack">{% for a in apps %}<div class="card"><div class="row-between"><strong>{{ a.user }}</strong>
+  <form method="post" class="row">{% csrf_token %}<input type="hidden" name="app" value="{{ a.pk }}"><select name="status" onchange="this.form.submit()" aria-label="Status"><option value="submitted" {% if a.status == 'submitted' %}selected{% endif %}>Submitted</option><option value="shortlisted" {% if a.status == 'shortlisted' %}selected{% endif %}>Shortlisted</option><option value="unsuccessful" {% if a.status == 'unsuccessful' %}selected{% endif %}>Unsuccessful</option></select></form></div>
+  <p class="mt-1">{{ a.cover_note|linebreaksbr }}</p>
+  {% if a.share_profile %}<p class="small mb-0"><strong>Verified credentials:</strong> {% for c in a.user.credentials.all %}{% if c.is_valid %}<a href="{{ c.get_verify_url }}">{{ c.title }}</a>{% if not forloop.last %}, {% endif %}{% endif %}{% empty %}none{% endfor %} · {{ a.user.email }}</p>{% else %}<p class="small muted mb-0">Applicant chose not to share their profile.</p>{% endif %}</div>
+{% empty %}<div class="card empty">No applications yet.</div>{% endfor %}</div>
+{% endblock %}

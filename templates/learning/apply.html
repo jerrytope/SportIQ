@@ -1,0 +1,9 @@
+{% extends "app/base.html" %}
+{% block title %}Apply · {{ course.title }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></div><h1>Apply for this programme</h1><p>{{ course.prerequisites_text|default:"Tell us about your experience and why you want to take this programme." }}</p></div></div>
+<form class="card" method="post" enctype="multipart/form-data" style="max-width:720px">{% csrf_token %}
+  {% include "components/form.html" %}
+  <button class="btn btn-primary" type="submit">Submit application</button>
+</form>
+{% endblock %}

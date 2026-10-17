@@ -1,0 +1,15 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Support desk{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Support desk</h1><p>Technical, academic, payment, accessibility and complaint tickets with response targets.</p></div>
+  <div class="row"><a class="btn btn-secondary" href="{% url 'backoffice:help_articles' %}">{% icon "book" %}Help articles</a><a class="btn btn-secondary" href="{% url 'backoffice:status_notices' %}">{% icon "alert" %}Service notices</a></div></div>
+<nav class="tabs">
+  <a href="?view=open" class="{% if view == 'open' %}active{% endif %}">Open</a><a href="?view=mine" class="{% if view == 'mine' %}active{% endif %}">Assigned to me</a><a href="?view=overdue" class="{% if view == 'overdue' %}active{% endif %}">Past SLA</a><a href="?view=all" class="{% if view == 'all' %}active{% endif %}">All</a></nav>
+<div class="chip-list mb-2"><a class="chip {% if not request.GET.category %}on{% endif %}" href="?view={{ view }}">All categories</a>{% for v, l in categories %}<a class="chip {% if request.GET.category == v %}on{% endif %}" href="?view={{ view }}&category={{ v }}">{{ l|truncatechars:24 }}</a>{% endfor %}</div>
+<div class="table-wrap"><table><thead><tr><th>Ticket</th><th>Learner</th><th>Category</th><th>Priority</th><th>Status</th><th>Assignee</th><th>Due</th></tr></thead><tbody>
+  {% for t in tickets %}<tr><td><a href="{% url 'backoffice:ticket_detail' t.pk %}"><strong>{{ t.reference }}</strong> {{ t.subject|truncatechars:40 }}</a></td><td>{{ t.user }}</td><td><small>{{ t.get_category_display|truncatechars:22 }}</small></td>
+    <td><span class="badge {% if t.priority == 'urgent' %}badge-red{% elif t.priority == 'high' %}badge-amber{% else %}badge-grey{% endif %}">{{ t.get_priority_display }}</span></td><td>{{ t.get_status_display }}</td><td>{{ t.assignee|default:"—" }}</td>
+    <td>{% if t.is_overdue %}<span class="badge badge-red">Overdue</span>{% else %}<small>{{ t.sla_due|date:"j M H:i" }}</small>{% endif %}</td></tr>
+  {% empty %}<tr><td colspan="7" class="empty">No tickets.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

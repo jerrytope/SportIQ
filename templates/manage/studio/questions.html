@@ -1,0 +1,25 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Question bank{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:course_builder' course.pk %}">{{ course.title }}</a></div><h1>Question bank</h1><p>{{ questions|length }} question{{ questions|length|pluralize }}. Exams draw questions at random, optionally balanced by topic.</p></div></div>
+<div class="chip-list mb-2"><a class="chip {% if not request.GET.topic %}on{% endif %}" href="?">All topics</a>{% for t in topics %}<a class="chip {% if request.GET.topic == t.topic %}on{% endif %}" href="?topic={{ t.topic|urlencode }}">{{ t.topic }} ({{ t.n }})</a>{% endfor %}</div>
+<div class="split">
+  <div class="stack">
+    {% for q in questions %}
+    <div class="card card-tight">
+      <div class="row-between"><span class="row"><span class="badge badge-grey">{{ q.get_kind_display }}</span>{% if q.topic %}<span class="badge">{{ q.topic }}</span>{% endif %}<span class="badge badge-grey">{{ q.get_difficulty_display }} · {{ q.points }} pt</span>{% if not q.is_active %}<span class="badge badge-red">Inactive</span>{% endif %}</span>
+        {% if editable %}<a class="small" href="{% url 'backoffice:question_edit' q.pk %}">Edit</a>{% endif %}</div>
+      <p class="mt-1 mb-1" style="font-weight:600;color:var(--primary)">{{ q.text }}</p>
+      {% if q.choices.all %}<ul class="small" style="margin:0;padding-left:1.1rem">{% for c in q.choices.all %}<li {% if c.is_correct %}style="color:var(--brand);font-weight:600"{% endif %}>{{ c.text }}{% if c.is_correct %} ✓{% endif %}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% empty %}<div class="card empty">{% icon "clipboard" %}<p>No questions yet.</p></div>{% endfor %}
+  </div>
+  {% if editable %}
+  <form class="card" method="post" enctype="multipart/form-data" style="align-self:start">{% csrf_token %}
+    <h3>Add a question</h3>
+    {% include "components/form.html" %}
+    <button class="btn btn-primary" type="submit">Add question</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

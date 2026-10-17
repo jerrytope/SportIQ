@@ -1,0 +1,12 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Scholarship codes{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:finance' %}">Payments</a></div><h1>Scholarships &amp; sponsored seats</h1><p>A 100% code is a fully sponsored seat. Sponsors can be federations, councils or partners.</p></div></div>
+<div class="split">
+  <div class="table-wrap"><table><thead><tr><th>Code</th><th>Course</th><th>Discount</th><th>Used</th><th>Sponsor</th><th>Expires</th></tr></thead><tbody>
+    {% for v in vouchers %}<tr><td><code>{{ v.code }}</code>{% if not v.is_active %} <span class="badge badge-red">Off</span>{% endif %}</td><td>{{ v.course.title|default:"Any paid course" }}</td><td>{{ v.discount_percent }}%</td><td>{{ v.times_used }}/{{ v.max_uses }}</td><td>{{ v.sponsor|default:"—" }}</td><td>{{ v.expires_on|date:"j M Y"|default:"—" }}</td></tr>
+    {% empty %}<tr><td colspan="6" class="empty">No codes.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <form class="card" method="post">{% csrf_token %}<h3>New code</h3>{% include "components/form.html" %}<button class="btn btn-primary">Create code</button></form>
+</div>
+{% endblock %}

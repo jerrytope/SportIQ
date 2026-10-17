@@ -1,0 +1,11 @@
+{% extends "app/base.html" %}
+{% block title %}Peer review{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'research:index' %}">Research</a></div><h1>Peer review: {{ rv.publication.title }}</h1><p>Authors are not shown your name.</p></div></div>
+<div class="split">
+  <div class="card"><h3>Abstract</h3><p>{{ rv.publication.abstract|linebreaksbr }}</p>{% if rv.publication.file %}<a class="btn btn-secondary btn-sm" href="{{ rv.publication.file.url }}">Download manuscript</a>{% endif %}</div>
+  {% if rv.submitted %}<div class="alert alert-success">Submitted: {{ rv.get_recommendation_display }}</div>
+  {% else %}<form class="card" method="post">{% csrf_token %}<div class="field"><label for="rec">Recommendation</label><select id="rec" name="recommendation">{% for v, l in recs %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="c">Comments for the authors</label><textarea id="c" name="comments" rows="10" required></textarea></div><button class="btn btn-primary">Submit review</button></form>{% endif %}
+</div>
+{% endblock %}

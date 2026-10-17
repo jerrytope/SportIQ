@@ -1,0 +1,26 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Revise & practise · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'ai:assistant' %}">AI study assistant</a></div><h1>Revise &amp; practise</h1><p>Targeted revision from topics where you've lost marks, plus practice questions (never the real exam items).</p></div></div>
+<div class="split">
+  <div class="stack">
+    {% if result is not None %}
+      <div class="card card-tint"><h3 class="mb-0">You got {{ score }} of {{ result|length }}</h3></div>
+      {% for r in result %}<div class="exam-q"><div class="qtext">{{ r.q.text }}</div>{% for c in r.q.choices.all %}<div class="option {% if c.is_correct %}correct{% elif c.pk in r.chosen %}wrong{% endif %}">{{ c.text }}</div>{% endfor %}{% if r.q.explanation %}<p class="small muted mb-0">{{ r.q.explanation }}</p>{% endif %}</div>{% endfor %}
+      <a class="btn btn-primary" href="?course={{ course.slug }}">More practice</a>
+    {% elif course %}
+      <form method="post">{% csrf_token %}<h3>Practice: {{ course.title }}</h3>
+        {% for q in practice %}<input type="hidden" name="qid" value="{{ q.pk }}"><fieldset class="exam-q"><legend class="qn">Question {{ forloop.counter }}</legend><div class="qtext">{{ q.text }}</div>
+          {% for c in q.choices.all %}<label class="option"><input type="{% if q.kind == 'multi' %}checkbox{% else %}radio{% endif %}" name="q{{ q.pk }}" value="{{ c.pk }}"> {{ c.text }}</label>{% endfor %}</fieldset>
+        {% empty %}<div class="card empty">No practice questions for this course yet.</div>{% endfor %}
+        {% if practice %}<button class="btn btn-primary">Check answers</button>{% endif %}</form>
+    {% else %}
+      <div class="card"><h3>Topics to revise</h3>
+        {% for w in weak %}<div class="mb-2"><strong>{{ w.topic }}</strong> <small class="muted">· {{ w.course.title }} · {{ w.missed }} missed</small>
+          <ul class="list">{% for h in w.lessons %}<li>{% icon "book" %}<a class="grow" href="{{ h.url }}">{{ h.title }}</a></li>{% empty %}<li class="muted small">Reopen the course to revise this topic.</li>{% endfor %}</ul></div>
+        {% empty %}<p class="muted">No weak topics found. Nice work! Practise below to stay sharp.</p>{% endfor %}</div>
+    {% endif %}
+  </div>
+  <div class="card"><h3>Practise a course</h3><ul class="list">{% for c in courses %}<li><a class="grow" href="?course={{ c.slug }}">{{ c.title }}</a></li>{% empty %}<li class="muted small">Enrol in a course first.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

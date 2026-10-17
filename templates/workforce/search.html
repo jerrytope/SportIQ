@@ -1,0 +1,26 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Find professionals · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Find qualified professionals</h1><p>Authorised search of people who chose to be listed. Every search is logged. Contact is by request only.</p></div>
+  <a class="btn btn-secondary" href="{% url 'workforce:skills_map' %}">{% icon "map" %}Skills map</a></div>
+<form class="card card-tight inline-form mb-3" method="get">
+  <div><label for="w1">Profession</label><select id="w1" name="profession"><option value="">Any</option>{% for p in professions %}<option value="{{ p.slug }}" {% if filters.profession == p.slug %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></div>
+  <div><label for="w2">Sport</label><select id="w2" name="sport"><option value="">Any</option>{% for s in sports %}<option value="{{ s.slug }}" {% if filters.sport == s.slug %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></div>
+  <div><label for="w3">State</label><select id="w3" name="state"><option value="">Any</option>{% for s in states %}<option {% if filters.state == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+  <div><label for="w4">Holds credential</label><select id="w4" name="credential"><option value="">Any</option>{% for c in credential_types %}<option value="{{ c.code }}" {% if filters.credential == c.code %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+  <div><label for="w5">Experience</label><select id="w5" name="level"><option value="">Any</option>{% for v, l in levels %}<option value="{{ v }}" {% if filters.level == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <label class="check"><input type="checkbox" name="available" value="1" {% if filters.available %}checked{% endif %}> <span>Available</span></label>
+  <label class="check"><input type="checkbox" name="verified" value="1" {% if filters.verified %}checked{% endif %}> <span>Verified only</span></label>
+  <button class="btn btn-primary">Search</button>
+</form>
+{% if searched %}
+<p class="muted">{{ page.paginator.count }} result{{ page.paginator.count|pluralize }}</p>
+<div class="grid grid-2">{% for p in page %}
+  <div class="card"><div class="row-between"><strong style="color:var(--primary)">{{ p.get_full_name }}</strong>{% if p.is_verified_professional %}<span class="badge">{% icon "check" %}Verified</span>{% else %}<span class="badge badge-grey">Unverified profile</span>{% endif %}</div>
+    <small class="muted">{% for x in p.professions.all %}{{ x.name }}{% if not forloop.last %}, {% endif %}{% endfor %} · {{ p.state }} · {{ p.workforce_profile.get_availability_display }}{% if p.workforce_profile.years_experience %} · {{ p.workforce_profile.years_experience }} yrs{% endif %}</small>
+    <div class="row mt-1">{% for c in p.credentials.all %}{% if c.is_valid %}<a class="badge badge-gold" href="{{ c.get_verify_url }}" target="_blank" rel="noopener">{{ c.title|truncatechars:30 }}</a>{% endif %}{% endfor %}</div>
+    <form method="post" action="{% url 'workforce:contact' p.pk %}" class="inline-form mt-2">{% csrf_token %}<input name="message" placeholder="Why you'd like to contact them" aria-label="Message" required><button class="btn btn-sm btn-secondary">Request contact</button></form></div>
+{% empty %}<div class="card empty" style="grid-column:1/-1">No listed professionals match.</div>{% endfor %}</div>
+{% include "components/pagination.html" %}
+{% else %}<div class="card empty">{% icon "search" %}<p>Choose at least one filter to search.</p></div>{% endif %}
+{% endblock %}

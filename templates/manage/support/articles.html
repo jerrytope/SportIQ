@@ -1,0 +1,11 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Help articles{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:tickets' %}">Support desk</a></div><h1>Help centre articles &amp; FAQs</h1></div></div>
+<div class="split">
+  <div class="table-wrap"><table><thead><tr><th>Article</th><th>Category</th><th>FAQ</th><th>Published</th></tr></thead><tbody>
+    {% for a in articles %}<tr><td><a href="{% url 'backoffice:help_article_edit' a.pk %}">{{ a.title }}</a></td><td>{{ a.category }}</td><td>{{ a.is_faq|yesno:"Yes,—" }}</td><td>{{ a.is_published|yesno:"Yes,No" }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">None.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <form class="card" method="post">{% csrf_token %}<h3>New article</h3>{% include "components/form.html" %}<button class="btn btn-primary">Publish</button></form>
+</div>
+{% endblock %}

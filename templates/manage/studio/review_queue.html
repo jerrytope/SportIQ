@@ -1,0 +1,10 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Review queue{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Academic review queue</h1><p>NIS controls academic standards: no course reaches learners without review and approval.</p></div></div>
+<div class="grid grid-3">
+  <div class="card"><h3>Awaiting review ({{ in_review|length }})</h3><ul class="list">{% for c in in_review %}<li><span class="grow"><a class="title" href="{% url 'backoffice:course_builder' c.pk %}">{{ c.title }}</a><br><small class="muted">{{ c.owner }} · {{ c.updated_at|timesince }} ago</small></span></li>{% empty %}<li class="muted">Nothing waiting.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Approved, not published ({{ approved|length }})</h3><ul class="list">{% for c in approved %}<li><a class="grow" href="{% url 'backoffice:course_builder' c.pk %}">{{ c.title }}</a></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Overdue periodic review ({{ overdue|length }})</h3><ul class="list">{% for c in overdue %}<li><span class="grow"><a href="{% url 'backoffice:course_builder' c.pk %}">{{ c.title }}</a><br><small class="muted">Review was due {{ c.review_due|date:"j M Y" }}</small></span></li>{% empty %}<li class="muted">All current.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

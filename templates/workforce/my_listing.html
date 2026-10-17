@@ -1,0 +1,12 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Workforce directory · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>National sports workforce directory</h1><p>Choose whether authorised organisations can find you when looking for qualified coaches, officials and other professionals. Your contact details are never shown; organisations send a request you can accept or decline.</p></div></div>
+<div class="split">
+  <form class="card" method="post">{% csrf_token %}{% include "components/form.html" %}<button class="btn btn-primary">Save</button>
+    <p class="small muted mt-1 mb-0">Searches show your name, professions, state, verified credentials and experience. Unverified information is labelled as such. You can withdraw at any time.</p></form>
+  <div class="card"><h3>Contact requests</h3><ul class="list">{% for r in requests %}<li><span class="grow"><strong>{{ r.institution|default:r.requester }}</strong><br><small>{{ r.message|truncatechars:140 }}</small></span>
+    {% if r.status == "pending" %}<form method="post" action="{% url 'workforce:respond' r.pk %}" class="row">{% csrf_token %}<button class="btn btn-sm btn-primary" name="accept" value="1">Share my contact</button><button class="btn btn-sm btn-ghost">Decline</button></form>{% else %}<span class="badge badge-grey">{{ r.get_status_display }}</span>{% endif %}</li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul>
+    <p class="small mt-2 mb-0"><a href="{% url 'careers:experience' %}">Update your experience</a> · <a href="{% url 'credentials:external' %}">Add external qualifications</a></p></div>
+</div>
+{% endblock %}

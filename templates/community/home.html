@@ -1,0 +1,17 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Careers & community · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Careers &amp; community</h1><p>Professional groups, mentorship and opportunities across states, federations, universities and clubs.</p></div>
+  <div class="row"><a class="btn btn-secondary" href="{% url 'community:mentors' %}">{% icon "users" %}Mentorship ({{ mentor_count }})</a><a class="btn btn-primary" href="{% url 'community:opportunities' %}">{% icon "briefcase" %}Opportunities</a></div></div>
+<div class="split">
+  <div class="stack">
+    <div class="card"><h3>Latest in your groups</h3><ul class="list">{% for d in recent %}<li>{% icon "message" %}<span class="grow"><a class="title" href="{% url 'community:discussion' d.pk %}">{{ d.title }}</a><br><small class="muted">{{ d.group.name }} · {{ d.author }} · {{ d.created_at|timesince }} ago</small></span></li>{% empty %}<li class="muted">Join a group to see discussions here.</li>{% endfor %}</ul></div>
+    <div><h3>Discover groups</h3><div class="grid grid-2">{% for g in groups %}<a class="card card-link" href="{{ g.get_absolute_url }}"><div class="row-between"><span class="badge">{{ g.get_kind_display }}</span><small class="muted">{{ g.n }} members</small></div><h3 class="mt-1 mb-0">{{ g.name }}</h3><p class="small muted mb-0">{{ g.description|truncatechars:110 }}</p></a>{% endfor %}</div></div>
+  </div>
+  <div class="stack">
+    <div class="card"><h3>My groups</h3><ul class="list">{% for g in mine %}<li><a class="grow" href="{{ g.get_absolute_url }}">{{ g.name }}</a></li>{% empty %}<li class="muted small">None yet.</li>{% endfor %}</ul></div>
+    <div class="card"><div class="row-between"><h3 class="mb-0">New opportunities</h3><a class="small" href="{% url 'community:opportunities' %}">All</a></div><ul class="list">{% for o in opportunities %}<li><span class="grow"><a class="title" href="{{ o.get_absolute_url }}">{{ o.title }}</a><br><small class="muted">{{ o.get_kind_display }} · {{ o.organisation }}{% if o.state %} · {{ o.state }}{% endif %}</small></span></li>{% empty %}<li class="muted small">None open.</li>{% endfor %}</ul></div>
+    <div class="card card-tint"><h3>Your career tools</h3><ul class="list"><li><a href="{% url 'careers:experience' %}">Experience &amp; CV builder</a></li><li><a href="{% url 'workforce:my_listing' %}">Workforce directory listing</a></li><li><a href="{% url 'community:my_postings' %}">My applications &amp; postings</a></li></ul></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}My applications & postings{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>My applications &amp; postings</h1></div><a class="btn btn-primary" href="{% url 'community:post_opportunity' %}">Post an opportunity</a></div>
+<div class="split split-even">
+  <div class="card"><h3>Applications I've sent</h3><ul class="list">{% for a in applications %}<li><a class="grow" href="{{ a.opportunity.get_absolute_url }}">{{ a.opportunity.title }}</a><span class="badge badge-grey">{{ a.get_status_display }}</span></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>My postings</h3><ul class="list">{% for o in postings %}<li><span class="grow"><a class="title" href="{{ o.get_absolute_url }}">{{ o.title }}</a><br><small class="muted">{{ o.get_status_display }}</small></span><a class="btn btn-sm btn-secondary" href="{% url 'community:applicants' o.pk %}">{{ o.n }} applicant{{ o.n|pluralize }}</a></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

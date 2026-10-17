@@ -1,0 +1,14 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Help assistant · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'support:my_tickets' %}">Help &amp; support</a></div><h1>Help assistant</h1><p>Instant answers from the help centre. If it can't help, pass the conversation to a person.</p></div></div>
+<div style="max-width:820px">
+  {% if conv %}{% include "ai/_messages.html" %}{% endif %}
+  <form class="card" method="post" action="{% url 'ai:ask' %}">{% csrf_token %}<input type="hidden" name="mode" value="support">{% if conv %}<input type="hidden" name="conversation" value="{{ conv.pk }}">{% endif %}
+    <label for="q">Describe your problem</label><textarea id="q" name="q" rows="3" required placeholder="e.g. My video keeps buffering"></textarea><button class="btn btn-primary mt-1">Get help</button></form>
+  {% if conv and not conv.escalated_ticket %}
+  <form class="card card-tint row" method="post">{% csrf_token %}<input type="hidden" name="action" value="escalate"><strong class="grow">Still stuck?</strong>
+    <select name="category" aria-label="Category" style="width:auto">{% for v, l in categories %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select><button class="btn btn-secondary">Talk to a person</button></form>
+  {% elif conv.escalated_ticket %}<div class="alert alert-success">Passed to support as <a href="{% url 'support:ticket' conv.escalated_ticket.pk %}">{{ conv.escalated_ticket.reference }}</a>.</div>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends base %}{% load sportiq %}
+{% block title %}{{ r.title }} · Sports library{% endblock %}
+{% block head %}{% if r.kind == "model3d" %}<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>{% endif %}{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="breadcrumbs"><a href="{% url 'library:index' %}">Sports library</a> / {{ r.get_kind_display }}</div>
+<div class="split">
+  <div class="stack">
+    <div class="card">
+      <span class="badge">{{ r.get_kind_display }}</span>
+      <h1 style="font-size:1.8rem;margin-top:.5rem">{{ r.title }}</h1>
+      <p class="muted">{{ r.authors|default:r.publisher }} · {{ r.publisher }} · {{ r.year }} · version {{ r.version }}</p>
+      {% if r.kind == "model3d" and r.file %}<model-viewer src="{{ r.file.url }}" camera-controls auto-rotate style="width:100%;height:360px;background:var(--surface);border-radius:16px" alt="{{ r.title }}"></model-viewer>{% endif %}
+      {% if r.kind == "video" and r.file %}<div class="player mb-2"><video controls preload="metadata" src="{{ r.file.url }}"></video></div>{% endif %}
+      {% if r.abstract %}<div class="prose" style="max-width:none">{{ r.abstract|markdown }}</div>{% endif %}
+      <div class="row mt-2">
+        {% if r.file %}<a class="btn btn-primary" href="{% url 'library:download' r.slug %}">{% icon "download" %}Download</a>{% endif %}
+        {% if r.external_url %}<a class="btn btn-secondary" href="{{ r.external_url }}" target="_blank" rel="noopener">{% icon "globe" %}Open external resource</a>{% endif %}
+      </div>
+    </div>
+    <div class="card"><h3>Cite this</h3>
+      {% for style, text in citations.items %}<div class="mb-2"><div class="row-between"><strong class="small">{{ style }}</strong><a class="small" href="{% url 'library:cite' r.slug style|lower %}">Export</a></div><div class="transcript" style="max-height:none">{{ text }}</div></div>{% endfor %}
+    </div>
+    {% if user.is_authenticated %}
+    <div class="card" id="notes"><h3>My annotations</h3>
+      <form method="post" action="{% url 'library:annotate' r.slug %}" class="mb-2">{% csrf_token %}<div class="form-grid"><div class="field"><label for="pg">Page / timestamp</label><input id="pg" name="page"></div><div class="field full"><label for="nt">Note</label><textarea id="nt" name="note" rows="2" required></textarea></div></div><button class="btn btn-secondary btn-sm">Save note</button></form>
+      <ul class="list">{% for a in annotations %}<li><span class="grow">{% if a.page %}<span class="badge badge-grey">p. {{ a.page }}</span> {% endif %}{{ a.note }}</span><small class="muted">{{ a.created_at|date:"j M" }}</small></li>{% empty %}<li class="muted small">No notes yet.</li>{% endfor %}</ul></div>
+    {% endif %}
+  </div>
+  <div class="stack">
+    <div class="card"><dl class="details" style="grid-template-columns:1fr">
+      <dt>Licence</dt><dd>{{ r.licence }}</dd>
+      {% if r.owner %}<dt>Rights holder</dt><dd>{{ r.owner }}</dd>{% endif %}
+      <dt>Access</dt><dd>{{ r.get_access_level_display }}</dd>
+      {% if r.review_date %}<dt>Next review</dt><dd>{{ r.review_date|date:"F Y" }}</dd>{% endif %}
+      {% if r.tag_list %}<dt>Tags</dt><dd>{% for t in r.tag_list %}<a class="chip" href="{% url 'library:index' %}?q={{ t|urlencode }}">{{ t }}</a> {% endfor %}</dd>{% endif %}
+      <dt>Downloads</dt><dd>{{ r.downloads }}</dd>
+    </dl></div>
+    {% if user.is_authenticated %}<form class="card" method="post" action="{% url 'library:collect' r.slug %}">{% csrf_token %}<h3>Save to a collection</h3>
+      {% if collections %}<select name="collection" aria-label="Collection" class="mb-1">{% for c in collections %}<option value="{{ c.pk }}">{{ c.name }}</option>{% endfor %}</select>{% endif %}
+      <input name="new_collection" placeholder="…or name a new collection" aria-label="New collection" class="mb-1"><button class="btn btn-secondary btn-sm">Save</button></form>{% endif %}
+    {% if versions %}<div class="card"><h3>Version history</h3><ul class="timeline">{% for v in versions %}<li><strong>v{{ v.version }}</strong> · {{ v.created_at|date:"j M Y" }}{% if v.notes %}<br><small class="muted">{{ v.notes }}</small>{% endif %}</li>{% endfor %}</ul></div>{% endif %}
+    {% if related %}<div class="card"><h3>Related</h3><ul class="list">{% for x in related %}<li><a href="{{ x.get_absolute_url }}">{{ x.title }}</a></li>{% endfor %}</ul></div>{% endif %}
+  </div>
+</div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

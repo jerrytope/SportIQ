@@ -1,0 +1,21 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Mentorship · SportIQ{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'community:home' %}">Community</a></div>
+<div class="page-title"><div><h1>Mentorship</h1><p>Experienced coaches, officials, administrators and scientists, approved by NIS, supporting the next generation.</p></div></div>
+<form class="inline-form mb-2" method="get"><select name="sport" aria-label="Sport"><option value="">Any sport</option>{% for s in sports %}<option value="{{ s.slug }}" {% if request.GET.sport == s.slug %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select><select name="profession" aria-label="Profession"><option value="">Any profession</option>{% for p in professions %}<option value="{{ p.slug }}" {% if request.GET.profession == p.slug %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select><button class="btn btn-secondary">Filter</button></form>
+<div class="split">
+  <div class="grid grid-2">
+    {% for m in mentors %}<div class="card"><div class="row"><span class="avatar">{{ m.user.initials }}</span><div><strong style="color:var(--primary)">{{ m.user }}</strong><br><small class="muted">{{ m.headline }}</small></div></div>
+      <p class="small mt-2 mb-1">{{ m.areas }}</p><div class="row mb-2">{% for s in m.sports.all %}<span class="badge badge-grey">{{ s }}</span>{% endfor %}</div>
+      <form method="post" action="{% url 'community:request_mentor' m.pk %}">{% csrf_token %}<textarea name="goals" rows="2" placeholder="What would you like help with?" aria-label="Your goals" required></textarea><button class="btn btn-sm btn-primary mt-1">Request mentoring</button></form></div>
+    {% empty %}<div class="card empty" style="grid-column:1/-1">No mentors match.</div>{% endfor %}
+  </div>
+  <div class="stack">
+    <div class="card"><h3>My mentorships</h3><ul class="list">{% for r in my_requests %}<li><span class="grow">{{ r.mentor.user }}<br><small class="muted">{{ r.get_status_display }}{% if r.next_meeting_at %} · next {{ r.next_meeting_at|date:"j M H:i" }}{% endif %}</small></span>{% if r.status == "active" %}<form method="post" action="{% url 'community:mentorship_action' r.pk %}">{% csrf_token %}<button class="btn btn-sm btn-ghost" name="action" value="completed">End</button></form>{% endif %}</li>{% empty %}<li class="muted small">None yet.</li>{% endfor %}</ul></div>
+    {% if incoming %}<div class="card card-tint"><h3>Requests to me</h3><ul class="list">{% for r in incoming %}<li><span class="grow"><strong>{{ r.mentee }}</strong> · {{ r.get_status_display }}<br><small>{{ r.goals|truncatechars:120 }}</small></span>
+      {% if r.status == "pending" %}<form method="post" action="{% url 'community:mentorship_action' r.pk %}" class="row">{% csrf_token %}<button class="btn btn-sm btn-primary" name="action" value="active">Accept</button><button class="btn btn-sm btn-ghost" name="action" value="declined">Decline</button></form>{% endif %}</li>{% endfor %}</ul></div>{% endif %}
+    <form class="card" method="post">{% csrf_token %}<h3>{% if mine %}My mentor profile{% else %}Become a mentor{% endif %}</h3>{% if mine and not mine.approved %}<div class="alert alert-info small">Awaiting NIS approval.</div>{% endif %}{% include "components/form.html" %}<button class="btn btn-secondary">Save</button></form>
+  </div>
+</div>
+{% endblock %}

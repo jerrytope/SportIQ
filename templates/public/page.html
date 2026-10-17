@@ -1,0 +1,21 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}{{ page.title }} · SportIQ{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">{{ page.eyebrow }}</span>
+  <h1>{{ page.title }}</h1>
+  <p>{{ page.lead }}</p>
+  {% if page.phase %}<span class="pill pill-gold">{% icon "calendar" %}{{ page.phase }}</span>{% endif %}
+</div></section>
+<section class="section"><div class="container">
+  <div class="grid grid-2">
+    {% for title, text in page.points %}
+    <div class="card"><span class="bento-icon">{% icon page.icon %}</span><h3>{{ title }}</h3><p class="muted mb-0">{{ text }}</p></div>
+    {% endfor %}
+  </div>
+  {% if page.note %}<div class="alert alert-info mt-3">{% icon "alert" %} {{ page.note }}</div>{% endif %}
+  {% if page.eyebrow == "Academy" %}
+  <div class="cta-band mt-4"><h2>Ready to try it?</h2><div class="hero-cta">{% if page.app %}<a class="btn btn-gold btn-lg" href="{% url page.app %}">Open {{ page.title }}</a>{% endif %}<a class="btn btn-secondary btn-lg" href="{% url 'catalog:list' %}">Browse the catalogue</a></div></div>
+  {% endif %}
+</div></section>
+{% endblock %}

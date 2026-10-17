@@ -1,0 +1,16 @@
+{% if form.non_field_errors %}<div class="alert alert-error">{% for e in form.non_field_errors %}{{ e }} {% endfor %}</div>{% endif %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+<div class="{% if grid %}form-grid{% endif %}">
+{% for field in form.visible_fields %}
+  <div class="field {% if field.field.widget.input_type == 'textarea' or field.field.widget.attrs.rows or full_fields and field.name in full_fields %}full{% endif %}">
+    {% if field.field.widget.input_type == "checkbox" %}
+      <label class="check">{{ field }} <span>{{ field.label }}</span></label>
+    {% else %}
+      <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span aria-hidden="true" style="color:var(--danger)">*</span>{% endif %}</label>
+      {{ field }}
+    {% endif %}
+    {% if field.help_text %}<div class="help">{{ field.help_text|safe }}</div>{% endif %}
+    {% for e in field.errors %}<div class="error">{{ e }}</div>{% endfor %}
+  </div>
+{% endfor %}
+</div>

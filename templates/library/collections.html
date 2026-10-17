@@ -1,0 +1,13 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}My collections · Sports library{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'library:index' %}">Sports library</a></div><h1>My collections &amp; reading lists</h1></div></div>
+<div class="split">
+  <div class="stack">
+    {% for c in reading_lists %}<div class="card card-tint"><span class="badge">Reading list · {{ c.course.title }}</span><h3 class="mt-1">{{ c.name }}</h3><ul class="list">{% for r in c.resources.all %}<li><a class="grow" href="{{ r.get_absolute_url }}">{{ r.title }}</a><small class="muted">{{ r.get_kind_display }}</small></li>{% endfor %}</ul></div>{% endfor %}
+    {% for c in mine %}<div class="card"><h3>{{ c.name }}</h3><ul class="list">{% for r in c.resources.all %}<li><a class="grow" href="{{ r.get_absolute_url }}">{{ r.title }}</a><small class="muted">{{ r.get_kind_display }}</small></li>{% empty %}<li class="muted small">Empty.</li>{% endfor %}</ul></div>
+    {% empty %}{% if not reading_lists %}<div class="card empty">{% icon "bookmark" %}<p>Save resources from the library to build collections.</p></div>{% endif %}{% endfor %}
+  </div>
+  <div class="card"><h3>Recent annotations</h3><ul class="list">{% for a in notes %}<li><span class="grow"><a class="title" href="{{ a.resource.get_absolute_url }}#notes">{{ a.resource.title|truncatechars:40 }}</a><br><small class="muted">{{ a.note|truncatechars:90 }}</small></span></li>{% empty %}<li class="muted small">None.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

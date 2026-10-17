@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% load sportiq i18n %}
+{% block body_class %}app-body{% endblock %}
+{% block body %}
+
+<div class="app">
+  {% include "app/_sidebar.html" %}
+  <div class="side-drawer" id="sidedrawer"><div class="scrim" data-close="sidedrawer"></div>{% include "app/_sidebar.html" %}</div>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn mobile-menu-btn" type="button" data-open="sidedrawer" aria-label="Open menu">{% icon "menu" %}</button>
+      <form class="search" action="{% url 'catalog:list' %}" role="search">
+        {% icon "search" %}<label class="sr-only" for="topsearch">Search courses</label>
+        <input id="topsearch" type="search" name="q" placeholder="{% trans 'Search courses, topics, sports…' %}">
+      </form>
+      <div class="topbar-actions">
+        <form action="{% url 'set_language' %}" method="post" class="hide-sm">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+          {% get_current_language as LANG %}<label class="sr-only" for="lang">{% trans "Language" %}</label>
+          <select id="lang" name="language" onchange="this.form.submit()" style="width:auto;padding:.4rem .6rem" title="{% trans 'Interface translations are drafts awaiting expert review.' %}">
+            {% get_available_languages as LANGS %}{% for code, name in LANGS %}<option value="{{ code }}" {% if code == LANG %}selected{% endif %}>{{ name }}</option>{% endfor %}</select></form>
+        {% if user.is_backoffice %}<a class="btn btn-secondary btn-sm hide-sm" href="{% url 'backoffice:home' %}">Back office</a>{% endif %}
+        <a class="icon-btn" href="{% url 'notifications:list' %}" aria-label="Notifications">{% icon "bell" %}{% if unread_count %}<span class="dot"></span>{% endif %}</a>
+        <a href="{% url 'accounts:profile' %}" class="avatar" aria-label="My profile">{% if user.photo %}<img src="{{ user.photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</a>
+      </div>
+    </header>
+    <main id="main" class="content">
+      {% if messages %}{% for m in messages %}<div class="alert alert-{% if m.tags == 'error' %}error{% elif m.tags == 'warning' %}warning{% elif m.tags == 'info' %}info{% else %}success{% endif %}">{{ m }}</div>{% endfor %}{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+<nav class="tabbar" aria-label="Quick navigation">
+  <a href="{% url 'learning:dashboard' %}" class="{% active '/learn/' exact=True %}">{% icon "home" %}{% trans "Home" %}</a>
+  <a href="{% url 'catalog:list' %}" class="{% active '/courses/' %}">{% icon "search" %}{% trans "Explore" %}</a>
+  <a href="{% url 'learning:my_learning' %}" class="{% active '/learn/courses' %}">{% icon "book" %}{% trans "Learning" %}</a>
+  <a href="{% url 'credentials:wallet' %}" class="{% active '/credentials/' %}">{% icon "award" %}{% trans "Credentials" %}</a>
+  <a href="{% url 'accounts:profile' %}" class="{% active '/account/' %}">{% icon "user" %}{% trans "Me" %}</a>
+</nav>
+
+{% endblock %}

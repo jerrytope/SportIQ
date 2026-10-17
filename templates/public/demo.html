@@ -1,0 +1,22 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}Request a demo · SportIQ{% endblock %}
+{% block content %}
+<section class="section section-tint"><div class="container">
+  <div class="grid grid-2" style="align-items:start;gap:3rem">
+    <div>
+      <span class="eyebrow">Request a demo</span>
+      <h1>See SportIQ in action</h1>
+      <p class="muted" style="font-size:1.1rem">Tell us about your organisation and we'll show you how SportIQ can train, assess and certify your people.</p>
+      <ul class="list mt-3">
+        <li>{% icon "check-circle" %}<span class="grow">A walkthrough of learning, assessment and certification</span></li>
+        <li>{% icon "check-circle" %}<span class="grow">How federations and state councils track their staff</span></li>
+        <li>{% icon "check-circle" %}<span class="grow">Pricing, sponsored seats and pilot options</span></li>
+      </ul>
+    </div>
+    <form class="card" method="post">{% csrf_token %}
+      {% include "components/form.html" with grid=True %}
+      <button class="btn btn-primary btn-lg btn-block" type="submit">Request a demo</button>
+    </form>
+  </div>
+</div></section>
+{% endblock %}

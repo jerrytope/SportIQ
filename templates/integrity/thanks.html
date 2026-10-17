@@ -1,0 +1,12 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}Report received · SportIQ{% endblock %}
+{% block content %}
+<section class="auth-wrap"><div class="card auth-card wide">
+  <span class="bento-icon" style="margin-bottom:1rem">{% icon "shield" %}</span>
+  <h1 style="font-size:1.6rem">Thank you. Your report has been received.</h1>
+  <p>Save these details. You'll need both to check progress. We cannot recover them if lost.</p>
+  <dl class="details"><dt>Reference</dt><dd><code>{{ r.reference }}</code></dd><dt>Access code</dt><dd><code>{{ r.access_code }}</code></dd></dl>
+  <p class="small muted">If someone is in immediate danger, call the police (112).</p>
+  <a class="btn btn-secondary" href="{% url 'integrity:status' %}">Check status later</a>
+</div></section>
+{% endblock %}

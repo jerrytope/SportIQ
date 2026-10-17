@@ -1,0 +1,7 @@
+<figure class="quote-card"{% if hidden %} aria-hidden="true"{% endif %}>
+  <p>“{{ t.quote }}”</p>
+  <figcaption class="quote-who">
+    <span class="avatar">{% if t.photo %}<img src="{{ t.photo.url }}" alt="">{% else %}{{ t.initials }}{% endif %}</span>
+    <span><strong>{{ t.name }}</strong><small>{{ t.role }}</small></span>
+  </figcaption>
+</figure>

@@ -1,0 +1,57 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Account settings · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Account settings</h1><p>Notifications, security, privacy and your data.</p></div>
+  <a class="btn btn-secondary" href="{% url 'accounts:payments' %}">{% icon "card" %}Payments &amp; receipts</a></div>
+<div class="split split-even">
+  <div class="stack">
+    <form class="card" method="post">{% csrf_token %}
+      <h2 style="font-size:1.2rem">Notifications &amp; data saver</h2>
+      {% include "components/form.html" with form=prefs %}
+      <button class="btn btn-primary" name="save_prefs" value="1">Save preferences</button>
+    </form>
+    <form class="card" method="post">{% csrf_token %}
+      <h2 style="font-size:1.2rem">Change password</h2>
+      {% include "components/form.html" with form=pwd %}
+      <button class="btn btn-primary" name="change_password" value="1">Change password</button>
+    </form>
+    <div class="card">
+      <h2 style="font-size:1.2rem">Two-factor authentication</h2>
+      {% if has_2fa %}
+        <p><span class="badge">{% icon "shield" %}On</span> Codes from your authenticator app protect your account.</p>
+        <form method="post" action="{% url 'accounts:two_factor_disable' %}">{% csrf_token %}<button class="btn btn-secondary" data-confirm="Click again to turn off">Turn off</button></form>
+      {% else %}
+        <p class="muted">Add a second step at login using an authenticator app (Google Authenticator, Microsoft Authenticator, Authy). Required for staff accounts.</p>
+        <a class="btn btn-primary" href="{% url 'accounts:two_factor_setup' %}">Set up two-factor</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="stack">
+    <form class="card" method="post">{% csrf_token %}
+      <h2 style="font-size:1.2rem">Accessibility &amp; inclusion (optional)</h2>
+      <p class="muted small">Sensitive information under the NDPA 2023. We only store it with your consent and only use it for accessibility support and aggregated inclusion reporting.</p>
+      {% include "components/form.html" with form=sensitive %}
+      <button class="btn btn-secondary" name="save_sensitive" value="1">Save</button>
+    </form>
+    <div class="card"><h2 style="font-size:1.2rem">Workforce directory &amp; identity</h2>
+      <p class="small muted">Choose whether authorised organisations can find you, and (where enabled) confirm your identity.</p>
+      <a class="btn btn-secondary btn-sm" href="{% url 'workforce:my_listing' %}">Directory listing</a>
+      <form method="post" action="{% url 'verify_identity' %}" class="inline-form mt-2">{% csrf_token %}<input name="id_number" placeholder="National Identification Number" aria-label="National Identification Number" inputmode="numeric" maxlength="11"><button class="btn btn-secondary btn-sm">Verify identity</button></form>
+      <p class="small muted mb-0">Identity checks run only where legally authorised, through an approved provider. We store the result, not your number.</p></div>
+    <div class="card">
+      <h2 style="font-size:1.2rem">Privacy &amp; your data</h2>
+      <p class="muted small">Download a copy of everything SportIQ holds about you, or make a formal request.</p>
+      <a class="btn btn-primary" href="{% url 'accounts:export_data' %}">{% icon "download" %}Download my data</a>
+      <form method="post" action="{% url 'accounts:data_request' %}" class="mt-2">{% csrf_token %}
+        <div class="field"><label for="dr-kind">Make a request</label>
+          <select id="dr-kind" name="kind"><option value="correct">Correct my data</option><option value="delete">Delete my account</option><option value="export">Export my data (assisted)</option></select></div>
+        <div class="field"><label for="dr-details">Details</label><textarea id="dr-details" name="details" rows="3"></textarea></div>
+        <button class="btn btn-secondary" type="submit">Submit request</button>
+      </form>
+      {% if data_requests %}<h4 class="mt-3">Your requests</h4><ul class="list">{% for r in data_requests %}<li><span class="grow">{{ r.get_kind_display }}<br><small class="muted">{{ r.created_at|date:"j M Y" }}</small></span><span class="badge {% if r.status == 'open' %}badge-amber{% endif %}">{{ r.get_status_display }}</span></li>{% endfor %}</ul>{% endif %}
+      <h4 class="mt-3">Consent history</h4>
+      <ul class="list">{% for c in consents %}<li><span class="grow">{{ c.get_kind_display }}</span><small class="muted">{% if c.granted %}Given{% else %}Withdrawn{% endif %} · {{ c.created_at|date:"j M Y" }}</small></li>{% endfor %}</ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

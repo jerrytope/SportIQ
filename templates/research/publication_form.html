@@ -1,0 +1,6 @@
+{% extends "app/base.html" %}
+{% block title %}Submit a publication{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'research:index' %}">Research</a></div><h1>Submit for peer review</h1><p>The research office assigns independent reviewers. Evidence summaries for policy-makers are welcome.</p></div></div>
+<form class="card" method="post" enctype="multipart/form-data" style="max-width:860px">{% csrf_token %}{% include "components/form.html" with grid=True %}<button class="btn btn-primary">Submit</button></form>
+{% endblock %}

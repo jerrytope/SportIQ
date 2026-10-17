@@ -1,0 +1,11 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Notifications · SportIQ{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Notifications</h1></div>
+  {% if items %}<form method="post" action="{% url 'notifications:clear' %}">{% csrf_token %}<button class="btn btn-ghost" data-confirm="Click again to clear all">Clear all</button></form>{% endif %}</div>
+<div class="card"><ul class="list">
+  {% for n in items %}
+  <li>{% icon "bell" %}<span class="grow"><a class="title" href="{% url 'notifications:open' n.pk %}">{{ n.title }}</a>{% if not n.is_read %} <span class="badge badge-gold">New</span>{% endif %}<br><small class="muted">{{ n.body|truncatechars:160 }}</small></span><small class="muted">{{ n.created_at|timesince }} ago</small></li>
+  {% empty %}<li class="empty">{% icon "bell" %}<p>You're all caught up.</p></li>{% endfor %}
+</ul></div>
+{% endblock %}

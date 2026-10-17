@@ -1,0 +1,9 @@
+{% extends "app/base.html" %}
+{% block title %}Feedback · {{ course.title }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>How was {{ course.title }}?</h1><p>Your feedback goes to the course team and NIS quality assurance.</p></div></div>
+<form class="card" method="post" style="max-width:720px">{% csrf_token %}
+  {% include "components/form.html" %}
+  <button class="btn btn-primary" type="submit">Send feedback</button>
+</form>
+{% endblock %}

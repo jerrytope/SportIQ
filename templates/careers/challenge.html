@@ -1,0 +1,12 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ c.title }} · Challenge{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'careers:challenges' %}">Challenges</a></div>
+<div class="card card-dark mb-3"><span class="pill pill-gold">{{ c.get_metric_display }} · target {{ c.target }}</span><h1 style="color:#fff;margin-top:.75rem">{{ c.title }}</h1><p style="color:#a9c9b8">{{ c.description }} · {{ c.starts_on|date:"j M" }}–{{ c.ends_on|date:"j M Y" }}</p>
+  {% if entry %}<div class="progress progress-gold" style="background:rgba(255,255,255,.15)"><span style="width:{{ pct }}%"></span></div><small style="color:#a9c9b8">{{ mine }} of {{ c.target }}{% if pct >= 100 %} · target reached 🎉{% endif %}</small>
+  {% else %}<form method="post" action="{% url 'careers:join_challenge' c.pk %}">{% csrf_token %}<button class="btn btn-gold">Join challenge</button></form>{% endif %}</div>
+<div class="split split-even">
+  {% if board %}<div class="card"><h3>Leaderboard</h3><p class="small muted">Shown because the organiser enabled it.</p><ol class="list">{% for r in board %}<li><span class="grow">{{ r.user.first_name }} {{ r.user.last_name|slice:":1" }}.</span><strong>{{ r.n }}</strong></li>{% endfor %}</ol></div>{% endif %}
+  {% if teams %}<div class="card"><h3>Team standings (average per member)</h3><ol class="list">{% for t in teams %}<li><span class="grow">{{ t.team }} <small class="muted">· {{ t.members }} members</small></span><strong>{{ t.avg }}</strong></li>{% endfor %}</ol></div>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Practicals{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Practicals marking</h1><p>Portfolio evidence, video submissions and workplace competences. Competence needing supervision isn't complete until the supervisor confirms it.</p></div>
+  <a class="btn btn-secondary" href="{% url 'backoffice:records' 'practical-tasks' %}">Manage tasks</a></div>
+<div class="split split-even mb-3">
+  <div class="card"><h3>To assess ({{ pending|length }})</h3><ul class="list">{% for s in pending %}<li><span class="grow"><a class="title" href="{% url 'backoffice:practical_assess' s.pk %}">{{ s.user }}</a><br><small class="muted">{{ s.task.title }} · attempt {{ s.attempt }} · {{ s.created_at|timesince }} ago</small></span><a class="btn btn-sm btn-primary" href="{% url 'backoffice:practical_assess' s.pk %}">Assess</a></li>{% empty %}<li class="muted">Nothing waiting.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Waiting for supervisor ({{ awaiting_supervisor|length }})</h3><ul class="list">{% for s in awaiting_supervisor %}<li><span class="grow">{{ s.user }} · {{ s.task.title }}<br><small class="muted">{{ s.supervisor_name }} &lt;{{ s.supervisor_email }}&gt;</small></span></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+</div>
+<div class="card"><h3>Recently assessed</h3><ul class="list">{% for s in recent %}<li><span class="grow">{{ s.user }} · {{ s.task.title }}</span><span class="badge {% if s.status == 'passed' %}{% elif s.status == 'failed' %}badge-red{% else %}badge-amber{% endif %}">{{ s.get_status_display }} {{ s.score_percent|default_if_none:"" }}{% if s.score_percent is not None %}%{% endif %}</span></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul></div>
+{% endblock %}

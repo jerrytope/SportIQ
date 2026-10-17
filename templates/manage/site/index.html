@@ -1,0 +1,16 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Site content{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Site content</h1><p>Everything on the public landing page is edited here; no developer needed.</p></div>
+  <a class="btn btn-secondary" href="{% url 'web:home' %}" target="_blank" rel="noopener">{% icon "eye" %}View site</a></div>
+<div class="split">
+  <form class="card" method="post">{% csrf_token %}<h3>Landing page copy &amp; contact details</h3>{% include "components/form.html" with grid=True %}<button class="btn btn-primary">Save</button></form>
+  <div class="stack">
+    <div class="card"><h3>Sections</h3><ul class="list">{% for kind, label, n in sections %}<li><a class="grow" href="{% url 'backoffice:site_list' kind %}">{{ label }}</a><span class="badge badge-grey">{{ n }}</span></li>{% endfor %}</ul></div>
+    <div class="card"><h3>Newsletter</h3><p class="mb-0"><strong>{{ subscribers }}</strong> active subscriber{{ subscribers|pluralize }}</p></div>
+    <div class="card"><h3>Demo requests</h3><ul class="list">{% for d in demos %}<li><span class="grow"><strong>{{ d.organisation }}</strong><br><small class="muted">{{ d.name }} · <a href="mailto:{{ d.email }}">{{ d.email }}</a> · {{ d.learners_estimate }} · {{ d.created_at|date:"j M" }}</small>{% if d.message %}<br><small>{{ d.message|truncatechars:120 }}</small>{% endif %}</span>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="demo_status"><input type="hidden" name="demo" value="{{ d.pk }}">
+        <select name="status" onchange="this.form.submit()" aria-label="Status">{% for v, l in d.STATUSES %}<option value="{{ v }}" {% if v == d.status %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></form></li>{% empty %}<li class="muted">None yet.</li>{% endfor %}</ul></div>
+  </div>
+</div>
+{% endblock %}

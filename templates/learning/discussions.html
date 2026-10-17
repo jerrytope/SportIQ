@@ -1,0 +1,20 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}Discussion · {{ course.title }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'learning:course' course.slug %}">{{ course.title }}</a></div><h1>Course discussion</h1><p>Ask the instructor, help other learners. Posts are moderated.</p></div></div>
+<div class="split">
+  <div class="card">
+    <ul class="list">{% for t in threads %}
+      <li>{% if t.is_pinned %}{% icon "flag" %}{% else %}{% icon "message" %}{% endif %}
+        <span class="grow"><a class="title" href="{% url 'learning:thread' course.slug t.pk %}">{{ t.title }}</a><br><small class="muted">{{ t.author }} · {{ t.created_at|timesince }} ago{% if t.is_hidden %} · hidden{% endif %}</small></span>
+        {% if t.is_question %}{% if t.is_answered %}<span class="badge">Answered</span>{% else %}<span class="badge badge-amber">Awaiting answer</span>{% endif %}{% endif %}
+        <small class="muted">{{ t.n }}</small></li>
+    {% empty %}<li class="empty">No threads yet. Start the conversation.</li>{% endfor %}</ul>
+  </div>
+  <form class="card" method="post">{% csrf_token %}
+    <h3>Start a thread</h3>
+    {% include "components/form.html" %}
+    <button class="btn btn-primary" type="submit">Post</button>
+  </form>
+</div>
+{% endblock %}

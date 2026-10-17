@@ -1,0 +1,6 @@
+{% extends "app/base.html" %}
+{% block title %}Post an opportunity{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'community:opportunities' %}">Opportunities</a></div><h1>Post an opportunity</h1><p>Moderators check every posting. Don't ask applicants for fees.</p></div></div>
+<form class="card" method="post" style="max-width:860px">{% csrf_token %}{% include "components/form.html" with grid=True %}<button class="btn btn-primary">Submit</button></form>
+{% endblock %}

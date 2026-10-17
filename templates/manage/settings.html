@@ -1,0 +1,12 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Settings{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Platform settings</h1><p>Feature switches and integration status.</p></div></div>
+<div class="split split-even">
+  <form class="card" method="post">{% csrf_token %}<h3>Features</h3>{% include "components/form.html" %}<button class="btn btn-primary">Save</button>
+    <p class="small muted mt-1 mb-0">Leaderboards are off by default because they can disadvantage learners with disabilities, limited connectivity or different schedules.</p></form>
+  <div class="card"><h3>Integrations</h3><p class="small muted">Configured with environment variables on the server (see README). Keys are never shown here.</p>
+    <ul class="list">{% for name, on, var in integrations %}<li><span class="grow">{{ name }}<br><small class="muted"><code>{{ var }}</code></small></span>{% if on %}<span class="badge">Configured</span>{% else %}<span class="badge badge-amber">Not configured</span>{% endif %}</li>{% endfor %}</ul>
+    <p class="small mt-2 mb-0"><a href="{% url 'api_docs' %}" target="_blank" rel="noopener">{% icon "file" %} Public API documentation</a></p></div>
+</div>
+{% endblock %}

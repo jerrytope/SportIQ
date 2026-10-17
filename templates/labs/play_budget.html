@@ -1,0 +1,14 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ s.title }} · Budget sandbox{% endblock %}
+{% block content %}
+{% include "labs/_header.html" %}
+<form method="post" class="card" style="max-width:820px">{% csrf_token %}
+  <h3>Total budget: ₦{{ s.data.total|floatformat:0 }}</h3>
+  <div class="table-wrap" style="border:0"><table><thead><tr><th>Budget line</th><th>Notes</th><th>Allocation (₦)</th></tr></thead><tbody>
+    {% for l in s.data.lines %}<tr><td><strong>{{ l.label }}</strong></td><td><small class="muted">{{ l.hint }}</small></td><td><input type="number" min="0" step="1000" name="{{ l.key }}" value="0" aria-label="{{ l.label }}" data-line></td></tr>{% endfor %}
+  </tbody></table></div>
+  <p class="mt-2"><strong>Allocated: ₦<span id="sum">0</span></strong></p>
+  <button class="btn btn-primary">Submit budget</button>
+</form>
+<script>document.querySelectorAll("[data-line]").forEach(function(i){i.addEventListener("input",function(){var s=0;document.querySelectorAll("[data-line]").forEach(function(x){s+=+x.value||0});document.getElementById("sum").textContent=s.toLocaleString();});});</script>
+{% endblock %}

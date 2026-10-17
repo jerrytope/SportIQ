@@ -1,0 +1,137 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ lesson.title }} · {{ course.title }}{% endblock %}
+{% block head %}{% if lesson.hls_playlist %}<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js" defer></script>{% endif %}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'learning:my_learning' %}">My learning</a> / <a href="{{ course.get_absolute_url }}">{{ course.title }}</a></div>
+<div class="row-between mb-2">
+  <div><h1 style="font-size:1.6rem;margin:0">{{ lesson.title }}</h1><small class="muted">Lesson {{ position }} of {{ total }} · {{ lesson.module.title }}</small></div>
+  <div class="row" style="min-width:200px"><div class="progress" style="flex:1;min-width:120px"><span style="width:{{ enrolment.progress }}%"></span></div><small class="muted">{{ enrolment.progress }}%</small></div>
+</div>
+
+{% if enrolment.status == "completed" %}
+<div class="card card-dark mb-2 row-between">
+  <div><h3 class="mb-0">🏆 Course completed</h3><p class="mb-0" style="color:#a9c9b8">Completed {{ enrolment.completed_at|date:"j M Y" }}.</p></div>
+  <div class="row">{% if credential %}<a class="btn btn-gold" href="{{ credential.get_absolute_url }}">{% icon "award" %}View certificate</a>{% endif %}
+  {% if show_feedback %}<a class="btn btn-secondary" href="{% url 'learning:feedback' course.slug %}">Rate this course</a>{% endif %}</div>
+</div>
+{% endif %}
+
+<div class="player-layout">
+  <div class="stack">
+    {% if lesson.kind == "video" %}
+      {% if lesson.video or lesson.hls_playlist %}
+      <div class="player">
+        <video controls playsinline preload="{% if user.data_saver %}none{% else %}metadata{% endif %}"
+          {% if lesson.poster %}poster="{{ lesson.poster.url }}"{% endif %}
+          data-progress-url="{% url 'learning:save_position' course.slug lesson.pk %}" data-resume="{{ progress.position_seconds }}"
+          {% if lesson.hls_playlist %}data-hls="{{ MEDIA_URL|default:'/media/' }}{{ lesson.hls_playlist }}"{% endif %} {% if user.data_saver %}data-low-bandwidth="1"{% endif %}>
+          {% if not lesson.hls_playlist and lesson.video %}<source src="{{ lesson.video.url }}">{% endif %}
+          {% if lesson.subtitles %}<track kind="captions" src="{{ lesson.subtitles.url }}" srclang="en" label="English" default>{% endif %}
+          Your browser can't play this video. Use the audio or text version below.
+        </video>
+      </div>
+      <div class="player-toolbar">
+        <label class="sr-only" for="speed">Playback speed</label>
+        <select id="speed" style="width:auto"><option value="0.75">0.75×</option><option value="1" selected>1× speed</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+        {% if lesson.hls_playlist %}<label class="sr-only" for="quality">Quality</label><select id="quality" style="width:auto"><option value="-1">Auto quality</option></select>{% endif %}
+        {% if lesson.audio %}<a class="btn btn-secondary btn-sm" href="#audio">{% icon "headphones" %}Audio only</a>{% endif %}
+        {% if user.data_saver %}<span class="badge badge-gold">Data saver on</span>{% endif %}
+      </div>
+      {% else %}
+      <div class="alert alert-info">The video for this lesson is being prepared. Use the text version below.</div>
+      {% endif %}
+      {% if lesson.audio %}<div class="card card-tight" id="audio"><strong class="small">{% icon "headphones" %} Audio-only version (uses about 90% less data)</strong><audio controls preload="none" src="{{ lesson.audio.url }}" style="width:100%;margin-top:.5rem"></audio></div>{% endif %}
+    {% endif %}
+
+    {% if lesson.kind == "quiz" and exam_state %}
+    <div class="card">
+      <span class="eyebrow">Assessment</span>
+      <h2 style="font-size:1.4rem">{{ exam_state.exam.title }}</h2>
+      {% if exam_state.exam.instructions %}<div class="prose small" style="max-width:none">{{ exam_state.exam.instructions|markdown }}</div>{% endif %}
+      <div class="row mb-2"><span class="badge badge-grey">{% icon "clock" %}{{ exam_state.exam.time_limit_minutes }} minutes</span><span class="badge badge-grey">{{ exam_state.exam.question_count }} questions</span><span class="badge badge-grey">Pass mark {{ exam_state.exam.pass_mark }}%</span><span class="badge badge-grey">{{ exam_state.used }} of {{ exam_state.allowed }} attempts used</span></div>
+      {% if exam_state.attempts %}<ul class="list mb-2">{% for a in exam_state.attempts %}<li><span class="grow">Attempt {{ a.number }} · {{ a.submitted_at|date:"j M, H:i" }}</span>
+        {% if a.status == "released" %}<span class="badge {% if a.passed %}{% else %}badge-red{% endif %}">{{ a.percent }}% · {% if a.passed %}Passed{% else %}Not passed{% endif %}</span>{% else %}<span class="badge badge-amber">{{ a.get_status_display }}</span>{% endif %}
+        <a class="small" href="{% url 'learning:attempt' a.pk %}">Review</a></li>{% endfor %}</ul>{% endif %}
+      {% if exam_state.passed %}<div class="alert alert-success">{% icon "check-circle" %} You passed this assessment.</div>
+      {% elif exam_state.in_progress %}<a class="btn btn-primary" href="{% url 'learning:attempt' exam_state.in_progress.pk %}">Resume attempt</a>
+      {% elif not exam_state.open %}<div class="alert alert-info">{% icon "calendar" %} Opens {{ exam_state.exam.opens_at|date:"j M Y, H:i"|default:"soon" }}{% if exam_state.exam.closes_at %}, closes {{ exam_state.exam.closes_at|date:"j M Y, H:i" }}{% endif %}.</div>
+      {% elif exam_state.used < exam_state.allowed %}
+        <form method="post" action="{% url 'learning:exam_start' exam_state.exam.pk %}">{% csrf_token %}
+          {% if exam_state.exam.identity_declaration %}<label class="check mb-1"><input type="checkbox" name="declare" required> <span>I am {{ user.get_full_name }}, I will work alone, and the answers will be my own.</span></label>{% endif %}
+          {% if exam_state.exam.webcam_invigilation %}<div class="alert alert-info small">This assessment uses webcam snapshots (one still image a minute, seen only by examiners). <label class="check mt-1"><input type="checkbox" name="alternative"> <span>I cannot use a camera: I will sit with an accessible alternative arrangement</span></label></div>{% endif %}
+          <button class="btn btn-primary btn-lg" data-confirm="Click again to start the timer">Start assessment</button></form>
+        <p class="small muted mt-1">The AI study assistant and course notes are not available during the assessment. Work on your own.</p>
+      {% else %}<div class="alert alert-warning">You have used all attempts.</div>
+        <form method="post" action="{% url 'learning:exam_appeal' exam_state.exam.pk %}">{% csrf_token %}<input type="hidden" name="kind" value="resit"><div class="field"><label for="rr">Request a resit: tell your instructor why</label><textarea id="rr" name="reason" rows="2" required></textarea></div><button class="btn btn-secondary btn-sm">Request resit</button></form>{% endif %}
+    </div>
+    {% endif %}
+
+    {% if lesson.kind == "practical" and lesson.practical_task %}
+    <a class="card card-link row" href="{% url 'practicals:task' lesson.practical_task.pk %}"><span class="bento-icon mb-0">{% icon "clipboard" %}</span><span class="grow"><strong style="color:var(--primary)">Practical task: {{ lesson.practical_task.title }}</strong><br><small class="muted">{{ lesson.practical_task.get_kind_display }}{% if lesson.practical_task.requires_supervisor %} · needs supervisor sign-off{% endif %}. Completes automatically when assessed as competent.</small></span>{% icon "arrow-right" %}</a>
+    {% endif %}
+    {% if lesson.kind == "lab" and lesson.lab %}
+    <a class="card card-link row" href="{{ lesson.lab.get_absolute_url }}"><span class="bento-icon mb-0">{% icon "flask" %}</span><span class="grow"><strong style="color:var(--primary)">{{ lesson.lab.get_kind_display }}: {{ lesson.lab.title }}</strong><br><small class="muted">Training exercise · {{ lesson.lab.summary }}</small></span>{% icon "arrow-right" %}</a>
+    {% endif %}
+    {% if lesson.kind == "live" and lesson.live_session %}
+    <a class="card card-link row" href="{{ lesson.live_session.get_absolute_url }}"><span class="bento-icon mb-0">{% icon "video" %}</span><span class="grow"><strong style="color:var(--primary)">{{ lesson.live_session.title }}</strong><br><small class="muted">{{ lesson.live_session.starts_at|date:"D j M, H:i" }} · {{ lesson.live_session.get_kind_display }}</small></span>{% icon "arrow-right" %}</a>
+    {% endif %}
+    {% if lesson.kind == "scorm" and lesson.scorm %}
+    <div class="card card-tight"><iframe src="{% url 'integrations:scorm_launch' lesson.pk %}" title="{{ lesson.title }}" style="width:100%;height:560px;border:0;border-radius:12px" allowfullscreen></iframe><small class="muted">Interactive package (SCORM {{ lesson.scorm.version }}). Your progress is saved automatically.</small></div>
+    {% endif %}
+    {% if lesson.embed_url %}<div class="card card-tight"><iframe src="{{ lesson.embed_url }}" title="{{ lesson.title }}" style="width:100%;height:520px;border:0;border-radius:12px" allowfullscreen loading="lazy"></iframe></div>{% endif %}
+    {% if ltr %}<div class="card prose" style="max-width:none;border-color:var(--accent)"><span class="badge badge-gold">{{ ltr.get_language_display }}</span><h3>{{ ltr.title }}</h3>{{ ltr.body|markdown }}{% if ltr.transcript %}<details><summary>Transcript</summary><div class="transcript">{{ ltr.transcript }}</div></details>{% endif %}</div>{% endif %}
+    {% if lesson.body %}<div class="card prose" style="max-width:none">{% if lesson.kind == "video" %}<h3 class="mt-0">Text version</h3>{% endif %}{{ lesson.body|markdown }}</div>{% endif %}
+    {% if lesson.attachment %}<a class="card card-link row" href="{{ lesson.attachment.url }}" download>{% icon "download" %}<span class="grow"><strong>Download lesson resource</strong><br><small class="muted">{{ lesson.attachment.name|cut:"lessons/files/" }}</small></span></a>{% endif %}
+
+    <div data-tabs>
+      <div class="tabs" role="tablist">
+        {% if lesson.transcript %}<button type="button" data-tab="transcript" aria-selected="true">Transcript</button>{% endif %}
+        <button type="button" data-tab="notes" id="notes">My notes ({{ notes|length }})</button>
+        <button type="button" data-tab="discuss">Discussion</button>
+      </div>
+      {% if lesson.transcript %}<div class="tab-panel" data-panel="transcript"><div class="transcript">{{ lesson.transcript }}</div></div>{% endif %}
+      <div class="tab-panel" data-panel="notes">
+        <form id="note-form" method="post" action="{% url 'learning:add_note' course.slug lesson.pk %}" class="mb-2">{% csrf_token %}
+          <input type="hidden" name="at_seconds" id="note-at">
+          <label class="sr-only" for="note-body">New note</label>
+          <textarea id="note-body" name="body" rows="3" placeholder="Write a private note{% if lesson.kind == 'video' %} (saved at the current video time){% endif %}…" required></textarea>
+          <button class="btn btn-secondary btn-sm mt-1" type="submit">Save note</button>
+        </form>
+        <ul class="list">{% for n in notes %}<li><span class="grow">{% if n.at_seconds is not None %}<a href="#" data-seek="{{ n.at_seconds }}" class="badge">{{ n.at_seconds|floatformat:0 }}s</a> {% endif %}{{ n.body|linebreaksbr }}</span>
+          <form method="post" action="{% url 'learning:delete_note' n.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm" aria-label="Delete note">{% icon "trash" %}</button></form></li>{% empty %}<li class="muted small">No notes yet.</li>{% endfor %}</ul>
+      </div>
+      <div class="tab-panel" data-panel="discuss">
+        <ul class="list">{% for t in threads %}<li>{% icon "message" %}<a class="grow" href="{% url 'learning:thread' course.slug t.pk %}">{{ t.title }}</a>{% if t.is_answered %}<span class="badge">Answered</span>{% endif %}<small class="muted">{{ t.n }} repl{{ t.n|pluralize:"y,ies" }}</small></li>{% empty %}<li class="muted small">No discussions yet.</li>{% endfor %}</ul>
+        <a class="btn btn-secondary btn-sm mt-1" href="{% url 'learning:discussions' course.slug %}">Open course discussion</a>
+      </div>
+    </div>
+
+    <div class="row-between card card-tight">
+      {% if prev %}<a class="btn btn-ghost" href="{% url 'learning:lesson' course.slug prev.pk %}">{% icon "chevron-left" %}Previous</a>{% else %}<span></span>{% endif %}
+      <div class="row">
+        <button type="button" class="btn btn-ghost" data-offline-save="{{ request.path }}" data-title="{{ course.title }}: {{ lesson.title|escape }}" data-assets="{% if lesson.audio %}{{ lesson.audio.url }}{% endif %}|{% if lesson.attachment %}{{ lesson.attachment.url }}{% endif %}|{% if lesson.subtitles %}{{ lesson.subtitles.url }}{% endif %}|{% if lesson.poster %}{{ lesson.poster.url }}{% endif %}">{% icon "download" %}Save offline</button>
+        <form method="post" action="{% url 'learning:bookmark' course.slug lesson.pk %}">{% csrf_token %}<button class="btn btn-ghost" aria-pressed="{{ bookmarked|yesno:'true,false' }}">{% icon "bookmark" %}{% if bookmarked %}Saved{% else %}Save{% endif %}</button></form>
+        {% if lesson.pk in done %}
+          {% if next %}<a class="btn btn-primary" href="{% url 'learning:lesson' course.slug next.pk %}">Next lesson {% icon "chevron-right" %}</a>{% else %}<span class="badge">{% icon "check" %}Completed</span>{% endif %}
+        {% elif lesson.kind == "quiz" and exam_state and not exam_state.passed %}
+          <span class="badge badge-amber">Pass the assessment to continue</span>
+        {% else %}
+          <form method="post" action="{% url 'learning:complete' course.slug lesson.pk %}" data-offline-complete {% if next %}data-next="{% url 'learning:lesson' course.slug next.pk %}"{% endif %}>{% csrf_token %}<button class="btn btn-primary">{% icon "check" %}Mark complete{% if next %} &amp; continue{% endif %}</button></form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <aside class="card card-tight outline" aria-label="Course outline">
+    <strong style="color:var(--primary)">{{ course.title }}</strong>
+    {% for m in modules %}
+      <h4>{{ m.title }}</h4>
+      {% for l in m.lessons.all %}
+        <a href="{% url 'learning:lesson' course.slug l.pk %}" class="{% if l.pk == lesson.pk %}current{% endif %}">
+          <span class="tick {% if l.pk in done %}done{% endif %}">{% if l.pk in done %}{% icon "check" %}{% endif %}</span>
+          <span>{{ l.title }}<br><small class="muted">{{ l.get_kind_display }} · {{ l.duration_minutes|duration }}</small></span></a>
+      {% endfor %}
+    {% endfor %}
+  </aside>
+</div>
+{% endblock %}

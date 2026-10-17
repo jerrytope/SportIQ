@@ -1,0 +1,10 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}No access{% endblock %}
+{% block content %}
+<div class="card text-center" style="max-width:520px;margin:3rem auto">
+  <span class="bento-icon" style="margin:0 auto 1rem">{% icon "lock" %}</span>
+  <h1 style="font-size:1.5rem">You don't have access to this area</h1>
+  <p class="muted">Your role doesn't include this part of the back office. Ask a SportIQ administrator if you need it.</p>
+  <a class="btn btn-primary" href="{% url 'backoffice:home' %}">Back to overview</a>
+</div>
+{% endblock %}

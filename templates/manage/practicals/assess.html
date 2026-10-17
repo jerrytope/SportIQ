@@ -1,0 +1,23 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Assess practical{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:practicals' %}">Practicals marking</a></div><h1>{{ sub.task.title }}</h1><p>{{ sub.user }} · attempt {{ sub.attempt }} · {{ sub.task.course.title }} · pass mark {{ sub.task.pass_mark }}%</p></div></div>
+<div class="split">
+  <div class="stack">
+    {% if sub.text %}<div class="card"><h3>Submission</h3><div class="transcript" style="max-height:480px">{{ sub.text }}</div></div>{% endif %}
+    {% if sub.file %}<a class="card card-link row" href="{{ sub.file.url }}">{% icon "file" %}<strong>Uploaded document</strong></a>{% endif %}
+    {% if sub.video %}<div class="player"><video controls preload="metadata" src="{{ sub.video.url }}"></video></div>{% endif %}
+    {% if sub.video_url %}<a class="card card-link row" href="{{ sub.video_url }}" target="_blank" rel="noopener">{% icon "video" %}<strong>Video link</strong></a>{% endif %}
+    {% if sub.task.requires_supervisor %}<div class="card card-tint"><strong>Supervisor:</strong> {{ sub.supervisor_name }} ({{ sub.supervisor_role }}) · {% if sub.supervisor_signed_at %}<span class="badge">Confirmed {{ sub.supervisor_signed_at|date:"j M" }}</span>{% elif sub.supervisor_comment %}<span class="badge badge-red">Declined</span>{% else %}<span class="badge badge-amber">Not yet confirmed</span>{% endif %}{% if sub.supervisor_comment %}<p class="small mb-0 mt-1">{{ sub.supervisor_comment }}</p>{% endif %}</div>{% endif %}
+    {% if sub.ai_feedback %}<div class="card" style="border-color:var(--accent)"><h3>{% icon "sparkles" %} Draft AI feedback (not a grade)</h3><div class="small" style="white-space:pre-wrap">{{ sub.ai_feedback }}</div></div>{% endif %}
+  </div>
+  <form class="card" method="post">{% csrf_token %}
+    <h3>Rubric</h3>
+    {% for c in criteria %}<div class="field"><label for="c{{ c.i }}">{{ c.title }} (0–{{ c.max }})</label><input id="c{{ c.i }}" type="number" min="0" max="{{ c.max }}" name="c{{ c.i }}" value="{{ c.score }}"></div>{% empty %}<p class="muted small">No rubric defined: score holistically in feedback.</p>{% endfor %}
+    <div class="field"><label for="fb">Feedback to learner</label><textarea id="fb" name="feedback" rows="6">{{ sub.feedback }}</textarea></div>
+    <div class="row"><button class="btn btn-primary" name="action" value="assess">Save assessment</button><button class="btn btn-secondary" name="action" value="revise">Request revision</button></div>
+    <button class="btn btn-ghost btn-sm mt-1" name="action" value="ai_feedback">{% icon "sparkles" %}Draft feedback with AI</button>
+    {% if history %}<h4 class="mt-3">Previous attempts</h4><ul class="list">{% for h in history %}<li><small class="grow">#{{ h.attempt }} · {{ h.get_status_display }}</small></li>{% endfor %}</ul>{% endif %}
+  </form>
+</div>
+{% endblock %}

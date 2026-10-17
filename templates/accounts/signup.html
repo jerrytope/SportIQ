@@ -1,0 +1,20 @@
+{% extends "public/base.html" %}{% load sportiq %}
+{% block title %}Create your account · SportIQ{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="card auth-card wide">
+    <span class="eyebrow">Free account</span>
+    <h1 style="font-size:1.9rem">Join the digital academy for Nigerian sport</h1>
+    <p class="muted">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    {% if not site.public_registration_open %}
+      <div class="alert alert-warning">Public registration is currently closed. Institutions can still invite members.</div>
+    {% else %}
+    <form method="post" novalidate>{% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+      {% include "components/form.html" with grid=True %}
+      <button class="btn btn-primary btn-lg btn-block" type="submit">Create account</button>
+    </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

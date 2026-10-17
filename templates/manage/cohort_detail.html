@@ -1,0 +1,18 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ cohort.name }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:cohorts' %}">Cohorts</a></div><h1>{{ cohort.name }}</h1><p>{{ cohort.course.title }} · {{ enrolments|length }}{% if cohort.capacity %} of {{ cohort.capacity }}{% endif %} learners{% if cohort.instructor %} · instructor {{ cohort.instructor }}{% endif %}</p></div></div>
+<div class="split">
+  <div class="table-wrap"><table><thead><tr><th>Learner</th><th>Progress</th><th>Status</th><th>Due</th><th>Last active</th></tr></thead><tbody>
+    {% for e in enrolments %}<tr><td><a href="{% url 'backoffice:user_detail' e.user.pk %}">{{ e.user }}</a><br><small class="muted">{{ e.user.email }}</small></td>
+      <td style="min-width:140px"><div class="progress"><span style="width:{{ e.progress }}%"></span></div><small>{{ e.progress }}%</small></td><td>{{ e.get_status_display }}</td><td>{{ e.due_date|date:"j M"|default:"—" }}</td><td><small>{{ e.last_activity_at|timesince|default:"never" }}</small></td></tr>
+    {% empty %}<tr><td colspan="5" class="empty">No learners yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <form class="card" method="post">{% csrf_token %}
+    <h3>Bulk enrol</h3>
+    <div class="field"><label for="emails">Email addresses</label><textarea id="emails" name="emails" rows="6" placeholder="one per line or comma-separated"></textarea><div class="help">Learners must already have SportIQ accounts. Use Users → Import to create accounts first.</div></div>
+    <div class="field"><label for="due">Due date (optional)</label><input id="due" type="date" name="due_date"></div>
+    <button class="btn btn-primary">Enrol learners</button>
+  </form>
+</div>
+{% endblock %}

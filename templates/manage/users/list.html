@@ -1,0 +1,20 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Users{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Users &amp; roles</h1><p>{{ page.paginator.count }} account{{ page.paginator.count|pluralize }}.</p></div>
+  <a class="btn btn-secondary" href="{% url 'backoffice:users_import' %}">{% icon "upload" %}Import CSV</a></div>
+<form class="inline-form mb-2" method="get">
+  <input type="search" name="q" value="{{ q }}" placeholder="Name, email or phone" aria-label="Search">
+  <select name="kind" aria-label="Type"><option value="">Everyone</option><option value="learners" {% if kind == 'learners' %}selected{% endif %}>Learners</option><option value="staff" {% if kind == 'staff' %}selected{% endif %}>Staff</option><option value="unverified" {% if kind == 'unverified' %}selected{% endif %}>Unverified professionals</option><option value="inactive" {% if kind == 'inactive' %}selected{% endif %}>Deactivated</option></select>
+  <select name="state" aria-label="State"><option value="">All states</option>{% for s in states %}<option {% if request.GET.state == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+  <select name="profession" aria-label="Profession"><option value="">All professions</option>{% for p in professions %}<option value="{{ p.slug }}" {% if request.GET.profession == p.slug %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select>
+  <button class="btn btn-secondary">Filter</button>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Name</th><th>Profession</th><th>State</th><th>Roles</th><th>Courses</th><th>Joined</th></tr></thead><tbody>
+  {% for u in page %}<tr><td><a href="{% url 'backoffice:user_detail' u.pk %}"><strong>{{ u.get_full_name|default:u.email }}</strong></a><br><small class="muted">{{ u.email }}</small>{% if not u.is_active %} <span class="badge badge-red">Inactive</span>{% endif %}{% if u.is_verified_professional %} <span class="badge">Verified</span>{% endif %}</td>
+    <td><small>{% for p in u.professions.all %}{{ p.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small></td><td>{{ u.state }}</td>
+    <td>{% for r in u.role_labels %}<span class="badge badge-blue">{{ r }}</span> {% endfor %}{% if u.is_superuser %}<span class="badge badge-blue">Superuser</span>{% endif %}</td><td>{{ u.n_enrol }}</td><td><small>{{ u.date_joined|date:"j M Y" }}</small></td></tr>
+  {% empty %}<tr><td colspan="6" class="empty">No users match.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include "components/pagination.html" %}
+{% endblock %}

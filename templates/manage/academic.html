@@ -1,0 +1,23 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Academic settings{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Academic settings</h1><p>Subject areas, academic terms and credential types.</p></div></div>
+<div class="split split-even">
+  <div class="stack">
+    <div class="card"><h3>Subject areas (curriculum tracks)</h3>
+      <ul class="list">{% for t in tracks %}<li><span class="grow"><strong>{{ t.name }}</strong> <small class="muted">· {{ t.n }} course{{ t.n|pluralize }}</small><br><small class="muted">{% for s in t.subjects.all %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% empty %}No subjects{% endfor %}</small></span></li>{% endfor %}</ul>
+      <form method="post" class="inline-form mt-2">{% csrf_token %}<input type="hidden" name="form" value="track"><input name="name" placeholder="New subject area" aria-label="New subject area" required><button class="btn btn-secondary btn-sm">Add area</button></form>
+      <form method="post" class="inline-form mt-1">{% csrf_token %}<input type="hidden" name="form" value="subject">
+        <select name="track" aria-label="Subject area">{% for t in tracks %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}</select><input name="name" placeholder="New subject" aria-label="New subject" required><button class="btn btn-secondary btn-sm">Add subject</button></form>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card"><h3>Academic terms</h3>
+      <ul class="list">{% for t in terms %}<li><span class="grow">{{ t.name }}</span><small class="muted">{{ t.starts_on|date:"j M Y" }} – {{ t.ends_on|date:"j M Y" }}</small></li>{% empty %}<li class="muted">No terms.</li>{% endfor %}</ul>
+      <form method="post" class="mt-2">{% csrf_token %}<input type="hidden" name="form" value="term">{% include "components/form.html" with form=term_form grid=True %}<button class="btn btn-secondary btn-sm">Add term</button></form>
+    </div>
+    <div class="card"><h3>Credential types</h3><p class="small muted">Managed by the registrar in <a href="{% url 'backoffice:credentials' %}">Credentials</a>.</p>
+      <ul class="list">{% for c in credential_types %}<li><span class="grow">{{ c.name }}</span><span class="badge badge-grey">{{ c.get_kind_display }}</span></li>{% endfor %}</ul></div>
+  </div>
+</div>
+{% endblock %}

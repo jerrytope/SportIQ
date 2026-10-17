@@ -1,0 +1,17 @@
+{% extends base %}{% load sportiq %}
+{% block title %}Opportunities · SportIQ{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<section class="page-hero"><div class="container">{% endif %}
+<div class="page-title"><div><span class="eyebrow">Careers</span><h1>Opportunities in Nigerian sport</h1><p>Jobs, internships, volunteering, apprenticeships, research projects and events, approved by moderators.</p></div>
+  {% if user.is_authenticated %}<a class="btn btn-primary" href="{% url 'community:post_opportunity' %}">{% icon "plus" %}Post an opportunity</a>{% endif %}</div>
+{% if not user.is_authenticated %}</div></section><section class="section" style="padding-top:32px"><div class="container">{% endif %}
+<div class="chip-list mb-2"><a class="chip {% if not request.GET.kind %}on{% endif %}" href="?">All</a>{% for v, l in kinds %}<a class="chip {% if request.GET.kind == v %}on{% endif %}" href="?kind={{ v }}">{{ l }}</a>{% endfor %}</div>
+<div class="split">
+  <div class="stack">{% for o in items %}
+    <a class="card card-link" href="{{ o.get_absolute_url }}"><div class="row-between"><span class="badge">{{ o.get_kind_display }}</span>{% if o.closes_on %}<small class="muted">Closes {{ o.closes_on|date:"j M" }}</small>{% endif %}</div>
+      <h3 class="mt-1 mb-0">{{ o.title }}</h3><p class="small muted mb-0">{{ o.organisation }}{% if o.state %} · {{ o.state }}{% endif %}{% if o.sport %} · {{ o.sport }}{% endif %} · {% if o.paid %}Paid{% else %}Unpaid{% endif %}</p></a>
+  {% empty %}<div class="card empty">{% icon "briefcase" %}<p>No open opportunities match.</p></div>{% endfor %}</div>
+  <div class="card"><h3>Research projects recruiting</h3><ul class="list">{% for p in research %}<li><a class="grow" href="{{ p.get_absolute_url }}">{{ p.title }}</a></li>{% empty %}<li class="muted small">None right now.</li>{% endfor %}</ul></div>
+</div>
+{% if not user.is_authenticated %}</div></section>{% endif %}
+{% endblock %}

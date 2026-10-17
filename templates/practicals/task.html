@@ -1,0 +1,24 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ task.title }} · Practical{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'learning:course' task.course.slug %}">{{ task.course.title }}</a> / Practical task</div>
+<div class="page-title"><div><h1>{{ task.title }}</h1><p>{{ task.get_kind_display }} · pass mark {{ task.pass_mark }}%{% if task.requires_supervisor %} · needs supervisor sign-off{% endif %}</p></div></div>
+<div class="split">
+  <div class="stack">
+    <div class="card prose" style="max-width:none"><h3 class="mt-0">Instructions</h3>{{ task.instructions|markdown }}
+      {% if task.template_file %}<p><a class="btn btn-secondary btn-sm" href="{{ task.template_file.url }}" download>{% icon "download" %}Download template</a></p>{% endif %}</div>
+    {% if can_submit %}
+    <form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}
+      <h3>{% if submissions %}Resubmit{% else %}Submit your work{% endif %}</h3>
+      {% if task.requires_supervisor %}<div class="alert alert-info small">This competence must be observed in person. Name the qualified supervisor who watched you; we'll email them a secure link to confirm. Online submission alone is not enough.</div>{% endif %}
+      {% include "components/form.html" with grid=True %}
+      <button class="btn btn-primary">Submit for assessment</button>
+    </form>
+    {% else %}<div class="alert alert-info">Your latest submission is {{ submissions.0.get_status_display|lower }}.</div>{% endif %}
+  </div>
+  <div class="stack">
+    <div class="card"><h3>Assessment rubric</h3><ul class="list">{% for c in task.rubric %}<li><span class="grow">{{ c.title }}</span><span class="badge badge-grey">{{ c.max }} pts</span></li>{% empty %}<li class="muted">Assessed holistically.</li>{% endfor %}</ul></div>
+    <div class="card"><h3>Your submissions</h3><ul class="list">{% for s in submissions %}<li><a class="grow" href="{% url 'practicals:submission' s.pk %}">Attempt {{ s.attempt }} · {{ s.created_at|date:"j M Y" }}</a><span class="badge {% if s.status == 'passed' %}{% elif s.status == 'failed' %}badge-red{% else %}badge-amber{% endif %}">{{ s.get_status_display }}</span></li>{% empty %}<li class="muted">None yet.</li>{% endfor %}</ul></div>
+  </div>
+</div>
+{% endblock %}

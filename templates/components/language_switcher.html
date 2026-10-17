@@ -1,0 +1,5 @@
+{% load i18n %}<form action="{% url 'set_language' %}" method="post" class="lang-switch">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+  {% get_current_language as LANG %}<label class="sr-only" for="{{ switcher_id }}">{% trans "Language" %}</label>
+  <select id="{{ switcher_id }}" name="language" onchange="this.form.submit()" title="{% trans 'Interface translations are drafts awaiting expert review.' %}">
+    {% get_available_languages as LANGS %}{% for code, name in LANGS %}<option value="{{ code }}" {% if code == LANG %}selected{% endif %}>{{ name }}</option>{% endfor %}</select>
+  <noscript><button class="btn btn-ghost btn-sm" type="submit">{% trans "Language" %}</button></noscript></form>

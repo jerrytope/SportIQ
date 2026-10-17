@@ -1,0 +1,19 @@
+{% extends "app/base.html" %}{% load sportiq %}
+{% block title %}{{ s.title }} · Lab{% endblock %}
+{% block content %}
+{% include "labs/_header.html" %}
+<div class="split">
+  <div class="stack">
+    {% if s.video and not history %}<div class="player"><video controls preload="metadata" src="{{ s.video.url }}"></video></div>{% endif %}
+    {% if node %}
+    <form class="card" method="post">{% csrf_token %}
+      <span class="eyebrow">Decision {{ history|length|add:1 }}</span>
+      <div class="prose" style="max-width:none">{{ node.text|markdown }}</div>
+      {% for o in node.options %}<label class="option"><input type="radio" name="option" value="{{ forloop.counter0 }}" required> <span>{{ o.text }}</span></label>{% endfor %}
+      <button class="btn btn-primary mt-1">Decide</button>
+    </form>
+    {% endif %}
+  </div>
+  <div class="card"><h3>Your decisions</h3><ul class="timeline">{% for h in history %}<li>{{ h.feedback|default:"Decision recorded." }}</li>{% empty %}<li class="muted">Make your first decision.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

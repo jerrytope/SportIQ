@@ -1,0 +1,16 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{% if lesson.pk %}Edit lesson{% else %}New lesson{% endif %}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:course_builder' course.pk %}">{{ course.title }}</a> / {{ module.title }}</div>
+  <h1>{% if lesson.pk %}{{ lesson.title }}{% else %}New lesson{% endif %}</h1>
+  <p>Video lessons should include a text version and, where possible, subtitles and a transcript for accessibility and low bandwidth.</p></div></div>
+{% if lesson.pk and lesson.kind == "video" %}<div class="alert {% if lesson.media_status == 'ready' %}alert-success{% elif lesson.media_status == 'failed' %}alert-error{% else %}alert-info{% endif %}">Media status: {{ lesson.get_media_status_display }}{% if lesson.hls_playlist %} · adaptive streams (240p/360p/720p) and audio-only track ready{% endif %}</div>{% endif %}
+<form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}
+  {% include "components/form.html" with grid=True %}
+  <div class="row"><button class="btn btn-primary" type="submit">Save lesson</button><a class="btn btn-ghost" href="{% url 'backoffice:course_builder' course.pk %}">Cancel</a></div>
+</form>
+{% if lesson.pk %}<form class="card mt-2" method="post" enctype="multipart/form-data" action="{% url 'backoffice:scorm_upload' lesson.pk %}">{% csrf_token %}<h3>SCORM / interactive package</h3>
+  {% if lesson.scorm %}<p class="small">Installed: {{ lesson.scorm.title|default:"package" }} (SCORM {{ lesson.scorm.version }}, launch <code>{{ lesson.scorm.launch_path }}</code>)</p>{% endif %}
+  <div class="inline-form"><input type="file" name="package" accept=".zip" aria-label="SCORM zip" required><button class="btn btn-secondary btn-sm">Upload .zip</button></div><p class="small muted mb-0">SCORM 1.2 or 2004. Completion and score are recorded automatically and stored as xAPI statements.</p></form>{% endif %}
+{% if lesson.pk %}<form method="post" action="{% url 'backoffice:lesson_delete' lesson.pk %}" class="mt-2">{% csrf_token %}<button class="btn btn-danger btn-sm" data-confirm="Click again to delete">{% icon "trash" %}Delete lesson</button></form>{% endif %}
+{% endblock %}

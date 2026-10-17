@@ -1,0 +1,23 @@
+{% extends base %}{% load sportiq %}
+{% block title %}{{ path.title }} · SportIQ{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="breadcrumbs"><a href="{% url 'catalog:paths' %}">Learning paths</a></div>
+<div class="card card-dark mb-3">
+  <span class="pill pill-gold">{% icon "layers" %}Learning path</span>
+  <h1 style="color:#fff;margin-top:.75rem">{{ path.title }}</h1>
+  <p style="color:#a9c9b8">{{ path.summary }}</p>
+  {% if user.is_authenticated %}<div class="progress progress-gold" style="background:rgba(255,255,255,.15)"><span style="width:{{ pct }}%"></span></div><small style="color:#a9c9b8">{{ pct }}% of this path complete</small>{% endif %}
+</div>
+{% if path.description %}<div class="prose mb-3">{{ path.description|markdown }}</div>{% endif %}
+<ol class="list" style="list-style:none">
+  {% for i in items %}
+  <li class="card mb-2" style="display:flex;gap:1rem;align-items:center">
+    <span class="avatar" style="{% if i.course_id in done %}background:var(--brand);color:#fff{% endif %}">{% if i.course_id in done %}{% icon "check" %}{% else %}{{ forloop.counter }}{% endif %}</span>
+    <span class="grow" style="flex:1"><span class="badge badge-grey">{{ i.get_stage_display }}</span><br><a class="title" href="{{ i.course.get_absolute_url }}">{{ i.course.title }}</a><br><small class="muted">{{ i.course.summary|truncatechars:120 }}</small></span>
+    <span>{% if i.course_id in done %}<span class="badge">Completed</span>{% elif i.course_id in enrolled %}<a class="btn btn-sm btn-primary" href="{% url 'learning:course' i.course.slug %}">Continue</a>{% else %}<a class="btn btn-sm btn-secondary" href="{{ i.course.get_absolute_url }}">View</a>{% endif %}</span>
+  </li>
+  {% endfor %}
+</ol>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

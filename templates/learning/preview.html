@@ -1,0 +1,11 @@
+{% extends base %}{% load sportiq %}
+{% block title %}Preview: {{ lesson.title }}{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}<div class="container" style="padding:32px 16px 64px">{% endif %}
+<div class="breadcrumbs"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a> / Free preview</div>
+<h1 style="font-size:1.8rem">{{ lesson.title }}</h1>
+{% if lesson.video %}<div class="player mb-2"><video controls preload="metadata" {% if lesson.poster %}poster="{{ lesson.poster.url }}"{% endif %}><source src="{{ lesson.video.url }}">{% if lesson.subtitles %}<track kind="captions" src="{{ lesson.subtitles.url }}" srclang="en" label="English" default>{% endif %}</video></div>{% endif %}
+{% if lesson.body %}<div class="card prose" style="max-width:none">{{ lesson.body|markdown }}</div>{% endif %}
+<div class="cta-band mt-3"><h2>Enjoying the preview?</h2><div class="hero-cta"><a class="btn btn-gold btn-lg" href="{{ course.get_absolute_url }}">Enrol in {{ course.title }}</a></div></div>
+{% if not user.is_authenticated %}</div>{% endif %}
+{% endblock %}

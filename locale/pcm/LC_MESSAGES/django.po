@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: pcm\n"
+
+#, fuzzy
+msgid "Home"
+msgstr "Home"
+
+#, fuzzy
+msgid "Explore courses"
+msgstr "Check courses"
+
+#, fuzzy
+msgid "My learning"
+msgstr "My learning"
+
+#, fuzzy
+msgid "Academy"
+msgstr "Academy"
+
+#, fuzzy
+msgid "Live academy"
+msgstr "Live class"
+
+#, fuzzy
+msgid "Practical labs"
+msgstr "Practice labs"
+
+#, fuzzy
+msgid "Sports library"
+msgstr "Sports library"
+
+#, fuzzy
+msgid "AI study assistant"
+msgstr "AI study helper"
+
+#, fuzzy
+msgid "Research & insights"
+msgstr "Research"
+
+#, fuzzy
+msgid "Qualifications"
+msgstr "Qualifications"
+
+#, fuzzy
+msgid "Credentials"
+msgstr "My certificates"
+
+#, fuzzy
+msgid "CPD & renewals"
+msgstr "CPD & renew"
+
+#, fuzzy
+msgid "Achievements"
+msgstr "Wetin I don achieve"
+
+#, fuzzy
+msgid "Careers & community"
+msgstr "Work & community"
+
+#, fuzzy
+msgid "Community"
+msgstr "Community"
+
+#, fuzzy
+msgid "Opportunities"
+msgstr "Opportunities"
+
+#, fuzzy
+msgid "Experience & CV"
+msgstr "Experience & CV"
+
+#, fuzzy
+msgid "Challenges"
+msgstr "Challenges"
+
+#, fuzzy
+msgid "Me"
+msgstr "Me"
+
+#, fuzzy
+msgid "Professional profile"
+msgstr "My work profile"
+
+#, fuzzy
+msgid "Account settings"
+msgstr "Account settings"
+
+#, fuzzy
+msgid "Help & support"
+msgstr "Help"
+
+#, fuzzy
+msgid "Report a concern"
+msgstr "Report wahala"
+
+#, fuzzy
+msgid "Back office"
+msgstr "Back office"
+
+#, fuzzy
+msgid "Log out"
+msgstr "Comot"
+
+#, fuzzy
+msgid "Language"
+msgstr "Language"
+
+#, fuzzy
+msgid "Explore"
+msgstr "Check am"
+
+#, fuzzy
+msgid "Learning"
+msgstr "Learning"
+
+#, fuzzy
+msgid "Search courses, topics, sports…"
+msgstr "Find course, topic, sport…"
+
+#, fuzzy
+msgid "About SportIQ"
+msgstr "About SportIQ"
+
+#, fuzzy
+msgid "Resources"
+msgstr "Resources"
+
+#, fuzzy
+msgid "For institutions"
+msgstr "For organisations"
+
+#, fuzzy
+msgid "Verify"
+msgstr "Check am"
+
+#, fuzzy
+msgid "Verify a certificate"
+msgstr "Check certificate"
+
+#, fuzzy
+msgid "Course catalogue"
+msgstr "All courses"
+
+#, fuzzy
+msgid "Learning paths"
+msgstr "Learning road"
+
+#, fuzzy
+msgid "Certifications"
+msgstr "Certificates"
+
+#, fuzzy
+msgid "FAQs"
+msgstr "Questions wey people dey ask"
+
+#, fuzzy
+msgid "Blog"
+msgstr "Blog"
+
+#, fuzzy
+msgid "Events"
+msgstr "Events"
+
+#, fuzzy
+msgid "Help centre"
+msgstr "Help centre"
+
+#, fuzzy
+msgid "Sign up"
+msgstr "Join"
+
+#, fuzzy
+msgid "Sign up free"
+msgstr "Join free"
+
+#, fuzzy
+msgid "Login"
+msgstr "Enter"
+
+#, fuzzy
+msgid "Request a demo"
+msgstr "Ask for demo"
+
+#, fuzzy
+msgid "Request demo"
+msgstr "Ask for demo"
+
+#, fuzzy
+msgid "My dashboard"
+msgstr "My dashboard"
+
+#, fuzzy
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#, fuzzy
+msgid "Organisation"
+msgstr "Organisation"
+
+#, fuzzy
+msgid "Observatory"
+msgstr "Observatory"
+
+#, fuzzy
+msgid "Frequently asked questions"
+msgstr "Questions wey people dey ask"
+
+#, fuzzy
+msgid "Interface translations are drafts awaiting expert review."
+msgstr "Dis translation still be draft wey experts go check."

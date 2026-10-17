@@ -1,0 +1,20 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}Instructor copilot{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:course_builder' course.pk %}">{{ course.title }}</a></div><h1>{% icon "sparkles" %} Instructor copilot</h1>
+  <p>Drafts questions and objectives from your approved lesson content. Nothing reaches learners until a subject expert reviews and approves it.</p></div></div>
+<div class="split">
+  <div class="stack">
+    <form class="card" method="post">{% csrf_token %}<input type="hidden" name="action" value="approve"><h3>Drafts awaiting review ({{ drafts|length }})</h3>
+      {% for q in drafts %}<label class="check mb-2" style="align-items:flex-start"><input type="checkbox" name="q" value="{{ q.pk }}"> <span><strong>{{ q.text }}</strong><br><small class="muted">{% for c in q.choices.all %}{% if c.is_correct %}<b>✓ {{ c.text }}</b>{% else %}{{ c.text }}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}</small> · <a class="small" href="{% url 'backoffice:question_edit' q.pk %}">edit</a></span></label>
+      {% empty %}<p class="muted">No drafts.</p>{% endfor %}
+      {% if drafts %}<label class="check mb-1"><input type="checkbox" name="as_practice" checked> <span>Approve as practice-only (not drawn into graded exams)</span></label><button class="btn btn-primary">Approve selected</button>{% endif %}</form>
+  </div>
+  <div class="stack">
+    <form class="card" method="post">{% csrf_token %}<input type="hidden" name="action" value="questions"><h3>Draft questions</h3>
+      <div class="field"><label for="ls">From lessons</label><select id="ls" name="lessons" multiple size="6">{% for l in lessons %}<option value="{{ l.pk }}">{{ l.title }}</option>{% endfor %}</select><div class="help">None selected = whole course.</div></div>
+      <div class="field"><label for="n">How many</label><input id="n" type="number" name="n" min="1" max="15" value="5"></div><button class="btn btn-secondary">Draft questions</button></form>
+    <form class="card" method="post">{% csrf_token %}<input type="hidden" name="action" value="objectives"><h3>Draft learning objectives</h3><p class="small muted">Overwrites the objectives field with a draft for you to edit.</p><button class="btn btn-secondary">Draft objectives</button></form>
+  </div>
+</div>
+{% endblock %}

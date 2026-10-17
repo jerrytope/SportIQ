@@ -1,0 +1,32 @@
+{% extends "manage/base.html" %}{% load sportiq humanize %}
+{% block page_title %}Overview{% endblock %}
+{% block content %}
+<div class="page-title"><div><h1>Good {% now "A" as ampm %}{% if ampm == "AM" %}morning{% else %}afternoon{% endif %}, {{ user.first_name }}</h1>
+  <p>{% for r in user.role_labels %}{{ r }}{% if not forloop.last %} · {% endif %}{% empty %}{% if user.is_superuser %}Super administrator{% endif %}{% endfor %}</p></div>
+  {% if user|has_role:"analyst,academic_manager" %}<a class="btn btn-secondary" href="{% url 'backoffice:analytics' %}">{% icon "chart" %}Full analytics</a>{% endif %}</div>
+
+<div class="kpis mb-3">
+  <div class="kpi green"><div class="label">Registered learners</div><div class="value">{{ kpis.total_learners|intcomma }}</div><div class="sub">+{{ kpis.registrations }} in 30 days</div></div>
+  <div class="kpi"><div class="label">Active learners (30 days)</div><div class="value">{{ kpis.active_learners|intcomma }}</div><div class="sub">at least one day of activity</div></div>
+  <div class="kpi"><div class="label">Completions (30 days)</div><div class="value">{{ kpis.completions }}</div><div class="sub">{{ kpis.completion_rate }}% completion rate</div></div>
+  <div class="kpi gold"><div class="label">Certificates issued (30 days)</div><div class="value">{{ kpis.certificates }}</div><div class="sub">{{ kpis.verifications }} verified by others</div></div>
+</div>
+
+<div class="split">
+  <div class="card">
+    <div class="row-between"><h3 class="mb-0">New learner registrations</h3><small class="muted">last 12 months</small></div>
+    <div class="chart" role="img" aria-label="Monthly registrations">
+      {% for m in monthly %}<div class="col"><small>{{ m.n }}</small><div class="bar" style="height:{{ m.h }}%"></div><small>{{ m.label }}</small></div>{% endfor %}
+    </div>
+  </div>
+  <div class="card">
+    <h3>Waiting for you</h3>
+    <ul class="list">
+      {% for label, n, url, ico in tasks %}
+        <li>{% icon ico %}<a class="grow" href="{% url url %}">{{ label }}</a><span class="badge {% if n %}badge-gold{% else %}badge-grey{% endif %}">{{ n }}</span></li>
+      {% empty %}<li class="muted">Nothing needs your attention.</li>{% endfor %}
+      {% if overdue_tickets %}<li>{% icon "alert" %}<a class="grow" href="{% url 'backoffice:tickets' %}?view=overdue">Tickets past their SLA</a><span class="badge badge-red">{{ overdue_tickets }}</span></li>{% endif %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

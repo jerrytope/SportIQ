@@ -1,0 +1,7 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ label }}{% endblock %}
+{% block content %}
+<div class="page-title"><div><div class="breadcrumbs"><a href="{% url 'backoffice:site' %}">Site content</a></div><h1>{{ label }}</h1></div>
+  <a class="btn btn-primary" href="{% url 'backoffice:site_edit' kind 0 %}">{% icon "plus" %}Add</a></div>
+<div class="card"><ul class="list">{% for item in items %}<li><a class="grow" href="{% url 'backoffice:site_edit' kind item.pk %}">{{ item }}</a></li>{% empty %}<li class="empty">Nothing yet.</li>{% endfor %}</ul></div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "manage/base.html" %}{% load sportiq %}
+{% block page_title %}{{ course.title }}{% endblock %}
+{% block content %}
+<div class="page-title"><div>
+  <div class="breadcrumbs"><a href="{% url 'backoffice:studio' %}">Content studio</a></div>
+  <h1>{{ course.title }}</h1>
+  <p><span class="status-dot status-{{ course.status }}"></span> {{ course.get_status_display }} · version {{ course.version }} · {{ course.track.name }} · owner {{ course.owner|default:"—" }}</p></div>
+  <div class="row">
+    <a class="btn btn-secondary" href="{{ course.get_absolute_url }}" target="_blank" rel="noopener">{% icon "eye" %}Preview</a>
+    {% if editable %}<a class="btn btn-secondary" href="{% url 'backoffice:course_edit' course.pk %}">{% icon "settings" %}Settings</a><a class="btn btn-secondary" href="{% url 'backoffice:copilot' course.pk %}">{% icon "sparkles" %}Copilot</a>{% endif %}
+  </div></div>
+
+{% if missing and course.status == "draft" %}<div class="alert alert-warning">Complete before submitting for review: {{ missing|join:", " }}. <a href="{% url 'backoffice:course_edit' course.pk %}">Edit settings →</a></div>{% endif %}
+
+<div class="split">
+  <div>
+    {% for m in modules %}
+    <section class="builder-module">
+      <header><div><strong style="color:var(--primary)">{{ forloop.counter }}. {{ m.title }}</strong>{% if m.summary %}<br><small class="muted">{{ m.summary }}</small>{% endif %}</div>
+        {% if editable %}<div class="row"><a class="btn btn-sm btn-ghost" href="{% url 'backoffice:module_edit' m.pk %}">{% icon "edit" %}Edit</a><a class="btn btn-sm btn-secondary" href="{% url 'backoffice:lesson_add' m.pk %}">{% icon "plus" %}Lesson</a></div>{% endif %}</header>
+      {% for l in m.lessons.all %}
+      <div class="builder-lesson">
+        {% if l.kind == "video" %}{% icon "play" %}{% elif l.kind == "quiz" %}{% icon "clipboard" %}{% elif l.kind == "download" %}{% icon "download" %}{% else %}{% icon "file" %}{% endif %}
+        <span style="flex:1"><strong>{{ l.title }}</strong><br><small class="muted">{{ l.get_kind_display }} · {{ l.duration_minutes }} min{% if l.is_preview %} · free preview{% endif %}
+          {% if l.kind == "video" %} · media: {{ l.get_media_status_display|lower }}{% endif %}{% if l.kind == "quiz" and not l.exam %} · <span style="color:var(--danger)">no assessment attached</span>{% endif %}</small></span>
+        {% if editable %}<a class="btn btn-sm btn-ghost" href="{% url 'backoffice:lesson_edit' l.pk %}">Edit</a>{% endif %}
+      </div>
+      {% empty %}<div class="builder-lesson muted small">No lessons yet.</div>{% endfor %}
+    </section>
+    {% empty %}<div class="card empty">{% icon "layers" %}<p>Start by adding a module.</p></div>{% endfor %}
+    {% if editable %}
+    <form class="card card-tight" method="post" action="{% url 'backoffice:module_add' course.pk %}">{% csrf_token %}
+      <strong>Add a module</strong>
+      <div class="inline-form mt-1">{{ module_form.title }}<input type="hidden" name="order" value="{{ module_form.order.value }}"><button class="btn btn-secondary">{% icon "plus" %}Add module</button></div>
+    </form>
+    {% endif %}
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <h3>Workflow</h3>
+      <ol class="small muted" style="padding-left:1.1rem">
+        <li {% if course.status == 'draft' %}style="color:var(--brand);font-weight:700"{% endif %}>Draft: build content</li>
+        <li {% if course.status == 'in_review' %}style="color:var(--brand);font-weight:700"{% endif %}>In review: academic reviewer checks</li>
+        <li {% if course.status == 'approved' %}style="color:var(--brand);font-weight:700"{% endif %}>Approved: ready to publish</li>
+        <li {% if course.status == 'published' %}style="color:var(--brand);font-weight:700"{% endif %}>Published: visible to learners</li>
+      </ol>
+      <form method="post" action="{% url 'backoffice:course_workflow' course.pk %}">{% csrf_token %}
+        <label for="wf-note">Note / comment</label><textarea id="wf-note" name="note" rows="2"></textarea>
+        <div class="row mt-1">
+          {% if course.status == "draft" and editable %}<button class="btn btn-primary btn-sm" name="action" value="submit">Submit for review</button>{% endif %}
+          {% if course.status == "in_review" and can_review %}<button class="btn btn-primary btn-sm" name="action" value="approve">Approve</button><button class="btn btn-secondary btn-sm" name="action" value="changes">Request changes</button>{% endif %}
+          {% if course.status == "approved" and can_publish %}<button class="btn btn-primary btn-sm" name="action" value="publish">Publish</button><button class="btn btn-secondary btn-sm" name="action" value="changes">Send back</button>{% endif %}
+          {% if course.status == "published" and can_publish %}<button class="btn btn-secondary btn-sm" name="action" value="revise">Open revision</button><button class="btn btn-danger btn-sm" name="action" value="retire" data-confirm="Click again to retire">Retire</button>{% endif %}
+          {% if course.status == "retired" and can_publish %}<button class="btn btn-secondary btn-sm" name="action" value="revise">Reopen as draft</button>{% endif %}
+          <button class="btn btn-ghost btn-sm" name="action" value="comment">Comment</button>
+        </div>
+      </form>
+      {% if course.publish_at and course.status == "approved" %}<p class="small mt-1 mb-0">{% icon "calendar" %} Scheduled to publish {{ course.publish_at|date:"j M Y, H:i" }}.</p>{% endif %}
+      {% if course.status == "draft" and course.version > 0 %}<p class="small muted mt-1 mb-0">Version {{ course.version }} stays live for learners while you revise. Publishing creates version {{ course.version|add:1 }}.</p>{% endif %}
+    </div>
+    <div class="card">
+      <h3>Assessment</h3>
+      <ul class="list">{% for e in exams %}<li>{% icon "clipboard" %}<span class="grow">{{ e.title }}<br><small class="muted">{{ e.question_count }} questions · pass {{ e.pass_mark }}% · {% if e.is_published %}published{% else %}hidden{% endif %}{% if e.is_final %} · final{% endif %}</small></span>
+        {% if editable %}<a class="small" href="{% url 'backoffice:exam_edit' course.pk %}?exam={{ e.pk }}">Edit</a>{% endif %}</li>{% empty %}<li class="muted small">No assessment yet.</li>{% endfor %}</ul>
+      <div class="row mt-1">
+        <a class="btn btn-sm btn-secondary" href="{% url 'backoffice:question_bank' course.pk %}">{% icon "layers" %}Question bank ({{ bank.questions.count|default:0 }})</a>
+        {% if editable and not exams %}<a class="btn btn-sm btn-secondary" href="{% url 'backoffice:exam_edit' course.pk %}">{% icon "plus" %}Final assessment</a>{% endif %}
+      </div>
+    </div>
+    <div class="card">
+      <h3>Review history</h3>
+      <ul class="timeline">{% for c in comments %}<li><strong>{{ c.get_action_display }}</strong> · {{ c.author|default:"system" }} · <small class="muted">{{ c.created_at|date:"j M, H:i" }}</small>{% if c.body %}<br>{{ c.body }}{% endif %}</li>{% empty %}<li class="muted">No activity yet.</li>{% endfor %}</ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
