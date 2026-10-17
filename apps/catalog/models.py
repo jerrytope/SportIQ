@@ -218,7 +218,7 @@ class ReviewComment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["-created_at", "-id"]  # id breaks ties when two entries share a timestamp
 
 
 class Module(models.Model):

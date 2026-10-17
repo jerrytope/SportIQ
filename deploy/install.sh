@@ -123,8 +123,6 @@ SITE_URL=https://$DOMAIN
 DATABASE_URL=postgres://$DB_USER:$DB_PASS@127.0.0.1:5432/$DB_NAME
 # Encrypts confidential integrity reports. Never change or lose it once reports exist.
 INTEGRITY_ENCRYPTION_KEY=$FERNET
-# Staff must use an authenticator app for the back office (set false only for a short internal pilot).
-REQUIRE_STAFF_2FA=true
 SESSION_IDLE_MINUTES=240
 FFMPEG_BINARY=$(command -v ffmpeg)
 # Emails are written to the service log until SMTP is set:  journalctl -u $SERVICE | grep -A20 Subject

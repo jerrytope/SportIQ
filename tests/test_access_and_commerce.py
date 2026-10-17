@@ -72,12 +72,11 @@ def test_review_and_publish_workflow_bumps_version(client, course):
     assert list(course.review_comments.values_list("action", flat=True)) == ["published", "approved", "submitted"]
 
 
-def test_staff_2fa_enforced_when_enabled(client, settings):
-    settings.REQUIRE_STAFF_2FA = True
+def test_staff_open_back_office_without_two_factor(client):
     admin = make_user("boss@example.com", roles=["nis_admin"])
     client.force_login(admin)
-    resp = client.get(reverse("backoffice:home"))
-    assert resp.status_code == 302 and "/account/2fa/setup/" in resp["Location"]
+    assert client.get(reverse("backoffice:home")).status_code == 200
+    assert client.get("/account/2fa/setup/").status_code == 404  # two-factor was removed
 
 
 # --- Accounts -------------------------------------------------------------------------------

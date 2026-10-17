@@ -14,7 +14,6 @@ PW = "Str0ng-pass-123"
 def _settings(settings):
     settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
     settings.PAYSTACK_SECRET_KEY = ""
-    settings.REQUIRE_STAFF_2FA = False
     settings.STORAGES["staticfiles"]["BACKEND"] = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 

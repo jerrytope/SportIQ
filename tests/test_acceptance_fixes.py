@@ -13,28 +13,10 @@ from .conftest import PW, make_user
 pytestmark = pytest.mark.django_db
 
 
-def _totp(device):
-    from django_otp.oath import TOTP
-
-    t = TOTP(device.bin_key, device.step, device.t0, device.digits, device.drift)
-    return f"{t.token():0{device.digits}d}"
-
-
-# B6
-def test_learner_with_two_factor_must_enter_code_after_login(client, learner):
-    from django_otp.plugins.otp_totp.models import TOTPDevice
-
-    device = TOTPDevice.objects.create(user=learner, name="Authenticator app", confirmed=True)
-    client.post(reverse("accounts:login"), {"username": learner.email, "password": PW})
-    resp = client.get(reverse("learning:dashboard"))
-    assert resp.status_code == 302 and resp.url.startswith(reverse("accounts:two_factor_verify"))
-    client.post(reverse("accounts:two_factor_verify"), {"token": _totp(device)})
-    assert client.get(reverse("learning:dashboard")).status_code == 200
-
-
-def test_learner_without_two_factor_is_not_challenged(client, learner):
+def test_login_goes_straight_to_dashboard(client, learner):
     client.post(reverse("accounts:login"), {"username": learner.email, "password": PW})
     assert client.get(reverse("learning:dashboard")).status_code == 200
+    assert b"two-factor" not in client.get(reverse("accounts:settings")).content.lower()
 
 
 # M4

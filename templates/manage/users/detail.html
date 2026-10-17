@@ -13,7 +13,7 @@
       <h3>Account &amp; roles</h3>
       {% include "components/form.html" with grid=True %}
       <button class="btn btn-primary" name="action" value="save">Save changes</button>
-      <p class="small muted mt-1 mb-0">Staff with any back-office role must use two-factor authentication. Role changes are recorded in the audit log.</p>
+      <p class="small muted mt-1 mb-0">Role changes are recorded in the audit log.</p>
     </form>
     <div class="card"><h3>Enrolments</h3>
       <ul class="list">{% for e in enrolments %}<li><span class="grow">{{ e.course.title }}<br><small class="muted">{{ e.get_source_display }} · {{ e.created_at|date:"j M Y" }}</small></span><span class="badge {% if e.status == 'completed' %}{% else %}badge-grey{% endif %}">{{ e.get_status_display }} {{ e.progress }}%</span></li>{% empty %}<li class="muted">None.</li>{% endfor %}</ul>

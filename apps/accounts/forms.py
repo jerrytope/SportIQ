@@ -97,9 +97,3 @@ class SensitiveDataForm(forms.ModelForm):
         widgets = {"has_disability": forms.NullBooleanSelect()}
         labels = {"has_disability": "Do you have a disability? (optional)",
                   "accessibility_needs": "Accessibility needs we should know about (optional)"}
-
-
-class TokenForm(forms.Form):
-    token = forms.CharField(label="6-digit code", max_length=6, min_length=6,
-                            widget=forms.TextInput(attrs={"inputmode": "numeric", "autocomplete": "one-time-code",
-                                                          "autofocus": True}))

@@ -1,10 +1,7 @@
-import base64
 import io
 import json
 import zipfile
 
-import qrcode
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth import views as auth_views
@@ -18,13 +15,11 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
-from django_otp import login as otp_login
-from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from apps.core.audit import audit, client_ip
 from apps.notifications.services import send_email
 
-from .forms import LoginForm, PreferencesForm, ProfileForm, SensitiveDataForm, SignupForm, TokenForm
+from .forms import LoginForm, PreferencesForm, ProfileForm, SensitiveDataForm, SignupForm
 from .models import Consent, DataRequest
 
 VERIFY_SALT = "sportiq.email-verify"
@@ -182,9 +177,8 @@ def settings_view(request):
                 Consent.objects.create(user=user, kind="sensitive", granted=False)
                 messages.info(request, "Consent withdrawn and sensitive data removed.")
             return redirect("accounts:settings")
-    has_2fa = TOTPDevice.objects.filter(user=user, confirmed=True).exists()
     return render(request, "accounts/settings.html", {
-        "prefs": prefs, "pwd": pwd, "sensitive": sensitive, "has_2fa": has_2fa,
+        "prefs": prefs, "pwd": pwd, "sensitive": sensitive,
         "consents": user.consents.all()[:10], "data_requests": user.data_requests.all(),
     })
 
@@ -236,63 +230,6 @@ def export_data(request):
 @login_required
 def payments(request):
     return render(request, "accounts/payments.html", {"orders": request.user.orders.select_related("course")})
-
-
-# --- Two-factor (TOTP) ---------------------------------------------------------------
-
-def _qr_data_uri(text):
-    img = qrcode.make(text, box_size=6, border=2)
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
-
-
-@login_required
-def two_factor_setup(request):
-    device = TOTPDevice.objects.filter(user=request.user, confirmed=False).first()
-    if not device:
-        device = TOTPDevice.objects.create(user=request.user, name="Authenticator app", confirmed=False)
-    form = TokenForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        if device.verify_token(form.cleaned_data["token"]):
-            device.confirmed = True
-            device.save()
-            TOTPDevice.objects.filter(user=request.user, confirmed=False).delete()
-            otp_login(request, device)
-            audit(request.user, "account.2fa_enabled", request.user, request=request)
-            messages.success(request, "Two-factor authentication is on.")
-            return redirect(_safe_next(request, reverse("accounts:settings")))
-        form.add_error("token", "That code is not correct. Check your phone's clock and try again.")
-    secret = base64.b32encode(device.bin_key).decode()
-    return render(request, "accounts/two_factor_setup.html", {
-        "form": form, "qr": _qr_data_uri(device.config_url), "secret": secret,
-        "next": request.GET.get("next", ""),
-    })
-
-
-@login_required
-def two_factor_verify(request):
-    form = TokenForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        for device in TOTPDevice.objects.filter(user=request.user, confirmed=True):
-            if device.verify_token(form.cleaned_data["token"]):
-                otp_login(request, device)
-                default = "backoffice:home" if request.user.is_backoffice else "learning:dashboard"
-                return redirect(_safe_next(request, reverse(default)))
-        form.add_error("token", "That code is not correct.")
-    return render(request, "accounts/two_factor_verify.html", {"form": form, "next": request.GET.get("next", "")})
-
-
-@login_required
-@require_POST
-def two_factor_disable(request):
-    if request.user.is_backoffice and settings.REQUIRE_STAFF_2FA:
-        messages.error(request, "Staff accounts must keep two-factor authentication switched on.")
-        return redirect("accounts:settings")
-    TOTPDevice.objects.filter(user=request.user).delete()
-    audit(request.user, "account.2fa_disabled", request.user, request=request)
-    messages.info(request, "Two-factor authentication is off.")
-    return redirect("accounts:settings")
 
 
 password_reset = auth_views.PasswordResetView.as_view(

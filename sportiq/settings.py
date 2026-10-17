@@ -30,8 +30,6 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "rest_framework",
     "drf_spectacular",
-    "django_otp",
-    "django_otp.plugins.otp_totp",
     "apps.core",
     "apps.accounts",
     "apps.institutions",
@@ -66,10 +64,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "apps.accounts.middleware.TwoFactorMiddleware",
     "apps.accounts.middleware.PrivatePageCacheMiddleware",
 ]
 
@@ -116,8 +112,6 @@ LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "learning:dashboard"
 LOGOUT_REDIRECT_URL = "web:home"
 
-# Staff accounts must use TOTP two-factor (blueprint §4). Can be relaxed in local dev.
-REQUIRE_STAFF_2FA = env_bool("REQUIRE_STAFF_2FA", not DEBUG)
 
 LANGUAGE_CODE = "en"
 # Phase 4: interface languages. Non-English strings are draft translations pending expert review.

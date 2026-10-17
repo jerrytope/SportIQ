@@ -1,7 +1,6 @@
 Django==5.2.18
 djangorestframework==3.18.3
 drf-spectacular==0.30.0
-django-otp==1.7.4
 qrcode==8.2
 pillow==12.3.0
 reportlab==5.0.1

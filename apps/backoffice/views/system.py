@@ -104,7 +104,6 @@ def settings_view(request):
         ("Termii SMS", bool(dj.TERMII_API_KEY), "TERMII_API_KEY"),
         ("Email (SMTP)", "smtp" in dj.EMAIL_BACKEND, "EMAIL_BACKEND / EMAIL_HOST"),
         ("Background jobs (Celery)", bool(dj.CELERY_BROKER_URL), "CELERY_BROKER_URL"),
-        ("Staff two-factor enforced", dj.REQUIRE_STAFF_2FA, "REQUIRE_STAFF_2FA"),
     ]
     return render(request, "manage/settings.html", {"form": form, "integrations": integrations})
 

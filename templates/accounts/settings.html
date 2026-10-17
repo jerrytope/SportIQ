@@ -15,16 +15,6 @@
       {% include "components/form.html" with form=pwd %}
       <button class="btn btn-primary" name="change_password" value="1">Change password</button>
     </form>
-    <div class="card">
-      <h2 style="font-size:1.2rem">Two-factor authentication</h2>
-      {% if has_2fa %}
-        <p><span class="badge">{% icon "shield" %}On</span> Codes from your authenticator app protect your account.</p>
-        <form method="post" action="{% url 'accounts:two_factor_disable' %}">{% csrf_token %}<button class="btn btn-secondary" data-confirm="Click again to turn off">Turn off</button></form>
-      {% else %}
-        <p class="muted">Add a second step at login using an authenticator app (Google Authenticator, Microsoft Authenticator, Authy). Required for staff accounts.</p>
-        <a class="btn btn-primary" href="{% url 'accounts:two_factor_setup' %}">Set up two-factor</a>
-      {% endif %}
-    </div>
   </div>
   <div class="stack">
     <form class="card" method="post">{% csrf_token %}
