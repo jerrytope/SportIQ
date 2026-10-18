@@ -69,6 +69,9 @@ MIDDLEWARE = [
     "apps.accounts.middleware.PrivatePageCacheMiddleware",
 ]
 
+# Friendly "page expired" screen for security-token mismatches; the reason is logged (journalctl -u sportiq).
+CSRF_FAILURE_VIEW = "apps.core.views.csrf_failure"
+
 # Sign people out after this much inactivity (each request extends the session).
 SESSION_COOKIE_AGE = int(os.getenv("SESSION_IDLE_MINUTES", "240")) * 60
 SESSION_SAVE_EVERY_REQUEST = True
@@ -146,6 +149,9 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "SportIQ <no-reply@sportiq.edu.ng>")
+# Off: "Forgot password" asks users to contact support and an admin sets a new password in the back office.
+# Turn on once outgoing email works to let users reset their own password by email link.
+PASSWORD_RESET_BY_EMAIL = env_bool("PASSWORD_RESET_BY_EMAIL", False)
 
 # SMS (Termii). Empty key = messages are logged instead of sent.
 TERMII_API_KEY = os.getenv("TERMII_API_KEY", "")

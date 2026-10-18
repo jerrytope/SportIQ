@@ -2,12 +2,12 @@ import io
 import json
 import zipfile
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from django.core import signing
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -22,7 +22,6 @@ from apps.notifications.services import send_email
 from .forms import LoginForm, PreferencesForm, ProfileForm, SensitiveDataForm, SignupForm
 from .models import Consent, DataRequest
 
-VERIFY_SALT = "sportiq.email-verify"
 MAX_FAILURES = 8
 
 
@@ -44,14 +43,6 @@ def _safe_next(request, default):
     return default
 
 
-def send_verification(request, user):
-    token = signing.dumps({"u": user.pk}, salt=VERIFY_SALT)
-    url = request.build_absolute_uri(reverse("accounts:verify_email", args=[token]))
-    send_email(user.email, "Confirm your SportIQ email",
-               f"Hello {user.first_name},\n\nConfirm your email address to secure your account:\n{url}\n\n"
-               "This link expires in 3 days.")
-
-
 def signup(request):
     if request.user.is_authenticated:
         return redirect("learning:dashboard")
@@ -62,10 +53,9 @@ def signup(request):
         Consent.objects.create(user=user, kind="privacy")
         if form.cleaned_data.get("marketing"):
             Consent.objects.create(user=user, kind="marketing")
-        send_verification(request, user)
         login(request, user, backend="apps.accounts.backends.EmailBackend")
         audit(user, "account.signup", user, request=request)
-        messages.success(request, f"Welcome to SportIQ, {user.first_name}! We've sent a link to confirm your email.")
+        messages.success(request, f"Welcome to SportIQ, {user.first_name}!")
         return redirect(_safe_next(request, reverse("learning:dashboard")))
     return render(request, "accounts/signup.html", {"form": form})
 
@@ -80,7 +70,7 @@ class LoginView(auth_views.LoginView):
 
     def post(self, request, *args, **kwargs):
         if cache.get(self._key(), 0) >= MAX_FAILURES:
-            messages.error(request, "Too many failed attempts. Please wait 15 minutes or reset your password.")
+            messages.error(request, "Too many failed attempts. Please wait 15 minutes, or contact support to have your password reset.")
             return redirect("accounts:login")
         return super().post(request, *args, **kwargs)
 
@@ -107,29 +97,6 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect("web:home")
-
-
-def verify_email(request, token):
-    from .models import User
-
-    try:
-        data = signing.loads(token, salt=VERIFY_SALT, max_age=3 * 24 * 3600)
-        user = User.objects.get(pk=data["u"])
-    except (signing.BadSignature, User.DoesNotExist):
-        messages.error(request, "That confirmation link is invalid or has expired.")
-        return redirect("web:home")
-    user.email_verified = True
-    user.save(update_fields=["email_verified"])
-    messages.success(request, "Your email address is confirmed.")
-    return redirect("learning:dashboard" if request.user.is_authenticated else "accounts:login")
-
-
-@login_required
-@require_POST
-def resend_verification(request):
-    send_verification(request, request.user)
-    messages.success(request, "We've sent a new confirmation link.")
-    return redirect(request.META.get("HTTP_REFERER") or "learning:dashboard")
 
 
 @login_required
@@ -232,10 +199,17 @@ def payments(request):
     return render(request, "accounts/payments.html", {"orders": request.user.orders.select_related("course")})
 
 
-password_reset = auth_views.PasswordResetView.as_view(
+_email_password_reset = auth_views.PasswordResetView.as_view(
     template_name="accounts/password_reset.html", email_template_name="accounts/email_password_reset.txt",
     subject_template_name="accounts/email_password_reset_subject.txt",
     success_url=reverse_lazy("accounts:password_reset_done"))
+
+
+def password_reset(request):
+    """Self-service reset by email when PASSWORD_RESET_BY_EMAIL is on; otherwise ask support (an admin sets it)."""
+    if settings.PASSWORD_RESET_BY_EMAIL:
+        return _email_password_reset(request)
+    return render(request, "accounts/password_reset_contact.html")
 password_reset_done = auth_views.PasswordResetDoneView.as_view(template_name="accounts/password_reset_done.html")
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     template_name = "accounts/password_reset_confirm.html"

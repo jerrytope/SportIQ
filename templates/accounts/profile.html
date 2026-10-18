@@ -8,10 +8,6 @@
       {% if user.is_verified_professional %}<span class="badge">{% icon "check" %}Verified professional</span>{% else %}<span class="badge badge-grey">Unverified profile</span>{% endif %}</p></div></div>
   <a class="btn btn-secondary" href="{% url 'credentials:transcript' %}">{% icon "download" %}Download transcript</a>
 </div>
-{% if not user.email_verified %}
-<div class="alert alert-warning row-between">Please confirm your email address to secure your account.
-  <form method="post" action="{% url 'accounts:resend_verification' %}">{% csrf_token %}<button class="btn btn-sm btn-secondary">Resend link</button></form></div>
-{% endif %}
 <div class="split">
   <form class="card" method="post" enctype="multipart/form-data">{% csrf_token %}
     <h2 style="font-size:1.25rem">Edit profile</h2>

@@ -4,10 +4,6 @@
 <div class="page-title"><div><h1>Welcome back, {{ user.first_name|default:"learner" }} 👋🏾</h1><p>Here's where you left off.</p></div>
   <a class="btn btn-primary" href="{% url 'catalog:list' %}">{% icon "search" %}Explore courses</a></div>
 
-{% if not user.email_verified %}
-<div class="alert alert-warning row-between">Confirm your email address to secure your account and receive certificates.
-  <form method="post" action="{% url 'accounts:resend_verification' %}">{% csrf_token %}<button class="btn btn-sm btn-secondary">Resend link</button></form></div>
-{% endif %}
 {% for a in announcements %}<div class="alert alert-info"><strong>{{ a.title }}</strong> · {{ a.body|truncatechars:200 }}</div>{% endfor %}
 {% for s in surveys %}<div class="alert alert-info">{% icon "chart" %} Two quick questions about how <strong>{{ s.enrolment.course.title }}</strong> has helped you. <a href="{% url 'research:outcome_survey' s.pk %}">Answer now →</a></div>{% endfor %}
 {% for n in pending_nominations %}<div class="alert alert-success">{% icon "building" %} {{ n.institution.name }} nominated you for <strong>{{ n.course.title }}</strong>{% if n.due_date %}, due {{ n.due_date|date:"j M Y" }}{% endif %}. <a href="{% url 'learning:course' n.course.slug %}">Start now →</a></div>{% endfor %}

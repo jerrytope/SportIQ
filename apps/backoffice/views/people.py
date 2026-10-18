@@ -3,6 +3,8 @@ import io
 import secrets
 
 from django.contrib import messages
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.http import Http404
@@ -11,6 +13,7 @@ from django.views.decorators.http import require_POST
 
 from apps.accounts.models import NIGERIAN_STATES, User
 from apps.accounts.roles import STAFF_ROLES
+from apps.accounts.views import clear_lockout
 from apps.catalog.models import Course, Profession
 from apps.core.audit import audit
 from apps.core.models import AuditLog
@@ -107,11 +110,22 @@ def user_detail(request, pk):
             p.save()
             audit(request.user, "user.updated", p, {"before": before, "after": {"roles": p.staff_roles, "active": p.is_active}}, request)
             messages.success(request, "User updated.")
-        elif action == "reset":
-            send_email(person.email, "Reset your SportIQ password",
-                       f"An administrator sent you a password reset link: {request.build_absolute_uri('/account/password-reset/')}")
-            audit(request.user, "user.password_reset_sent", person, request=request)
-            messages.success(request, "Password reset email sent.")
+        elif action == "set_password":
+            # Admin-assisted reset while self-service reset by email is switched off.
+            pw1, pw2 = request.POST.get("new_password1", ""), request.POST.get("new_password2", "")
+            try:
+                if pw1 != pw2:
+                    raise ValidationError("The two passwords don't match.")
+                validate_password(pw1, person)
+            except ValidationError as exc:
+                messages.error(request, " ".join(exc.messages))
+                return redirect("backoffice:user_detail", pk=pk)
+            person.set_password(pw1)
+            person.save(update_fields=["password"])
+            clear_lockout(person.email)
+            audit(request.user, "user.password_set_by_admin", person, request=request)
+            messages.success(request, "New password set. Give it to the user privately; they can change it "
+                                      "under Account settings after logging in.")
         elif action == "membership" and request.POST.get("institution"):
             inst = get_object_or_404(Institution, pk=request.POST["institution"])
             m, _ = Membership.objects.update_or_create(user=person, institution=inst,

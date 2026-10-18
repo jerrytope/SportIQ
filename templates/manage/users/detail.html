@@ -4,11 +4,19 @@
 <div class="page-title"><div class="row"><span class="avatar avatar-lg">{{ person.initials }}</span><div>
   <div class="breadcrumbs"><a href="{% url 'backoffice:users' %}">Users</a></div>
   <h1>{{ person.get_full_name|default:person.email }}</h1>
-  <p>{{ person.email }} · joined {{ person.date_joined|date:"j M Y" }} · last login {{ person.last_login|timesince|default:"never" }}{% if person.last_login %} ago{% endif %}
-    {% if person.email_verified %}<span class="badge">Email verified</span>{% else %}<span class="badge badge-amber">Email unverified</span>{% endif %}</p></div></div>
-  <form method="post">{% csrf_token %}<button class="btn btn-secondary" name="action" value="reset">{% icon "mail" %}Send password reset</button></form></div>
+  <p>{{ person.email }} · joined {{ person.date_joined|date:"j M Y" }} · last login {{ person.last_login|timesince|default:"never" }}{% if person.last_login %} ago{% endif %}</p></div></div>
+</div>
 <div class="split">
   <div class="stack">
+    <form class="card" method="post" autocomplete="off">{% csrf_token %}
+      <h3>Set a new password</h3>
+      <p class="small muted">For users who forgot their password. Give the new password to them privately; they can change it under Account settings.</p>
+      <div class="form-grid">
+        <div class="field"><label for="np1">New password</label><input id="np1" type="password" name="new_password1" autocomplete="new-password" required minlength="8"></div>
+        <div class="field"><label for="np2">Repeat new password</label><input id="np2" type="password" name="new_password2" autocomplete="new-password" required minlength="8"></div>
+      </div>
+      <button class="btn btn-secondary" name="action" value="set_password">{% icon "lock" %}Set password</button>
+    </form>
     <form class="card" method="post">{% csrf_token %}
       <h3>Account &amp; roles</h3>
       {% include "components/form.html" with grid=True %}

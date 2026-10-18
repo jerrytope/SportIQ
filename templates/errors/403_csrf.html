@@ -1,0 +1,10 @@
+{% extends "public/base.html" %}
+{% block title %}Please try again · SportIQ{% endblock %}
+{% block content %}
+<section class="auth-wrap"><div class="card auth-card text-center">
+  <p class="pill pill-gold" style="margin:0 auto">Page expired</p>
+  <h1 style="font-size:1.6rem;margin-top:1rem">That page was out of date.</h1>
+  <p class="muted">For your security, forms expire when you log in or out, or when a page has been open for a while. Open it again and resubmit; nothing was saved.</p>
+  <div class="row" style="justify-content:center"><a class="btn btn-primary" href="{{ retry_url }}">Open the page again</a><a class="btn btn-secondary" href="/">Go home</a></div>
+</div></section>
+{% endblock %}

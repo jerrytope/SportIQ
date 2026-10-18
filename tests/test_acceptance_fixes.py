@@ -134,3 +134,43 @@ def test_mark_complete_form_supports_offline_queue(client, learner, course):
     lesson = course.lessons().first()
     page = client.get(reverse("learning:lesson", args=[course.slug, lesson.pk])).content
     assert b"data-offline-complete" in page and b"data-next=" in page
+
+
+# Email verification removed; password reset handled by admins while email is off
+def test_signup_logs_in_without_verification_email(client, coach_profession):
+    from django.core import mail
+
+    client.post(reverse("accounts:signup"), {
+        "first_name": "New", "last_name": "Coach", "email": "newcoach@example.com", "state": "Lagos",
+        "password1": "Str0ng-pass-2026!", "password2": "Str0ng-pass-2026!", "professions": [coach_profession.pk],
+        "accept_terms": "on"})
+    page = client.get(reverse("learning:dashboard"))
+    assert page.status_code == 200 and b"Confirm your email" not in page.content
+    assert not mail.outbox
+
+
+def test_forgot_password_asks_user_to_contact_support(client, db, settings):
+    page = client.get(reverse("accounts:password_reset")).content
+    assert b"Contact the SportIQ support team" in page and b"Send reset link" not in page
+    settings.PASSWORD_RESET_BY_EMAIL = True
+    assert b"Send reset link" in client.get(reverse("accounts:password_reset")).content
+
+
+def test_admin_sets_new_password(client, learner):
+    admin = make_user("nisadmin2@example.com", roles=["nis_admin"])
+    client.force_login(admin)
+    url = reverse("backoffice:user_detail", args=[learner.pk])
+    client.post(url, {"action": "set_password", "new_password1": "Brand-New-2026!", "new_password2": "different"})
+    learner.refresh_from_db()
+    assert learner.check_password(PW)  # mismatch rejected
+    client.post(url, {"action": "set_password", "new_password1": "Brand-New-2026!", "new_password2": "Brand-New-2026!"})
+    learner.refresh_from_db()
+    assert learner.check_password("Brand-New-2026!")
+    assert AuditLog.objects.filter(action="user.password_set_by_admin", object_id=str(learner.pk)).exists()
+
+
+def test_stale_form_shows_friendly_page_expired_screen(db):
+    from django.test import Client
+
+    resp = Client(enforce_csrf_checks=True).post(reverse("accounts:login"), {"username": "x@example.com", "password": "y"})
+    assert resp.status_code == 403 and b"That page was out of date" in resp.content
